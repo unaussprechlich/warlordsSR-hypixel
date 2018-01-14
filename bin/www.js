@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = require("../app");
 const debug = require('debug')('warlordssr-hypixel:server');
 const http = require("http");
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '3001');
 app_1.app.set('port', port);
 const server = http.createServer(app_1.app);
 server.listen(port);
