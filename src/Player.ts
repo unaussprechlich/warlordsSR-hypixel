@@ -336,7 +336,7 @@ schema.pre('save', function(next) {
     sr.mage.WL = calculateWL(stats.wins_mage, stats.losses_mage);
     sr.mage.pyromancer.WL = calculateWL(stats.wins_pyromancer, stats.losses_pyromancer);
     sr.mage.aquamancer.WL = calculateWL(stats.wins_aquamancer, stats.losses_aquamancer);
-    sr.mage.cryomancer.WL = calculateWL(stats.wins_cryomancer, stats.losses_aquamancer);
+    sr.mage.cryomancer.WL = calculateWL(stats.wins_cryomancer, stats.losses_cryomancer);
 
     sr.paladin.WL = calculateWL(stats.wins_paladin, stats.losses_paladin);
     sr.paladin.avenger.WL = calculateWL(stats.wins_avenger, stats.losses_avenger);
