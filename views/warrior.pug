@@ -1,0 +1,32 @@
+extends table
+
+
+block table
+  tr
+    th(scope="col")  #
+    th(scope="col") Name
+    th(scope="col") SR
+    th(scope="col") WL
+    th(scope="col") DHP
+    th(scope="col") Berserker
+    th(scope="col") WL
+    th(scope="col") DHP
+    th(scope="col") Defender
+    th(scope="col") WL
+    th(scope="col") DHP
+  tbody
+    - var rank = 1
+    for player in PLAYERS
+      tr
+        th(scope="row")= rank
+        +td_item(player.name)
+        +td_item(player.warlords_sr.warrior.SR)
+        +td_item(player.warlords_sr.warrior.WL)
+        +td_item(player.warlords_sr.warrior.DHP)
+        +td_item(player.warlords_sr.warrior.berserker.SR)
+        +td_item(player.warlords_sr.warrior.berserker.WL)
+        +td_item(player.warlords_sr.warrior.berserker.DHP)
+        +td_item(player.warlords_sr.warrior.defender.SR)
+        +td_item(player.warlords_sr.warrior.defender.WL)
+        +td_item(player.warlords_sr.warrior.defender.DHP)
+        - rank++

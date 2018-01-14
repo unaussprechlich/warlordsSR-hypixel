@@ -1,0 +1,18 @@
+extends layout
+
+mixin td_item(item)
+  if item
+    td= item
+  else
+    td= ""
+
+block content
+  #content
+    .table-responsive
+      table.table.table-striped.table-hover.tablesorter#sr_table
+        thead.thead-dark
+          block table
+
+block js
+  script
+    include tablesorter.js

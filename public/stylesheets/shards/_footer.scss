@@ -1,0 +1,101 @@
+/*!***********************************************
+ * © 2017 UNAUSSPRECHLICH ALL RIGHTS RESERVED   *
+ ************************************************/
+
+@import "_var";
+
+#footer {
+  
+  background-color: $backgroundColor_DARK_2;
+
+  .footer-top {
+	position: relative;
+	padding: 30px 0
+  }
+
+  .footer-logo {
+	display: inline-block;
+	margin-bottom: 5px;
+  }
+
+  .footer-bottom {
+	background-color: $backgroundColor_DARK_1;
+	padding: 20px 0 20px;
+
+	a:hover {
+	  text-decoration: underline;
+	}
+  }
+  
+  a, p {
+	font-weight: 300;
+  }
+
+  a, h2, p {
+	color: #fff;
+  }
+
+  a:hover{
+	color: $highlightColor_ORIGINAL;
+  }
+
+  h2{
+	padding-bottom: 10px;
+	font-weight: normal;
+  }
+
+  .social-icons {
+	text-align: center;
+	ul {
+	  list-style: none;
+	  padding: 0;
+	  margin: 0;
+	  display: inline-block;
+
+	  li:last-child {
+		margin-right: 0;
+	  }
+
+	  li {
+		margin-top: 30px;
+		float: left;
+		margin-right: 8px;
+
+		a {
+		  color: #fff;
+		  background-color: #d9d9d9;
+		  height: 36px;
+		  width: 36px;
+		  line-height: 36px;
+		  display: block;
+		  font-size: 16px;
+		  opacity: 0.8;
+		  border-radius: 4px;
+		}
+
+		a:hover {
+		  opacity: 1;
+		  -webkit-transform: scale(1.2);
+		  transform: scale(1.2);
+		}
+
+		a.envelope {
+		  background-color: #CECB26;
+		}
+
+		a.facebook{
+		  background-color: #3b5999;
+		}
+
+		a.twitter {
+		  background-color: #2ac6f7;
+		}
+
+		a.instagram {
+		  background-color: #cd486b;
+		}
+	  }
+	}
+  }
+}
+

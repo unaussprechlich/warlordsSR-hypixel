@@ -1,0 +1,40 @@
+/*!***********************************************
+ * © 2017 UNAUSSPRECHLICH ALL RIGHTS RESERVED   *
+ ************************************************/
+
+$highlightColor_LIGHT_2  : #B6EC45;
+$highlightColor_LIGHT_1  : #A1E611;
+$highlightColor_ORIGINAL : #d43c3c;
+$highlightColor_DARK_1 	 : darken($highlightColor_ORIGINAL, 0.25);
+$highlightColor_DARK_2   : darken($highlightColor_ORIGINAL, 0.5);
+
+$backgroundColor_LIGHT_1 : #e6e6e6;
+$backgroundColor_LIGHT_2 : #d2d2d2;
+//missing
+$backgroundColor_DARK_1  : #333333;
+$backgroundColor_DARK_2  : #282828;
+
+$darkenBy75: rgba(0,0,0,0.75);
+$darkenBy50: rgba(0,0,0,0.50);
+$darkenBy25: rgba(0,0,0,0.25);
+$darkenBy20: rgba(0,0,0,0.2);
+$darkenBy10: rgba(0,0,0,0.1);
+$darkenBy5 : rgba(0,0,0,0.05);
+
+$lightenBy75: rgba(255,255,255,0.75);
+$lightenBy50: rgba(255,255,255,0.50);
+$lightenBy25: rgba(255,255,255,0.2);
+$lightenBy20: rgba(255,255,255,0.2);
+$lightenBy15: rgba(255,255,255,0.1);
+$lightenBy5 : rgba(255,255,255,0.05);
+
+$font_size : 17px;
+
+@mixin fade($time){
+  -o-transition: $time ease-in-out;
+  -moz-transition: $time ease-in-out;
+  -webkit-transition: $time ease-in-out;
+  transition: $time ease-in-out;
+}
+
+

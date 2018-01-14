@@ -1,0 +1,116 @@
+include ./mixins/flash-messages
+
+doctype html
+html(lang='de')
+
+  //- HTML HEADER
+  head
+
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name='description', content='A SR system for the gamemode Warlords on the Hypixel-Network.')
+    meta(name='author', content='unaussprechlich')
+
+    //link( rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png")
+    //link( rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png")
+    //link( rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png")
+    //link( rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png")
+    //link( rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png")
+    //link( rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png")
+    //link( rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png")
+    //link( rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png")
+    //link( rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png")
+    //link( rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png")
+    //link( rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png")
+    //link( rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png")
+    //link( rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png")
+    //link( rel="manifest" href="/favicon/manifest.json")
+    //meta( name="msapplication-TileColor" content="#7FBA00")
+    //meta( name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png")
+    //meta( name="theme-color" content="#7FBA00")
+
+    link(href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet")
+
+    title= PAGE_TITLE
+
+    //cloudflare CDN for better performance more likely to be cached
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/css/bootstrap.min.css', rel='stylesheet')
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.29.3/css/theme.bootstrap_4.min.css', rel='stylesheet')
+
+
+
+    script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+
+    link(href='/stylesheets/style.css', rel='stylesheet')
+
+    //- Include template-specific stylesheets by extending the css block
+    block css
+
+    include ./shards/preloader
+
+    //- Add any other template-specific HEAD tags by extending the head block
+    block head
+
+  //- HTML BODY
+  body
+
+    #body
+
+      //- NOTE:
+      //- There is no .container wrapping class around body blocks to allow more flexibility in design.
+      //- Remember to include it in your templates when you override the intro and content blocks!
+
+      //- The Intro block appears above flash messages (used for temporary information display)
+      section#sidebar
+        .row
+          h1.text-right Warlords SR
+          p A skillrating system for the gamemode Warlords on the Hypixel-Network.
+          .inner
+           nav
+            ul
+              li
+                if(PAGE_TITLE === "WarlordsSR")
+                  a(href='home').active Overview
+                else
+                  a(href='home') Overview
+              li
+                if(PAGE_TITLE === "Paladin|WarlordsSR")
+                  a(href='paladin').active Paladin
+                else
+                  a(href='paladin') Paladin
+              li
+                if(PAGE_TITLE === "Warrior|WarlordsSR")
+                  a(href='warrior').active Warrior
+                else
+                  a(href='warrior') Warrior
+              li
+                if(PAGE_TITLE === "Mage|WarlordsSR")
+                  a(href='mage').active Mage
+                else
+                  a(href='mage') Mage
+              li
+                if(PAGE_TITLE === "Shaman|WarlordsSR")
+                  a(href='shaman').active Shaman
+                else
+                  a(href='shaman') Shaman
+          p#copyright © 2018 unaussprechlich
+
+      //- Flash messages allow you to display once-off status messages to users, e.g. form
+      //- validation errors, success messages, etc.
+      +flash-messages(messages)
+
+      //- The content block should contain the body of your template's content
+      block content
+
+
+    //- JAVASCRIPT
+
+    //script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+    script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.min.js')
+    script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.29.3/js/jquery.tablesorter.min.js')
+
+    //- Add scripts that are globally required by your site here.
+
+    //- Include template-specific javascript files by extending the js block
+    block js
