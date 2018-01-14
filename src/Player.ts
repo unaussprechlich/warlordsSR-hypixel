@@ -506,7 +506,7 @@ schema.pre('save', function(next) {
     sr.shaman.SR = Math.round((vOr0(sr.shaman.thunderlord.SR) + vOr0(sr.shaman.earthwarden.SR))/2);
     sr.warrior.SR = Math.round((vOr0(sr.warrior.berserker.SR) + vOr0(sr.warrior.defender.SR))/2);
 
-    sr.SR = Math.round(((vOr0(sr.paladin.SR) + vOr0(sr.mage.SR) + vOr0(sr.shaman.SR) + vOr0(sr.warrior.SR))/4) * 1.25);
+    sr.SR = Math.round(((vOr0(sr.paladin.SR) + vOr0(sr.mage.SR) + vOr0(sr.shaman.SR) + vOr0(sr.warrior.SR))/4));
 
     this.warlords_sr = sr;
 
@@ -562,7 +562,8 @@ function calculateSr(dhp : number | null, specPlays : number,  wl : number | nul
     if(dipAdjusted == null ||  wlAdjusted == null) return null;
     const tempSR = Math.log10(Math.pow(dipAdjusted * wlAdjusted, 2) +1) * average.ADJUST - 1000;
     if(tempSR <= 0) return null;
-    const SR= Math.round((Math.pow(1.0005, tempSR) - 1) * 416);
+    //const SR= Math.round((Math.pow(1.0005, tempSR) - 1) * 416);
+    const SR= Math.round((Math.cos(tempSR / Math.PI / 500 + Math.PI) + 1) * 2500);
     if(SR <= 0) return null;
     else return SR;
 }
