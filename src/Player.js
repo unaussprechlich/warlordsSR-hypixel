@@ -209,7 +209,7 @@ class Average {
 }
 const PYROMANCER = new Average(110, 103187, 1.76);
 const CRYOMANCER = new Average(90, 99546, 2.77);
-const AQUAMANCER = new Average(140, 105896, 1.93);
+const AQUAMANCER = new Average(135, 105896, 1.93);
 const AVENGER = new Average(60, 104286, 2.21);
 const CRUSADER = new Average(170, 93370, 2.77);
 const PROTECTOR = new Average(100, 127081, 2.02);
@@ -355,7 +355,7 @@ function calculateDHP(dmg, heal, prevented, plays) {
     return Math.round((dmg + heal + prevented) / plays);
 }
 function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
-    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || plays < 100 || wl > 20)
+    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || plays < 100)
         return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
