@@ -263,21 +263,22 @@ class Average{
 }
 
 
-const PYROMANCER = new Average(480, 103187, 1.76);
-const CRYOMANCER = new Average(445, 99546 , 2.77);
-const AQUAMANCER = new Average(462, 105896, 1.93);
-const AVENGER    = new Average(470, 104286, 2.21);
-const CRUSADER   = new Average(460, 93370 , 2.77);
-const PROTECTOR  = new Average(440, 127081, 2.02);
-const THUNDERLORD= new Average(473, 109217, 1.82);
-const EARTHWARDEN= new Average(440, 111751, 1.90);
-const BERSERKER  = new Average(463, 94848 , 2.65);
-const DEFENDER   = new Average(447, 97136 , 2.54);
+const PYROMANCER = new Average(110, 103187, 1.76);
+const CRYOMANCER = new Average(90, 99546 , 2.77);
+const AQUAMANCER = new Average(140, 105896, 1.93);
+const AVENGER    = new Average(60, 104286, 2.21);
+const CRUSADER   = new Average(170, 93370 , 2.77);
+const PROTECTOR  = new Average(100, 127081, 2.02);
+const THUNDERLORD= new Average(155, 109217, 1.82);
+const EARTHWARDEN= new Average(85, 111751, 1.90);
+const BERSERKER  = new Average(10, 94848 , 2.65);
+const DEFENDER   = new Average(-10, 97136 , 2.54);
 
 const LEAVING_PUNISHMENT = 15;
 const ANTI_SNIPER_TRESHOLD = 15000 + 7500; //averagePrevented = 13431 averageHeals = 7215
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000; //average = 2640
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
+const AVERAGE_KDA = 7; //real: 6.86034034034034;
 
 schema.pre('save', function(next) {
     const stats = this.warlords;
@@ -385,6 +386,7 @@ schema.pre('save', function(next) {
         antiSniperDHPValue,
         stats.pyromancer_plays,
         sr.mage.pyromancer.WL,
+        sr.KDA,
 
         PYROMANCER,
 
@@ -396,6 +398,7 @@ schema.pre('save', function(next) {
         sr.mage.aquamancer.DHP,
         stats.aquamancer_plays,
         sr.mage.aquamancer.WL,
+        sr.KDA,
 
         AQUAMANCER,
 
@@ -407,6 +410,7 @@ schema.pre('save', function(next) {
         sr.mage.cryomancer.DHP,
         stats.cryomancer_plays,
         sr.mage.cryomancer.WL,
+        sr.KDA,
 
         CRYOMANCER,
 
@@ -419,6 +423,7 @@ schema.pre('save', function(next) {
         sr.paladin.avenger.DHP,
         stats.avenger_plays,
         sr.paladin.avenger.WL,
+        sr.KDA,
 
         AVENGER,
 
@@ -430,6 +435,7 @@ schema.pre('save', function(next) {
         sr.paladin.crusader.DHP,
         stats.crusader_plays,
         sr.paladin.crusader.WL,
+        sr.KDA,
 
         CRUSADER,
 
@@ -441,6 +447,7 @@ schema.pre('save', function(next) {
         sr.paladin.protector.DHP,
         stats.protector_plays,
         sr.paladin.protector.WL,
+        sr.KDA,
 
         PROTECTOR,
 
@@ -453,6 +460,7 @@ schema.pre('save', function(next) {
         sr.shaman.thunderlord.DHP,
         stats.thunderlord_plays,
         sr.shaman.thunderlord.WL,
+        sr.KDA,
 
         THUNDERLORD,
 
@@ -464,6 +472,7 @@ schema.pre('save', function(next) {
         sr.shaman.earthwarden.DHP,
         stats.earthwarden_plays,
         sr.shaman.earthwarden.WL,
+        sr.KDA,
 
         EARTHWARDEN,
 
@@ -476,6 +485,7 @@ schema.pre('save', function(next) {
         sr.warrior.berserker.DHP,
         stats.berserker_plays,
         sr.warrior.berserker.WL,
+        sr.KDA,
 
         BERSERKER,
 
@@ -494,6 +504,7 @@ schema.pre('save', function(next) {
         antiDefenderN00bDHP,
         stats.defender_plays,
         sr.warrior.defender.WL,
+        sr.KDA,
 
         DEFENDER,
 
@@ -554,22 +565,46 @@ function calculateDHP(dmg : number, heal : number, prevented : number, plays : n
     return Math.round((dmg  + heal + prevented)/plays);
 }
 
-function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, average : Average, plays : number | null, penalty : number){
-    if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null || plays < 100 || wl > 20) return null;
+function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, kda : number | null, average : Average, plays : number | null, penalty : number){
+    if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null ||  kda == null || plays < 100 || wl > 20) return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
-    const dipAdjusted = av10(dhp, average.DHP);
-    const wlAdjusted = av10(wl / penaltyPerPlay, average.WL);
-    if(dipAdjusted == null ||  wlAdjusted == null) return null;
-    const tempSR = Math.log10(Math.pow(dipAdjusted * wlAdjusted, 2) +1) * average.ADJUST - 1000;
-    if(tempSR <= 0) return null;
-    //const SR= Math.round((Math.pow(1.0005, tempSR) - 1) * 416);
-    const SR= Math.round((Math.cos(tempSR / Math.PI / 500 + Math.PI) + 1) * 2500);
+    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
+    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
+    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
+    const SR= Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
+
     if(SR <= 0) return null;
     else return SR;
 }
 
+// plot [(cos((x/pi + pi)) + 0.8), log10(x + 0.5) - 0.397] between 0 and 10
+function adjust_1_wl(v : number, averageRatio : number){
+    const adjust = 2 - averageRatio;
+    if(v > 10) return 1.8;
+    else if(v > 2) return Math.cos(((v + adjust) / Math.PI) + Math.PI) + 0.8;
+    else if(v <= adjust || v <= 0) return 0;
+    else return Math.log10(v + 0.5 + adjust) - 0.398;
+}
+
+// plot [-cos((x + 3)/pi), tan((x - 3)/pi) + 0.35] between 0 and 7
+function adjust_2_wl(v : number, averageRatio : number){
+    const adjust = 2.027 - averageRatio;
+    if(v > 6.896 - adjust) return 2;
+    else if(v > 2.027) return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
+    else if(v <= 0.027 || v <= 0.027 - adjust) return 0;
+    else return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
+}
+
+// plot [-cos(x*PI/2)] between 0 and 2
+function adjust_dhp(v : number, average : number){
+    const x = v / average;
+    if(x >= 2) return 2;
+    else if(x <= 0) return 0;
+    else return Math.cos((x * Math.PI) / 2 + Math.PI) + 1;
+}
+
 function adjustV(valuePerGame : number, average : number) : number{
-    return log10_x2(Math.log2((valuePerGame / average) + 1)) + 1
+    return log10_x2(Math.log2( (valuePerGame / average)+ 1)) + 1
 }
 
 function av10(valuePerGame : number, average : number) : number | null{

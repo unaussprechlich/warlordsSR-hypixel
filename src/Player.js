@@ -207,20 +207,21 @@ class Average {
         this.WL = WL;
     }
 }
-const PYROMANCER = new Average(480, 103187, 1.76);
-const CRYOMANCER = new Average(445, 99546, 2.77);
-const AQUAMANCER = new Average(462, 105896, 1.93);
-const AVENGER = new Average(470, 104286, 2.21);
-const CRUSADER = new Average(460, 93370, 2.77);
-const PROTECTOR = new Average(440, 127081, 2.02);
-const THUNDERLORD = new Average(473, 109217, 1.82);
-const EARTHWARDEN = new Average(440, 111751, 1.90);
-const BERSERKER = new Average(463, 94848, 2.65);
-const DEFENDER = new Average(447, 97136, 2.54);
+const PYROMANCER = new Average(110, 103187, 1.76);
+const CRYOMANCER = new Average(90, 99546, 2.77);
+const AQUAMANCER = new Average(140, 105896, 1.93);
+const AVENGER = new Average(60, 104286, 2.21);
+const CRUSADER = new Average(170, 93370, 2.77);
+const PROTECTOR = new Average(100, 127081, 2.02);
+const THUNDERLORD = new Average(155, 109217, 1.82);
+const EARTHWARDEN = new Average(85, 111751, 1.90);
+const BERSERKER = new Average(10, 94848, 2.65);
+const DEFENDER = new Average(-10, 97136, 2.54);
 const LEAVING_PUNISHMENT = 15;
 const ANTI_SNIPER_TRESHOLD = 15000 + 7500;
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000;
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000;
+const AVERAGE_KDA = 7;
 schema.pre('save', function (next) {
     const stats = this.warlords;
     const sr = {
@@ -296,17 +297,17 @@ schema.pre('save', function (next) {
     sr.warrior.berserker.DHP = calculateDHP(stats.damage_berserker, stats.heal_berserker, stats.damage_prevented_berserker, stats.berserker_plays);
     sr.warrior.defender.DHP = calculateDHP(stats.damage_defender, stats.heal_defender, stats.damage_prevented_defender, stats.defender_plays);
     const antiSniperDHPValue = antiSniperDHP(stats.damage_pyromancer, stats.heal_pyromancer, stats.damage_prevented_pyromancer, stats.pyromancer_plays);
-    sr.mage.pyromancer.SR = calculateSr(antiSniperDHPValue, stats.pyromancer_plays, sr.mage.pyromancer.WL, PYROMANCER, sr.plays, stats.penalty);
-    sr.mage.aquamancer.SR = calculateSr(sr.mage.aquamancer.DHP, stats.aquamancer_plays, sr.mage.aquamancer.WL, AQUAMANCER, sr.plays, stats.penalty);
-    sr.mage.cryomancer.SR = calculateSr(sr.mage.cryomancer.DHP, stats.cryomancer_plays, sr.mage.cryomancer.WL, CRYOMANCER, sr.plays, stats.penalty);
-    sr.paladin.avenger.SR = calculateSr(sr.paladin.avenger.DHP, stats.avenger_plays, sr.paladin.avenger.WL, AVENGER, sr.plays, stats.penalty);
-    sr.paladin.crusader.SR = calculateSr(sr.paladin.crusader.DHP, stats.crusader_plays, sr.paladin.crusader.WL, CRUSADER, sr.plays, stats.penalty);
-    sr.paladin.protector.SR = calculateSr(sr.paladin.protector.DHP, stats.protector_plays, sr.paladin.protector.WL, PROTECTOR, sr.plays, stats.penalty);
-    sr.shaman.thunderlord.SR = calculateSr(sr.shaman.thunderlord.DHP, stats.thunderlord_plays, sr.shaman.thunderlord.WL, THUNDERLORD, sr.plays, stats.penalty);
-    sr.shaman.earthwarden.SR = calculateSr(sr.shaman.earthwarden.DHP, stats.earthwarden_plays, sr.shaman.earthwarden.WL, EARTHWARDEN, sr.plays, stats.penalty);
-    sr.warrior.berserker.SR = calculateSr(sr.warrior.berserker.DHP, stats.berserker_plays, sr.warrior.berserker.WL, BERSERKER, sr.plays, stats.penalty);
+    sr.mage.pyromancer.SR = calculateSr(antiSniperDHPValue, stats.pyromancer_plays, sr.mage.pyromancer.WL, sr.KDA, PYROMANCER, sr.plays, stats.penalty);
+    sr.mage.aquamancer.SR = calculateSr(sr.mage.aquamancer.DHP, stats.aquamancer_plays, sr.mage.aquamancer.WL, sr.KDA, AQUAMANCER, sr.plays, stats.penalty);
+    sr.mage.cryomancer.SR = calculateSr(sr.mage.cryomancer.DHP, stats.cryomancer_plays, sr.mage.cryomancer.WL, sr.KDA, CRYOMANCER, sr.plays, stats.penalty);
+    sr.paladin.avenger.SR = calculateSr(sr.paladin.avenger.DHP, stats.avenger_plays, sr.paladin.avenger.WL, sr.KDA, AVENGER, sr.plays, stats.penalty);
+    sr.paladin.crusader.SR = calculateSr(sr.paladin.crusader.DHP, stats.crusader_plays, sr.paladin.crusader.WL, sr.KDA, CRUSADER, sr.plays, stats.penalty);
+    sr.paladin.protector.SR = calculateSr(sr.paladin.protector.DHP, stats.protector_plays, sr.paladin.protector.WL, sr.KDA, PROTECTOR, sr.plays, stats.penalty);
+    sr.shaman.thunderlord.SR = calculateSr(sr.shaman.thunderlord.DHP, stats.thunderlord_plays, sr.shaman.thunderlord.WL, sr.KDA, THUNDERLORD, sr.plays, stats.penalty);
+    sr.shaman.earthwarden.SR = calculateSr(sr.shaman.earthwarden.DHP, stats.earthwarden_plays, sr.shaman.earthwarden.WL, sr.KDA, EARTHWARDEN, sr.plays, stats.penalty);
+    sr.warrior.berserker.SR = calculateSr(sr.warrior.berserker.DHP, stats.berserker_plays, sr.warrior.berserker.WL, sr.KDA, BERSERKER, sr.plays, stats.penalty);
     const antiDefenderN00bDHP = antiDefenderNoobDHP(stats.damage_defender, stats.heal_defender, stats.damage_prevented_defender, stats.defender_plays);
-    sr.warrior.defender.SR = calculateSr(antiDefenderN00bDHP, stats.defender_plays, sr.warrior.defender.WL, DEFENDER, sr.plays, stats.penalty);
+    sr.warrior.defender.SR = calculateSr(antiDefenderN00bDHP, stats.defender_plays, sr.warrior.defender.WL, sr.KDA, DEFENDER, sr.plays, stats.penalty);
     sr.mage.SR = Math.round((vOr0(sr.mage.pyromancer.SR) + vOr0(sr.mage.aquamancer.SR) + vOr0(sr.mage.cryomancer.SR)) / 3);
     sr.paladin.SR = Math.round((vOr0(sr.paladin.avenger.SR) + vOr0(sr.paladin.crusader.SR) + vOr0(sr.paladin.protector.SR)) / 3);
     sr.shaman.SR = Math.round((vOr0(sr.shaman.thunderlord.SR) + vOr0(sr.shaman.earthwarden.SR)) / 2);
@@ -353,22 +354,49 @@ function calculateDHP(dmg, heal, prevented, plays) {
         return null;
     return Math.round((dmg + heal + prevented) / plays);
 }
-function calculateSr(dhp, specPlays, wl, average, plays, penalty) {
-    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || plays < 100 || wl > 20)
+function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
+    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || plays < 100 || wl > 20)
         return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
-    const dipAdjusted = av10(dhp, average.DHP);
-    const wlAdjusted = av10(wl / penaltyPerPlay, average.WL);
-    if (dipAdjusted == null || wlAdjusted == null)
-        return null;
-    const tempSR = Math.log10(Math.pow(dipAdjusted * wlAdjusted, 2) + 1) * average.ADJUST - 1000;
-    if (tempSR <= 0)
-        return null;
-    const SR = Math.round((Math.cos(tempSR / Math.PI / 500 + Math.PI) + 1) * 2500);
+    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
+    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
+    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
+    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
     if (SR <= 0)
         return null;
     else
         return SR;
+}
+function adjust_1_wl(v, averageRatio) {
+    const adjust = 2 - averageRatio;
+    if (v > 10)
+        return 1.8;
+    else if (v > 2)
+        return Math.cos(((v + adjust) / Math.PI) + Math.PI) + 0.8;
+    else if (v <= adjust || v <= 0)
+        return 0;
+    else
+        return Math.log10(v + 0.5 + adjust) - 0.398;
+}
+function adjust_2_wl(v, averageRatio) {
+    const adjust = 2.027 - averageRatio;
+    if (v > 6.896 - adjust)
+        return 2;
+    else if (v > 2.027)
+        return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
+    else if (v <= 0.027 || v <= 0.027 - adjust)
+        return 0;
+    else
+        return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
+}
+function adjust_dhp(v, average) {
+    const x = v / average;
+    if (x >= 2)
+        return 2;
+    else if (x <= 0)
+        return 0;
+    else
+        return Math.cos((x * Math.PI) / 2 + Math.PI) + 1;
 }
 function adjustV(valuePerGame, average) {
     return log10_x2(Math.log2((valuePerGame / average) + 1)) + 1;
