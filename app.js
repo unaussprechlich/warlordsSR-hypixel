@@ -18,6 +18,8 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const sassMiddleware = require("node-sass-middleware");
 const index = require("./routes/index");
+const player = require("./routes/player");
+const overview = require("./routes/overview");
 const paladin = require("./routes/paladin");
 const mage = require("./routes/mage");
 const warrior = require("./routes/warrior");
@@ -47,11 +49,12 @@ exports.app.use(sassMiddleware({
 }));
 exports.app.use(express.static(path.join(__dirname, 'public')));
 exports.app.use('/', index);
-exports.app.use('/home', index);
+exports.app.use('/overview', overview);
 exports.app.use('/paladin', paladin);
 exports.app.use('/mage', mage);
 exports.app.use('/warrior', warrior);
 exports.app.use('/shaman', shaman);
+exports.app.use("/player", player);
 exports.app.use(function (req, res, next) {
     next(404);
 });

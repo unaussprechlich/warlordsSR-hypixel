@@ -14,7 +14,7 @@ const Player_1 = require("../src/Player");
 router.get('/', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const players = yield Player_1.Player.find({}, { name: 1, warlords_sr: 1 }).sort({ "warlords_sr.mage.SR": -1 }).lean(true);
+            const players = yield Player_1.Player.find({}, { name: 1, uuid: 1, warlords_sr: 1 }).sort({ "warlords_sr.mage.SR": -1 }).lean(true);
             res.render('mage', { PAGE_TITLE: 'Mage|WarlordsSR', PLAYERS: players });
         }
         catch (err) {

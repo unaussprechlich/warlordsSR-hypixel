@@ -20,7 +20,7 @@ block table
   tbody
     - var rank = 1
     for player in PLAYERS
-      tr
+      tr(onclick = "window.location.href = '/player?uuid=" + player.uuid +"';")
         th(scope="row")= rank
         +td_item(player.name)
         +td_item(player.warlords_sr.paladin.SR)

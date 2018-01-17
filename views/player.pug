@@ -1,0 +1,230 @@
+extends layout
+
+block content
+  #content
+    h2= PLAYER.name
+
+    p= "Warlords SR: " + PLAYER.warlords_sr
+    p= "Warlords KD: " + PLAYER.warlords_sr.KD
+    p= "Warlords KDA: " + PLAYER.warlords_sr.KDA
+    p= "Games Played: " + PLAYER.warlords_sr.WL
+    p= "Win Loss Ratio: " + PLAYER.warlords_sr.plays
+    p= "Damage + Healing Prevented: " + PLAYER.warlords_sr.DHP
+
+    //Paladin///======================================================
+    p= "Paladin DHP: " + PLAYER.warlords_sr.paladin
+    p= "Paladin SR: " + PLAYER.warlords_sr.paladin
+    p= "Paladin WL: " + PLAYER.warlords_sr.paladin
+
+    p= "Avenger DHP: " + PLAYER.warlords_sr.paladin.avenger.DHP
+    p= "Avenger SR: " + PLAYER.warlords_sr.paladin.avenger.SR
+    p= "Avenger WL: " + PLAYER.warlords_sr.paladin.avenger.WL
+
+    p= "Crusader DHP: " + PLAYER.warlords_sr.paladin.crusader.DHP
+    p= "Crusader SR: " + PLAYER.warlords_sr.paladin.crusader.SR
+    p= "Crusader WL: " + PLAYER.warlords_sr.paladin.crusader.WL
+
+    p= "Protector DHP: " + PLAYER.warlords_sr.paladin.protector.DHP
+    p= "Protector SR: " + PLAYER.warlords_sr.paladin.protector.SR
+    p= "Protector WL: " + PLAYER.warlords_sr.paladin.protector.WL
+
+    //Mage///=========================================================
+    p= "mage DHP: " + PLAYER.warlords_sr.mage
+    p= "mage SR: " + PLAYER.warlords_sr.mage
+    p= "mage WL: " + PLAYER.warlords_sr.mage
+
+    p= "pyromancer DHP: " + PLAYER.warlords_sr.mage.pyromancer.DHP
+    p= "pyromancer SR: " + PLAYER.warlords_sr.mage.pyromancer.SR
+    p= "pyromancer WL: " + PLAYER.warlords_sr.mage.pyromancer.WL
+
+    p= "cryomancer DHP: " + PLAYER.warlords_sr.mage.cryomancer.DHP
+    p= "cryomancer SR: " + PLAYER.warlords_sr.mage.cryomancer.SR
+    p= "cryomancer WL: " + PLAYER.warlords_sr.mage.cryomancer.WL
+
+    p= "aquamancer DHP: " + PLAYER.warlords_sr.mage.aquamancer.DHP
+    p= "aquamancer SR: " + PLAYER.warlords_sr.mage.aquamancer.SR
+    p= "aquamancer WL: " + PLAYER.warlords_sr.mage.aquamancer.WL
+
+    //Warrior///======================================================
+    p= "warrior DHP: " + PLAYER.warlords_sr.warrior
+    p= "warrior SR: " + PLAYER.warlords_sr.warrior
+    p= "warrior WL: " + PLAYER.warlords_sr.warrior
+
+    p= "berserker DHP: " + PLAYER.warlords_sr.warrior.berserker.DHP
+    p= "berserker SR: " + PLAYER.warlords_sr.warrior.berserker.SR
+    p= "berserker WL: " + PLAYER.warlords_sr.warrior.berserker.WL
+
+    p= "defender DHP: " + PLAYER.warlords_sr.warrior.defender.DHP
+    p= "defender SR: " + PLAYER.warlords_sr.warrior.defender.SR
+    p= "defender WL: " + PLAYER.warlords_sr.warrior.defender.WL
+
+    //Shaman///======================================================
+    p= "shaman DHP: " + PLAYER.warlords_sr.shaman
+    p= "shaman SR: " + PLAYER.warlords_sr.shaman
+    p= "shaman WL: " + PLAYER.warlords_sr.shaman
+
+    p= "thunderlord DHP: " + PLAYER.warlords_sr.shaman.thunderlord.DHP
+    p= "thunderlord SR: " + PLAYER.warlords_sr.shaman.thunderlord.SR
+    p= "thunderlord WL: " + PLAYER.warlords_sr.shaman.thunderlord.WL
+
+    p= "earthwarden DHP: " + PLAYER.warlords_sr.shaman.earthwarden.DHP
+    p= "earthwarden SR: " + PLAYER.warlords_sr.shaman.earthwarden.SR
+    p= "earthwarden WL: " + PLAYER.warlords_sr.shaman.earthwarden.WL
+
+
+    h3 Warrior
+
+    p= "warrior damage dealt: " + PLAYER.warlords.damage_warrior
+    p= "warrior damage prevented: " + PLAYER.warlords.damage_prevented_warrior
+    p= "warrior life leeched: " + PLAYER.warlords.heal_warrior
+    p= "warrior plays: " + PLAYER.warlords.warrior_plays
+    p= "warrior wins: " + PLAYER.warlords.wins_warrior
+    p= "warrior losses: " + PLAYER.warlords.losses_warrior
+
+    h3 Paladin
+
+    p= "paladin damage dealt: " + PLAYER.warlords.damage_paladin
+    p= "paladin damage prevented: " + PLAYER.warlords.damage_prevented_paladin
+    p= "paladin heal: " + PLAYER.warlords.heal_paladin
+    p= "paladin plays: " + PLAYER.warlords.paladin_plays
+    p= "paladin abuse: " + PLAYER.warlords.wins_paladin
+    p= "paladin losses: " + PLAYER.warlords.losses_paladin
+
+    h3 Mage
+
+    p= "mage damage dealt: " + PLAYER.warlords.damage_mage
+    p= "mage damage prevented: " + PLAYER.warlords.damage_prevented_mage
+    p= "mage heal: " + PLAYER.warlords.heal_mage
+    p= "mage plays: " + PLAYER.warlords.mage_plays
+    p= "mage wins: " + PLAYER.warlords.wins_mage
+    p= "mage losses: " + PLAYER.warlords.losses_mage
+
+    h3 Shaman
+
+    p= "shaman damage dealt: " + PLAYER.warlords.damage_shaman
+    p= "shaman damage prevented: " + PLAYER.warlords.damage_prevented_shaman
+    p= "shaman heal: " + PLAYER.warlords.heal_shaman
+    p= "shaman plays: " + PLAYER.warlords.shaman_plays
+    p= "shaman wins: " + PLAYER.warlords.wins_shaman
+    p= "shaman losses: " + PLAYER.warlords.losses_shaman
+
+    h3 Berserker
+
+    p= "berserker plays: " + PLAYER.warlords.berserker_plays
+    p= "berserker damage: " + PLAYER.warlords.damage_berserker
+    p= "berserker damage prevented: " + PLAYER.warlords.damage_prevented_berserker
+    p= "berserker heal: " + PLAYER.warlords.heal_berserker
+    p= "berserker life leeched " + PLAYER.wariords.life_leeched_berserker
+    p= "berserker wins: " + PLAYER.warlords.wins_berserker
+    p= "berserker losses: " + PLAYER.warlords.losses_berserker
+
+    h3 Defender
+
+    p= "defender abuse: " + PLAYER.warlords.defender_plays
+    p= "defender damage: " + PLAYER.warlords.damage_defender
+    p= "defender damage prevented: " + PLAYER.warlords.damage_prevented_defender
+    p= "defender heal: " + PLAYER.warlords.heal_defender
+    p= "defender wins: " + PLAYER.warlords.wins_defender
+    p= "defender losses: " + PLAYER.warlords.losses_defender
+
+    h3 Pyromancer
+
+    p= "pyromancer plays: " + PLAYER.warlords.pyromancer_plays
+    p= "pyromancer damage: " + PLAYER.warlords.damage_pyromancer
+    p= "pyromancer damage prevented: " + PLAYER.warlords.damage_prevented_pyromancer
+    p= "pyromancer heal: " + PLAYER.warlords.heal_pyromancer
+    p= "pyromancer wins: " + PLAYER.warlords.wins_pyromancer
+    p= "pyromancer losses: " + PLAYER.warlords.losses_pyromancer
+
+    h3 Cryomancer
+
+    p= "cryomancer plays: " + PLAYER.warlords.cryomancer_plays
+    p= "cryomancer damage: " + PLAYER.warlords.damage_cryomancer
+    p= "cryomancer damage prevented: " + PLAYER.warlords.damage_prevented_cryomancer
+    p= "cryomancer heal: " + PLAYER.warlords.heal_cryomancer
+    p= "cryomancer wins: " + PLAYER.warlords.wins_cryomancer
+    p= "cryomancer losses: " + PLAYER.warlords.losses_cryomancer
+
+    h3 Aquamancer
+
+    p= "aquamancer plays: " + PLAYER.warlords.aquamancer_plays
+    p= "aquamancer damage: " + PLAYER.warlords.damage_aquamancer
+    p= "aquamancer damage prevented: " + PLAYER.warlords.damage_prevented_aquamancer
+    p= "aquamancer heal: " + PLAYER.warlords.heal_aquamancer
+    p= "aquamancer wins: " + PLAYER.warlords.wins_aquamancer
+    p= "aquamancer losses: " + PLAYER.warlords.losses_aquamancer
+
+    h3 Avenger
+
+    p= "avenger plays: " + PLAYER.warlords.avenger_plays
+    p= "avenger damage: " + PLAYER.warlords.damage_avenger
+    p= "avenger damage prevented: " + PLAYER.warlords.damage_prevented_avenger
+    p= "avenger heal: " + PLAYER.warlords.heal_avenger
+    p= "avenger wins: " + PLAYER.warlords.wins_avenger
+    p= "avenger losses: " + PLAYER.warlords.losses_avenger
+
+    h3 Crusader
+
+    p= "crusader plays: " + PLAYER.warlords.crusader_plays
+    p= "crusader damage: " + PLAYER.warlords.damage_crusader
+    p= "crusader damage prevented: " + PLAYER.warlords.damage_prevented_crusader
+    p= "crusader heal: " + PLAYER.warlords.heal_crusader
+    p= "crusader wins: " + PLAYER.warlords.wins_crusader
+    p= "crusader losses: " + PLAYER.warlords.losses_crusader
+
+    h3 Protector
+
+    p= "protector plays: " + PLAYER.warlords.protector_plays
+    p= "protector damage: " + PLAYER.warlords.damage_protector
+    p= "protector damage prevented: " + PLAYER.warlords.damage_prevented_protector
+    p= "protector heal: " + PLAYER.warlords.heal_protector
+    p= "protector wins: " + PLAYER.warlords.wins_protector
+    p= "protector losses: " + PLAYER.warlords.losses_protector
+
+    h3 Thunderlord
+
+    p= "thunderlord plays: " + PLAYER.warlords.thunderlord_plays
+    p= "thunderlord damage: " + PLAYER.warlords.damage_thunderlord
+    p= "thunderlord damage prevented: " + PLAYER.warlords.damage_prevented_thunderlord
+    p= "thunderlord heal: " + PLAYER.warlords.heal_thunderlord
+    p= "thunderlord wins: " + PLAYER.warlords.wins_thunderlord
+    p= "thunderlord losses: " + PLAYER.warlords.losses_thunderlord
+
+    h3 Earthwarden
+
+    p= "earthwarden plays: " + PLAYER.warlords.earthwarden_plays
+    p= "earthwarden damage: " + PLAYER.warlords.damage_earthwarden
+    p= "earthwarden damage prevented: " + PLAYER.warlords.damage_prevented_earthwarden
+    p= "earthwarden heal: " + PLAYER.warlords.heal_earthwarden
+    p= "earthwarden wins: " + PLAYER.warlords.wins_earthwarden
+    p= "earthwarden losses: " + PLAYER.warlords.losses_earthwarden
+
+    h3 GENERAL GARBAGE
+
+    p= "assists: " + PLAYER.warlords.assists
+    p= "damage: " + PLAYER.warlords.damage
+    p= "deaths: " + PLAYER.warlords.deaths
+    p= "heal: " + PLAYER.warlords.heal
+    p= "damage prevented: " + PLAYER.warlords.damage_prevented
+    p= "damage taken: " + PLAYER.warlords.damage_taken
+    p= "kills: " + PLAYER.warlords.kills
+    p= "life leeched: " + PLAYER.warlords.life_leeched
+    p= "wins: " + PLAYER.warlords.wins
+    p= "blue wins: " + PLAYER.warlords.wins_blu
+    p= "red wins: " + PLAYER.warlords.wins_red
+    p= "losses: " + PLAYER.warlords.losses
+    p= "penalty: " + PLAYER.warlords.penalty
+
+    p= "CTF Wins: " + PLAYER.warlords.wins_capturetheflag
+    p= "CTF Wins on Blue: " + PLAYER.warlords.wins_capturetheflag_blu
+    p= "CTF Wins on Red: " + PLAYER.warlords.wins_capturetheflag_red
+    p= "the FUCK: " + PLAYER.warlords.flag_conquer_team
+    p= "Flags Captured: " + PLAYER.warlords.flag_conquer_self
+
+    p= "Dominigger Wins: " + wins_domination
+    p= "Dom Wins on Blue: " + wins_domination_blu
+    p= "Dom Wins on Red: " + wins_domination_red
+
+    p= "TDM Wins: " + wins_teamdeathmatcb
+    p= "TDM Wins on Blue: " + wins_teamdeathmatcb_blu
+    p= "TDM Wins on Red: " + wins_teamdeathmatch_red

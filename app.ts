@@ -10,6 +10,8 @@ import bodyParser = require('body-parser');
 import * as sassMiddleware from 'node-sass-middleware'
 
 import index = require('./routes/index');
+import player = require('./routes/player');
+import overview = require('./routes/overview');
 import paladin = require('./routes/paladin');
 import mage = require('./routes/mage');
 import warrior = require('./routes/warrior');
@@ -50,11 +52,12 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/home', index);
+app.use('/overview', overview);
 app.use('/paladin', paladin);
 app.use('/mage', mage);
 app.use('/warrior', warrior);
 app.use('/shaman', shaman);
+app.use("/player", player);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
