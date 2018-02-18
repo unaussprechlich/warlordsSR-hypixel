@@ -13,7 +13,7 @@ const path = require("path");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 require("mongoose").Promise = global.Promise;
-const Player_1 = require("./src/Player");
+const PlayerDB_1 = require("./src/PlayerDB");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const sassMiddleware = require("node-sass-middleware");
@@ -25,11 +25,11 @@ const mage = require("./routes/mage");
 const warrior = require("./routes/warrior");
 const shaman = require("./routes/shaman");
 exports.app = express();
-mongoose.connect('mongodb://localhost/hypixel', { useMongoClient: true });
+mongoose.connect('mongodb://localhost/hypixel');
 function reloadSR() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("Reloading SR ...");
-        const players = yield Player_1.Player.find({});
+        const players = yield PlayerDB_1.PlayerModel.find({});
         players.forEach(value => {
             value.save().catch(err => console.log(err));
         });

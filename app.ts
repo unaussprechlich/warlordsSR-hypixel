@@ -3,7 +3,7 @@ import * as path from "path"
 import * as logger from 'morgan'
 import * as mongoose from "mongoose"
 require("mongoose").Promise = global.Promise;
-import {IPlayer, Player} from "./src/Player"
+import {PlayerModel} from "./src/PlayerDB"
 
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
@@ -19,11 +19,11 @@ import shaman = require('./routes/shaman');
 
 export const app = express();
 
-mongoose.connect('mongodb://localhost/hypixel', { useMongoClient: true });
+mongoose.connect('mongodb://localhost/hypixel');
 
 async function reloadSR(){
     console.log("Reloading SR ...");
-    const players = await Player.find({});
+    const players = await PlayerModel.find({});
     players.forEach(value => {
         value.save().catch(err => console.log(err))
     })

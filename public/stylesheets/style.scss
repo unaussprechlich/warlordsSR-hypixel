@@ -1,7 +1,15 @@
 @import "shards/_footer";
 @import "shards/_sidebar";
+@import "shards/_preloader";
+@import "shards/_navbar_main";
+@import "shards/_player";
 
 #content{
-  margin : 0 0 0 350px;
+  margin-left: 65px;
+}
+
+#sr_table_wrapper{
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 

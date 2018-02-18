@@ -1,0 +1,35 @@
+/*!***********************************************
+ * © 2017 UNAUSSPRECHLICH ALL RIGHTS RESERVED   *
+ ************************************************/
+
+@import "_var";
+
+.main-nav{
+  background-color: $backgroundColor_DARK_2;
+  z-index: 1;
+}
+
+.navbar-brand:hover{
+  color : #fff;
+  @include fade(0.2s);
+}
+
+.navbar-brand{
+  font-size: 26px;
+  font-weight: 600;
+  padding-left: 0;
+  color: darken(#fff, 10);
+  @include fade(0.2s);
+}
+
+
+/* sm */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+}
+
+@media (max-width: 767px) {
+
+
+}
+

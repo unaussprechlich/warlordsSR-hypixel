@@ -1,0 +1,153 @@
+/* Sidebar */
+@import "_var";
+
+.playerside{
+  margin-top: 40px;
+}
+
+.accordion{
+  .card{
+    margin-top: 15px;
+  }
+}
+
+.card-header{
+  h3{
+    display: inline-block;
+    span {
+      font-weight: 100;
+    }
+  }
+}
+
+.card-body{
+  .statitem{
+    span{
+      font-weight: bold;
+    }
+    margin: 0;
+  }
+
+  .statstable{
+    margin-top: 15px;
+    th, td{
+      padding: 7px;
+    }
+  }
+
+  .divider {
+    height: 1px;
+    width:100%;
+    display:block;
+    margin: 15px 0;
+    overflow: hidden;
+    background-color: #e5e5e5;
+  }
+
+  .spec{
+    h4{
+      display: inline-block;
+      span {
+        font-weight: normal;
+      }
+    }
+  }
+}
+
+
+.sr{
+
+  margin-left: 15px;
+  display: inline-block;
+  width: 100px;
+  border-width: 3px !important;
+  position: absolute;
+  right: 1.25rem;
+
+  div{
+    display: inline-block;
+    padding: 4px;
+    margin: 0;
+
+    p{
+      margin: 0;
+      font-weight: bold;
+    }
+  }
+
+  .srtext{
+    width: 35px;
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .srvalue{
+    width: 59px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+.sr.bronze{
+  .srvalue{
+    background-color: $bronze;
+    p {
+      color: #ffffff;
+    }
+  }
+  border-color: $bronze !important;
+}
+
+.sr.silver{
+  .srvalue{
+    background-color: $silver;
+    p {
+      color: #ffffff;
+    }
+  }
+  border-color: $silver !important;
+}
+
+.sr.platinum{
+  .srvalue{
+    background-color: $platinum;
+  }
+  border-color: $platinum !important;
+}
+
+.sr.gold{
+  .srvalue{
+    background-color: $gold;
+    p {
+      color: #ffffff;
+    }
+  }
+  border-color: $gold !important;
+}
+
+.sr.diamond{
+  .srvalue{
+    background-color: $diamond;
+  }
+  border-color: $diamond !important;
+}
+
+.sr.master{
+  .srvalue{
+    background-color: $master;
+    p {
+      color: #ffffff;
+    }
+  }
+  border-color: $master !important;
+}
+
+.sr.grandmaster{
+  .srvalue{
+    background-color: $grandmaster;
+    p {
+      color: #ffffff;
+    }
+  }
+  border-color: $grandmaster !important;
+}

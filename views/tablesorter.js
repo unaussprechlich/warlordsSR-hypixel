@@ -2,8 +2,9 @@
  * © 2017 UNAUSSPRECHLICH ALL RIGHTS RESERVED   *
  ************************************************/
 
-$(function(){
-    $("#sr_table").tablesorter({
-        theme : "bootstrap"
+$(document).ready( function () {
+    $('#sr_table').DataTable({
+        fixedHeader: true,
+        pageLength: 25
     });
-});
+} );

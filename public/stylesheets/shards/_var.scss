@@ -4,15 +4,24 @@
 
 $highlightColor_LIGHT_2  : #B6EC45;
 $highlightColor_LIGHT_1  : #A1E611;
-$highlightColor_ORIGINAL : #d43c3c;
+$highlightColor_ORIGINAL : #007bff;
 $highlightColor_DARK_1 	 : darken($highlightColor_ORIGINAL, 0.25);
 $highlightColor_DARK_2   : darken($highlightColor_ORIGINAL, 0.5);
 
-$backgroundColor_LIGHT_1 : #e6e6e6;
-$backgroundColor_LIGHT_2 : #d2d2d2;
-//missing
-$backgroundColor_DARK_1  : #333333;
-$backgroundColor_DARK_2  : #282828;
+$backgroundColor_LIGHT_1 : #5a6775;
+$backgroundColor_LIGHT_2 : #404C59;
+$backgroundColor_DEF     : #242C35;
+$backgroundColor_DARK_1  : #182431;
+$backgroundColor_DARK_2  : #0D1927;
+
+$bronze : #905923;
+$silver : #9498a1;
+$platinum : #e5e4e2;
+$gold : #D4AF37;
+$diamond: #b9f2ff;
+$master : #ff5c33;
+$grandmaster: #8f0000;
+
 
 $darkenBy75: rgba(0,0,0,0.75);
 $darkenBy50: rgba(0,0,0,0.50);

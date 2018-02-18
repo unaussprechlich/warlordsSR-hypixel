@@ -53,46 +53,26 @@ $font: (
 
 
 #sidebar {
-  padding: 150px 60px;
-  background: $backgroundColor_DARK_1;
-  cursor: default;
+  padding: 65px 15px 0 15px;
+  background: $backgroundColor_DEF;
   height: 100vh;
   left: 0;
   overflow-x: hidden;
   overflow-y: auto;
   position: fixed;
-  text-align: right;
   top: 0;
-  width: 350px;
-
-  h1{
-    color: $highlightColor_ORIGINAL;
-    width: 100%;
-  }
-
-  p{
-    font-size: 15px;
-    color: $backgroundColor_LIGHT_2;
-    text-align: right;
-  }
-
-  #copyright{
-    position: absolute;
-    bottom: 50px;
-    width: 260px;
-    text-align: center;
-  }
+  width: 65px;
 
   nav {
     > ul {
       list-style: none;
-      padding: 30px 0 0;
-
+      padding: 0;
       > li {
-        margin: 1.5em 0 0 0;
         opacity: 1;
-        padding: 0;
         position: relative;
+        width: 65px;
+        height: 65px;
+        padding: 15px;
 
         &:first-child {
           margin: 0;
@@ -100,64 +80,43 @@ $font: (
       }
     }
 
+    li.active{
+      background-color: lighten($backgroundColor_DEF, 7);
+      border: 0 solid $backgroundColor_LIGHT_1;
+      border-left-width: 3px;
+      padding-left: 12px;
+    }
+
+    li:hover{
+      background-color: lighten($backgroundColor_DEF, 5 );
+    }
+
     a {
       border: 0;
-      color: $backgroundColor_LIGHT_1;
       display: block;
-      font-size: 17px;
-      font-weight: bold;
-      line-height: 1.75;
-      outline: 0;
-      padding: 20px 0 5px 0;
-      width: 260px;
       position: relative;
       text-decoration: none;
       text-transform: uppercase;
-
-      &:before,
-      &:after {
-        border-radius: 2px;
-        bottom: 0;
-        content: '';
-        height: 2px;
-        position: absolute;
-        right: 0;
-        width: 100%;
-      }
-
-      &:before {
-        background-image: -webkit-linear-gradient(left, $backgroundColor_DARK_1, $backgroundColor_LIGHT_2);
-      }
-
-      &:after {
-        max-width: 0;
-      }
-
-      &:hover {
-        color: $highlightColor_ORIGINAL;
-      }
-
-      &.active {
-        color: $highlightColor_ORIGINAL;
-
-        &:before {
-          background-image: -webkit-linear-gradient(left, $backgroundColor_DARK_1, $highlightColor_ORIGINAL);
-        }
-      }
-    }
-  }
-
-  body.is-loading & {
-    > .inner {
-      opacity: 0;
+      background-size: contain;
+      width: 35px;
+      height: 35px;
     }
 
-    nav {
-      ul {
-        li {
-          opacity: 0;
-        }
-      }
+    #overview_link{
+      background-image: url("../images/icon_warlords.png");
+    }
+
+    #warrior_link{
+      background-image: url("../images/icon_warrior.png");
+    }
+    #paladin_link{
+      background-image: url("../images/icon_paladin.png");
+    }
+    #mage_link{
+      background-image: url("../images/icon_mage.png");
+    }
+    #shaman_link{
+      background-image: url("../images/icon_shaman.png");
     }
   }
 }

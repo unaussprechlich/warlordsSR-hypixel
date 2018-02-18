@@ -2,216 +2,350 @@ extends layout
 
 mixin value(description, item)
   if item
-    p= description + ": "+ item
+    p.statitem
+      span= description + ":  "
+      | #{item}
   else
-    p= description + ": undefined"
+    p.statitem
+      span= description + ":  "
+      | -
 
-mixin spec(description, item)
-  h4= description
-  if item
-    +value("SR", item.SR)
-    +value("WL", item.SR)
-    +value("Damage, heal, prevented per game", item.SR)
+mixin TDnullCheck(value)
+  if(value)
+    td= value
+  else
+    td -
 
-mixin class(description, item)
-  h3= description
+mixin RankingNullCheck(value)
+  if(value)
+    span= "#" + value + "    "
+  else
+    span= "unranked  "
+
+mixin spec(description, item, rank)
+  .divider
+  .spec
+    h4
+      +RankingNullCheck(rank)
+      | #{description}
+    if item
+      +sritem(item.SR)
+      +value("WL", item.WL)
+      +value("DHP per game", item.DHP)
+
+mixin class(item)
   if item
-    +value("SR", item.SR)
-    +value("WL", item.SR)
-    +value("Damage, heal, prevented per game", item.SR)
+    +value("WL", item.WL)
+    +value("DHP per game", item.DHP)
+
+mixin stats(dmg, prevented, heal, plays, wins, losses)
+  table.statstable.table.table-bordered
+    thead.thead-default
+      tr
+        th Damage
+        th Prevented
+        th Healing
+        th Plays
+        th Wins
+        th Losses
+    tbody
+      tr
+        +TDnullCheck(dmg)
+        +TDnullCheck(prevented)
+        +TDnullCheck(heal)
+        +TDnullCheck(plays)
+        +TDnullCheck(wins)
+        +TDnullCheck(losses)
+
+mixin overview()
+
+  h4 Kills | Assists | Deaths
+  +value( "Assists" , PLAYER.warlords.assists)
+  +value( "Deaths" , PLAYER.warlords.deaths)
+  +value( "Kills" , PLAYER.warlords.kills)
+  +value( "Kill/Death Ratio" , PLAYER.warlords_sr.KD)
+  +value( "Kills+Assists/Deaths Ratio" , PLAYER.warlords_sr.KDA)
+
+  .divider
+  h4 Damage | Heal | Prevented
+  +value( "DHP per game" , PLAYER.warlords_sr.DHP)
+  +value( "Prevented" , PLAYER.warlords.damage_prevented)
+  +value( "Damage taken" , PLAYER.warlords.damage_taken)
+  +value( "Damage dealt" , PLAYER.warlords.damage)
+  +value( "Healing" , PLAYER.warlords.heal)
+  +value( "Life leeched" , PLAYER.warlords.life_leeched)
+
+  .divider
+  h4 Wins | Losses
+  +value( "Games Played" , PLAYER.warlords_sr.WL)
+  +value( "Wins/Losses Ratio" , PLAYER.warlords_sr.plays)
+  +value( "wins" , PLAYER.warlords.wins)
+  +value( "losses" , PLAYER.warlords.losses)
+  +value( "blue wins" , PLAYER.warlords.wins_blu)
+  +value( "red wins" , PLAYER.warlords.wins_red)
+  +value( "Games left / AFK" , PLAYER.warlords.penalty)
+
+  .divider
+  h5 Capture The Flag
+  +value( "Wins" , PLAYER.warlords.wins_capturetheflag)
+  +value( "Wins on Blue" , PLAYER.warlords.wins_capturetheflag_blu)
+  +value( "Wins on Red" , PLAYER.warlords.wins_capturetheflag_red)
+  +value( "Flags captured by team" , PLAYER.warlords.flag_conquer_team)
+  +value( "Flags captured" , PLAYER.warlords.flag_conquer_self)
+
+  .divider
+  h5 Domination
+  +value( "Wins" , PLAYER.warlords.wins_domination)
+  +value( "Wins on Blue" , PLAYER.warlords.wins_domination_blu)
+  +value( "Wins on Red" , PLAYER.warlords.wins_domination_red)
+
+  .divider
+  h5 Team Deathmatch
+  +value( "Wins" , PLAYER.warlords.wins_teamdeathmatch)
+  +value( "Wins on Blue" , PLAYER.warlords.wins_teamdeathmatch_blu)
+  +value( "Wins on Red" , PLAYER.warlords.wins_teamdeathmatch_red)
+
+mixin paladin()
+  +class(PLAYER.warlords_sr.paladin)
+  +stats(
+    PLAYER.warlords.damage_paladin,
+    PLAYER.warlords.damage_prevented_paladin,
+    PLAYER.warlords.heal_paladin,
+    PLAYER.warlords.paladin_plays,
+    PLAYER.warlords.wins_paladin,
+    PLAYER.warlords.losses_paladin
+  )
+
+
+  +spec("Avenger", PLAYER.warlords_sr.paladin.avenger, RANKING.paladin.avenger)
+  +stats(
+    PLAYER.warlords.damage_avenger,
+    PLAYER.warlords.damage_prevented_avenger,
+    PLAYER.warlords.heal_avenger,
+    PLAYER.warlords.avenger_plays,
+    PLAYER.warlords.wins_avenger,
+    PLAYER.warlords.losses_avenger
+  )
+
+  +spec("Crusader", PLAYER.warlords_sr.paladin.crusader, RANKING.paladin.crusader)
+  +stats(
+    PLAYER.warlords.damage_crusader,
+    PLAYER.warlords.damage_prevented_crusader,
+    PLAYER.warlords.heal_crusader,
+    PLAYER.warlords.crusader_plays,
+    PLAYER.warlords.wins_crusader,
+    PLAYER.warlords.losses_crusader
+  )
+
+  +spec("Protector", PLAYER.warlords_sr.paladin.protector, RANKING.paladin.protector)
+  +stats(
+    PLAYER.warlords.damage_protector,
+    PLAYER.warlords.damage_prevented_protector,
+    PLAYER.warlords.heal_protector,
+    PLAYER.warlords.protector_plays,
+    PLAYER.warlords.wins_protector,
+    PLAYER.warlords.losses_protector
+  )
+
+mixin mage()
+  +class(PLAYER.warlords_sr.mage)
+  +stats(
+    PLAYER.warlords.damage_mage,
+    PLAYER.warlords.damage_prevented_mage,
+    PLAYER.warlords.heal_mage,
+    PLAYER.warlords.mage_plays,
+    PLAYER.warlords.wins_mage,
+    PLAYER.warlords.losses_mage
+  )
+  +spec("Pyromancer", PLAYER.warlords_sr.mage.pyromancer, RANKING.mage.pyromancer)
+  +stats(
+    PLAYER.warlords.damage_pyromancer,
+    PLAYER.warlords.damage_prevented_pyromancer,
+    PLAYER.warlords.heal_pyromancer,
+    PLAYER.warlords.pyromancer_plays,
+    PLAYER.warlords.wins_pyromancer,
+    PLAYER.warlords.losses_pyromancer
+  )
+  +spec("Aquamancer", PLAYER.warlords_sr.mage.aquamancer, RANKING.mage.aquamancer)
+  +stats(
+    PLAYER.warlords.damage_aquamancer,
+    PLAYER.warlords.damage_prevented_aquamancer,
+    PLAYER.warlords.heal_aquamancer,
+    PLAYER.warlords.aquamancer_plays,
+    PLAYER.warlords.wins_aquamancer,
+    PLAYER.warlords.losses_aquamancer
+  )
+  +spec("Cryomancer", PLAYER.warlords_sr.mage.cryomancer, RANKING.mage.cryomancer)
+  +stats(
+    PLAYER.warlords.damage_cryomancer,
+    PLAYER.warlords.damage_prevented_cryomancer,
+    PLAYER.warlords.heal_cryomancer,
+    PLAYER.warlords.cryomancer_plays,
+    PLAYER.warlords.wins_cryomancer,
+    PLAYER.warlords.losses_cryomancer
+  )
+
+mixin warrior()
+  +class(PLAYER.warlords_sr.warrior)
+  +stats(
+    PLAYER.warlords.damage_warrior,
+    PLAYER.warlords.damage_prevented_warrior,
+    PLAYER.warlords.heal_warrior,
+    PLAYER.warlords.warrior_plays,
+    PLAYER.warlords.wins_warrior,
+    PLAYER.warlords.losses_warrior
+  )
+  +spec("Berserker", PLAYER.warlords_sr.warrior.berserker, RANKING.warrior.berserker)
+  +stats(
+    PLAYER.warlords.damage_berserker,
+    PLAYER.warlords.damage_prevented_berserker,
+    PLAYER.warlords.heal_berserker,
+    PLAYER.warlords.berserker_plays,
+    PLAYER.warlords.wins_berserker,
+    PLAYER.warlords.losses_berserker
+  )
+  +spec("Defender", PLAYER.warlords_sr.warrior.defender, RANKING.warrior.defender)
+  +stats(
+    PLAYER.warlords.damage_defender,
+    PLAYER.warlords.damage_prevented_defender,
+    PLAYER.warlords.heal_defender,
+    PLAYER.warlords.defender_plays,
+    PLAYER.warlords.wins_defender,
+    PLAYER.warlords.losses_defender
+  )
+
+mixin shaman()
+  +class(PLAYER.warlords_sr.shaman)
+  +stats(
+    PLAYER.warlords.damage_shaman,
+    PLAYER.warlords.damage_prevented_shaman,
+    PLAYER.warlords.heal_shaman,
+    PLAYER.warlords.shaman_plays,
+    PLAYER.warlords.wins_shaman,
+    PLAYER.warlords.losses_shaman
+  )
+  +spec("Thunderlord", PLAYER.warlords_sr.shaman.thunderlord, RANKING.shaman.thunderlord)
+  +stats(
+    PLAYER.warlords.damage_thunderlord,
+    PLAYER.warlords.damage_prevented_thunderlord,
+    PLAYER.warlords.heal_thunderlord,
+    PLAYER.warlords.thunderlord_plays,
+    PLAYER.warlords.wins_thunderlord,
+    PLAYER.warlords.losses_thunderlord
+  )
+  +spec("Earthwarden", PLAYER.warlords_sr.shaman.earthwarden, RANKING.shaman.thunderlord)
+  +stats(
+    PLAYER.warlords.damage_earthwarden,
+    PLAYER.warlords.damage_prevented_earthwarden,
+    PLAYER.warlords.heal_earthwarden,
+    PLAYER.warlords.earthwarden_plays,
+    PLAYER.warlords.wins_earthwarden,
+    PLAYER.warlords.losses_earthwarden
+  )
+
+mixin srdisplaythingy(value)
+    .srtext.rounded-left
+      p SR
+    .srvalue.bronze
+      p= value
+
+mixin sritem(value)
+  if(value)
+    if(value < 1500)
+      .sr.rounded.border.bronze
+        +srdisplaythingy(value)
+    else if(value < 2000)
+      .sr.rounded.border.silver
+        +srdisplaythingy(value)
+    else if(value < 2500)
+      .sr.rounded.border.platinum
+        +srdisplaythingy(value)
+    else if(value < 3000)
+      .sr.rounded.border.gold
+        +srdisplaythingy(value)
+    else if(value < 3500)
+      .sr.rounded.border.diamond
+        +srdisplaythingy(value)
+    else if(value < 4000)
+      .sr.rounded.border.master
+        +srdisplaythingy(value)
+    else if(value >= 4000)
+      .sr.rounded.border.grandmaster
+        +srdisplaythingy(value)
+
+  else
+    .sr.rounded.border.border-info
+      .srtext.rounded-left
+        p SR
+      .srvalue.rounded-right
+        p -
 
 
 block content
   #content
-    h2= PLAYER.name
+    .container
+      .row.playerside
+        .col-lg-12
+          .card
+            - var playerHeadLink= "https://crafatar.com/avatars/" + PLAYER.uuid
+            .card-body
+              .row
+                .col-lg-2.col-sm-3.col-3
+                  img.card-img-top(src= playerHeadLink)
+                .col-lg-10.col-sm-9.col-9
+                  h3.card-title= PLAYER.name
+                  - var planckeLink= "https://plancke.io/hypixel/player/stats/" + PLAYER.name
+                  a.btn.btn-primary(href= planckeLink) show on plancke.io
 
-    +value( "Warlords SR: " , PLAYER.warlords_sr.SR)
-    +value( "Warlords KD: " , PLAYER.warlords_sr.KD)
-    +value( "Warlords KDA: " , PLAYER.warlords_sr.KDA)
-    +value( "Games Played: " , PLAYER.warlords_sr.WL)
-    +value( "Win Loss Ratio: " , PLAYER.warlords_sr.plays)
-    +value( "Damage , Healing Prevented: " , PLAYER.warlords_sr.DHP)
-
-    //Paladin///======================================================
-
-    +class("Paladin", PLAYER.warlords_sr.paladin)
-    +spec("Avenger", PLAYER.warlords_sr.paladin.avenger)
-    +spec("Protector", PLAYER.warlords_sr.paladin.protector)
-    +spec("Crusader", PLAYER.warlords_sr.paladin.crusader)
-
-    //Mage///=========================================================
-
-    +class("Mage", PLAYER.warlords_sr.mage)
-    +spec("Pyromancer", PLAYER.warlords_sr.mage.pyromancer)
-    +spec("Aquamancer", PLAYER.warlords_sr.mage.aquamancer)
-    +spec("Cryomancer", PLAYER.warlords_sr.mage.cryomancer)
-
-
-    //Warrior///======================================================
-
-    +class("Warrior", PLAYER.warlords_sr.warrior)
-    +spec("Berserker", PLAYER.warlords_sr.warrior.berserker)
-    +spec("Defender", PLAYER.warlords_sr.warrior.defender)
+        .col-lg-12
+          .accordion
+            .card
+              .card-header#heading-general(data-toggle = "collapse" data-target = "#collapse-general" aria-controls="collapse-general")
+                h3.mb-0
+                  span= "#" + RANKING.overall + "   "
+                  | Overall
+                +sritem(PLAYER.warlords_sr.SR)
+              #collapse-general.collapse(aria-labelledby="heading-general" data-parent="#accordion")
+                .card-body
+                  +overview()
 
 
-    //Shaman///======================================================
-    +class("Shaman", PLAYER.warlords_sr.shaman)
-    +spec("Thudnerlord", PLAYER.warlords_sr.shaman.thunderlord)
-    +spec("Earthwarden", PLAYER.warlords_sr.shaman.earthwarden)
+            .card
+              .card-header#heading-paladin(data-toggle = "collapse" data-target = "#collapse-paladin" aria-controls="collapse-paladin")
+                h3.mb-0
+                  +RankingNullCheck(RANKING.paladin.overall)
+                  | Paladin
+                +sritem(PLAYER.warlords_sr.paladin.SR)
+              #collapse-paladin.collapse(aria-labelledby="heading-paladin" data-parent="#accordion")
+                .card-body
+                  +paladin()
 
-    h3 Warrior
+            .card
+              .card-header#heading-mage(data-toggle = "collapse" data-target = "#collapse-mage" aria-controls="collapse-mage")
+                h3.mb-0
+                  +RankingNullCheck(RANKING.mage.overall)
+                  | Mage
+                +sritem(PLAYER.warlords_sr.mage.SR)
+              #collapse-mage.collapse(aria-labelledby="heading-mage" data-parent="#accordion")
+                .card-body
+                  +mage()
 
-    +value( "warrior damage dealt: " , PLAYER.warlords.damage_warrior)
-    +value( "warrior damage prevented: " , PLAYER.warlords.damage_prevented_warrior)
-    +value( "warrior life leeched: " , PLAYER.warlords.heal_warrior)
-    +value( "warrior plays: " , PLAYER.warlords.warrior_plays)
-    +value( "warrior wins: " , PLAYER.warlords.wins_warrior)
-    +value( "warrior losses: " , PLAYER.warlords.losses_warrior)
+            .card
+              .card-header#heading-shaman(data-toggle = "collapse" data-target = "#collapse-shaman" aria-controls="collapse-shaman")
+                h3.mb-0
+                  +RankingNullCheck(RANKING.shaman.overall)
+                  | Shaman
+                +sritem(PLAYER.warlords_sr.shaman.SR)
+              #collapse-shaman.collapse(aria-labelledby="heading-shaman" data-parent="#accordion")
+                .card-body
+                  +shaman()
 
-    h3 Paladin
-
-    +value( "paladin damage dealt: " , PLAYER.warlords.damage_paladin)
-    +value( "paladin damage prevented: " , PLAYER.warlords.damage_prevented_paladin)
-    +value( "paladin heal: " , PLAYER.warlords.heal_paladin)
-    +value( "paladin plays: " , PLAYER.warlords.paladin_plays)
-    +value( "paladin abuse: " , PLAYER.warlords.wins_paladin)
-    +value( "paladin losses: " , PLAYER.warlords.losses_paladin)
-
-    h3 Mage
-
-    +value( "mage damage dealt: " , PLAYER.warlords.damage_mage)
-    +value( "mage damage prevented: " , PLAYER.warlords.damage_prevented_mage)
-    +value( "mage heal: " , PLAYER.warlords.heal_mage)
-    +value( "mage plays: " , PLAYER.warlords.mage_plays)
-    +value( "mage wins: " , PLAYER.warlords.wins_mage)
-    +value( "mage losses: " , PLAYER.warlords.losses_mage)
-
-    h3 Shaman
-
-    +value( "shaman damage dealt: " , PLAYER.warlords.damage_shaman)
-    +value( "shaman damage prevented: " , PLAYER.warlords.damage_prevented_shaman)
-    +value( "shaman heal: " , PLAYER.warlords.heal_shaman)
-    +value( "shaman plays: " , PLAYER.warlords.shaman_plays)
-    +value( "shaman wins: " , PLAYER.warlords.wins_shaman)
-    +value( "shaman losses: " , PLAYER.warlords.losses_shaman)
-
-    h3 Berserker
-
-    +value( "berserker plays: " , PLAYER.warlords.berserker_plays)
-    +value( "berserker damage: " , PLAYER.warlords.damage_berserker)
-    +value( "berserker damage prevented: " , PLAYER.warlords.damage_prevented_berserker)
-    +value( "berserker heal: " , PLAYER.warlords.heal_berserker)
-    +value( "berserker life leeched " , PLAYER.warlords.life_leeched_berserker)
-    +value( "berserker wins: " , PLAYER.warlords.wins_berserker)
-    +value( "berserker losses: " , PLAYER.warlords.losses_berserker)
-
-    h3 Defender
-
-    +value( "defender abuse: " , PLAYER.warlords.defender_plays)
-    +value( "defender damage: " , PLAYER.warlords.damage_defender)
-    +value( "defender damage prevented: " , PLAYER.warlords.damage_prevented_defender)
-    +value( "defender heal: " , PLAYER.warlords.heal_defender)
-    +value( "defender wins: " , PLAYER.warlords.wins_defender)
-    +value( "defender losses: " , PLAYER.warlords.losses_defender)
-
-    h3 Pyromancer
-
-    +value( "pyromancer plays: " , PLAYER.warlords.pyromancer_plays)
-    +value( "pyromancer damage: " , PLAYER.warlords.damage_pyromancer)
-    +value( "pyromancer damage prevented: " , PLAYER.warlords.damage_prevented_pyromancer)
-    +value( "pyromancer heal: " , PLAYER.warlords.heal_pyromancer)
-    +value( "pyromancer wins: " , PLAYER.warlords.wins_pyromancer)
-    +value( "pyromancer losses: " , PLAYER.warlords.losses_pyromancer)
-
-    h3 Cryomancer
-
-    +value( "cryomancer plays: " , PLAYER.warlords.cryomancer_plays)
-    +value( "cryomancer damage: " , PLAYER.warlords.damage_cryomancer)
-    +value( "cryomancer damage prevented: " , PLAYER.warlords.damage_prevented_cryomancer)
-    +value( "cryomancer heal: " , PLAYER.warlords.heal_cryomancer)
-    +value( "cryomancer wins: " , PLAYER.warlords.wins_cryomancer)
-    +value( "cryomancer losses: " , PLAYER.warlords.losses_cryomancer)
-
-    h3 Aquamancer
-
-    +value( "aquamancer plays: " , PLAYER.warlords.aquamancer_plays)
-    +value( "aquamancer damage: " , PLAYER.warlords.damage_aquamancer)
-    +value( "aquamancer damage prevented: " , PLAYER.warlords.damage_prevented_aquamancer)
-    +value( "aquamancer heal: " , PLAYER.warlords.heal_aquamancer)
-    +value( "aquamancer wins: " , PLAYER.warlords.wins_aquamancer)
-    +value( "aquamancer losses: " , PLAYER.warlords.losses_aquamancer)
-
-    h3 Avenger
-
-    +value( "avenger plays: " , PLAYER.warlords.avenger_plays)
-    +value( "avenger damage: " , PLAYER.warlords.damage_avenger)
-    +value( "avenger damage prevented: " , PLAYER.warlords.damage_prevented_avenger)
-    +value( "avenger heal: " , PLAYER.warlords.heal_avenger)
-    +value( "avenger wins: " , PLAYER.warlords.wins_avenger)
-    +value( "avenger losses: " , PLAYER.warlords.losses_avenger)
-
-    h3 Crusader
-
-    +value( "crusader plays: " , PLAYER.warlords.crusader_plays)
-    +value( "crusader damage: " , PLAYER.warlords.damage_crusader)
-    +value( "crusader damage prevented: " , PLAYER.warlords.damage_prevented_crusader)
-    +value( "crusader heal: " , PLAYER.warlords.heal_crusader)
-    +value( "crusader wins: " , PLAYER.warlords.wins_crusader)
-    +value( "crusader losses: " , PLAYER.warlords.losses_crusader)
-
-    h3 Protector
-
-    +value( "protector plays: " , PLAYER.warlords.protector_plays)
-    +value( "protector damage: " , PLAYER.warlords.damage_protector)
-    +value( "protector damage prevented: " , PLAYER.warlords.damage_prevented_protector)
-    +value( "protector heal: " , PLAYER.warlords.heal_protector)
-    +value( "protector wins: " , PLAYER.warlords.wins_protector)
-    +value( "protector losses: " , PLAYER.warlords.losses_protector)
-
-    h3 Thunderlord
-
-    +value( "thunderlord plays: " , PLAYER.warlords.thunderlord_plays)
-    +value( "thunderlord damage: " , PLAYER.warlords.damage_thunderlord)
-    +value( "thunderlord damage prevented: " , PLAYER.warlords.damage_prevented_thunderlord)
-    +value( "thunderlord heal: " , PLAYER.warlords.heal_thunderlord)
-    +value( "thunderlord wins: " , PLAYER.warlords.wins_thunderlord)
-    +value( "thunderlord losses: " , PLAYER.warlords.losses_thunderlord)
-
-    h3 Earthwarden
-
-    +value( "earthwarden plays: " , PLAYER.warlords.earthwarden_plays)
-    +value( "earthwarden damage: " , PLAYER.warlords.damage_earthwarden)
-    +value( "earthwarden damage prevented: " , PLAYER.warlords.damage_prevented_earthwarden)
-    +value( "earthwarden heal: " , PLAYER.warlords.heal_earthwarden)
-    +value( "earthwarden wins: " , PLAYER.warlords.wins_earthwarden)
-    +value( "earthwarden losses: " , PLAYER.warlords.losses_earthwarden)
-
-    h3 GENERAL GARBAGE
-
-    +value( "assists: " , PLAYER.warlords.assists)
-    +value( "damage: " , PLAYER.warlords.damage)
-    +value( "deaths: " , PLAYER.warlords.deaths)
-    +value( "heal: " , PLAYER.warlords.heal)
-    +value( "damage prevented: " , PLAYER.warlords.damage_prevented)
-    +value( "damage taken: " , PLAYER.warlords.damage_taken)
-    +value( "kills: " , PLAYER.warlords.kills)
-    +value( "life leeched: " , PLAYER.warlords.life_leeched)
-    +value( "wins: " , PLAYER.warlords.wins)
-    +value( "blue wins: " , PLAYER.warlords.wins_blu)
-    +value( "red wins: " , PLAYER.warlords.wins_red)
-    +value( "losses: " , PLAYER.warlords.losses)
-    +value( "penalty: " , PLAYER.warlords.penalty)
-
-    +value( "CTF Wins: " , PLAYER.warlords.wins_capturetheflag)
-    +value( "CTF Wins on Blue: " , PLAYER.warlords.wins_capturetheflag_blu)
-    +value( "CTF Wins on Red: " , PLAYER.warlords.wins_capturetheflag_red)
-    +value( "the FUCK: " , PLAYER.warlords.flag_conquer_team)
-    +value( "Flags Captured: " , PLAYER.warlords.flag_conquer_self)
-
-    +value( "Dominigger Wins: " , PLAYER.wins_domination)
-    +value( "Dom Wins on Blue: " , PLAYER.wins_domination_blu)
-    +value( "Dom Wins on Red: " , PLAYER.wins_domination_red)
-
-    +value( "TDM Wins: " , PLAYER.wins_teamdeathmatch)
-    +value( "TDM Wins on Blue: " , PLAYER.wins_teamdeathmatch_blu)
-    +value( "TDM Wins on Red: " , PLAYER.wins_teamdeathmatch_red)
+            .card
+              .card-header#heading-warrior(data-toggle = "collapse" data-target = "#collapse-warrior" aria-controls="collapse-warrior")
+                h3.mb-0
+                  +RankingNullCheck(RANKING.warrior.overall)
+                  | Warrior
+                +sritem(PLAYER.warlords_sr.warrior.SR)
+              #collapse-warrior.collapse(aria-labelledby="heading-warrior" data-parent="#accordion")
+                .card-body
+                  +warrior()
