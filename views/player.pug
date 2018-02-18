@@ -302,7 +302,7 @@ block content
             .card
               .card-header#heading-general(data-toggle = "collapse" data-target = "#collapse-general" aria-controls="collapse-general")
                 h3.mb-0
-                  span= "#" + RANKING.overall + "   "
+                  +RankingNullCheck(RANKING.overall)
                   | Overall
                 +sritem(PLAYER.warlords_sr.SR)
               #collapse-general.collapse(aria-labelledby="heading-general" data-parent="#accordion")
