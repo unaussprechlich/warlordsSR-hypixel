@@ -22,6 +22,8 @@ export interface IWarlordsSR{
     WL : number | null,
     plays : number | null,
     DHP : number | null,
+    realLosses : number | null,
+    realPenalty : number | null
 
     paladin : {
         DHP : number | null,

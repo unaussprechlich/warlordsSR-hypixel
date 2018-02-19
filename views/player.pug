@@ -77,8 +77,8 @@ mixin overview()
 
   .divider
   h4 Wins | Losses
-  +value( "Games Played" , PLAYER.warlords_sr.WL)
-  +value( "Wins/Losses Ratio" , PLAYER.warlords_sr.plays)
+  +value( "Games Played" , PLAYER.warlords_sr.plays)
+  +value( "Wins/Losses Ratio" , PLAYER.warlords_sr.WL)
   +value( "wins" , PLAYER.warlords.wins)
   +value( "losses" , PLAYER.warlords.losses)
   +value( "blue wins" , PLAYER.warlords.wins_blu)
@@ -274,7 +274,7 @@ mixin sritem(value)
         +srdisplaythingy(value)
 
   else
-    .sr.rounded.border.border-info
+    .sr.rounded
       .srtext.rounded-left
         p SR
       .srvalue.rounded-right

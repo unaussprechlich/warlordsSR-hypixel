@@ -79,8 +79,8 @@ class RankingCache {
                 paladin: {
                     overall: yield RankingCache.loadRankFromDatabase("warlords_sr.paladin.SR", uuid),
                     avenger: yield RankingCache.loadRankFromDatabase("warlords_sr.paladin.avenger.SR", uuid),
-                    crusader: yield RankingCache.loadRankFromDatabase("warlords_sr.paladin.protector.SR", uuid),
-                    protector: yield RankingCache.loadRankFromDatabase("warlords_sr.paladin.crusader.SR", uuid),
+                    crusader: yield RankingCache.loadRankFromDatabase("warlords_sr.paladin.crusader.SR", uuid),
+                    protector: yield RankingCache.loadRankFromDatabase("warlords_sr.paladin.protector.SR", uuid),
                 },
                 warrior: {
                     overall: yield RankingCache.loadRankFromDatabase("warlords_sr.warrior.SR", uuid),

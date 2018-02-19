@@ -27,8 +27,7 @@ function calculateSR(player) {
     const sr = newWarlordsSr();
     sr.KD = calculateKD(stats.kills, stats.deaths);
     sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
-    if (stats.wins != null && stats.losses != null)
-        sr.plays = stats.wins + stats.losses;
+    sr.plays = calculateOverallPlays(stats.mage_plays, stats.paladin_plays, stats.shaman_plays, stats.warrior_plays);
     sr.WL = calculateWL(stats.wins, stats.losses);
     sr.mage.WL = calculateWL(stats.wins_mage, stats.losses_mage);
     sr.mage.pyromancer.WL = calculateWL(stats.wins_pyromancer, stats.losses_pyromancer);
@@ -86,6 +85,7 @@ function calculateSR(player) {
     sr.SR = Math.round(((vOr0(sr.paladin.SR) + vOr0(sr.mage.SR) + vOr0(sr.shaman.SR) + vOr0(sr.warrior.SR)) / 4));
     if (sr.SR == 0)
         sr.SR = null;
+    console.log(sr.SR);
     return sr;
 }
 exports.calculateSR = calculateSR;
@@ -97,6 +97,8 @@ function newWarlordsSr() {
         WL: null,
         plays: null,
         DHP: null,
+        realLosses: null,
+        realPenalty: null,
         paladin: {
             DHP: null,
             SR: null,
@@ -133,6 +135,17 @@ function vOr0(value) {
     if (value == null)
         return 0;
     return value;
+}
+function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays) {
+    if (magePlays == null)
+        magePlays = 0;
+    if (palPlays == null)
+        palPlays = 0;
+    if (shaPlays == null)
+        shaPlays = 0;
+    if (warPlays == null)
+        warPlays = 0;
+    return magePlays + palPlays + shaPlays + warPlays;
 }
 function calculateWL(wins, losses) {
     if (losses == null || wins == null)

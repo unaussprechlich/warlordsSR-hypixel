@@ -99,8 +99,8 @@ export class RankingCache{
             paladin : {
                 overall : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.SR", uuid),
                 avenger : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.avenger.SR", uuid),
-                crusader : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.protector.SR", uuid),
-                protector : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.crusader.SR", uuid),
+                crusader : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.crusader.SR", uuid),
+                protector : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.protector.SR", uuid),
             },
 
             warrior : {
