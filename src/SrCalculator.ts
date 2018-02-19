@@ -241,6 +241,197 @@ export function calculateSR(player : IPlayer) {
     return sr;
 }
 
+/**
+ *
+ * @param {number | null} dhp
+ * @param {number} specPlays
+ * @param {number | null} wl
+ * @param {number | null} kda
+ * @param {Average} average
+ * @param {number | null} plays
+ * @param {number} penalty
+ * @returns {any}
+ */
+function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, kda : number | null, average : Average, plays : number | null, penalty : number){
+    if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null ||  kda == null || specPlays < 100) return null;
+    const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
+    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
+    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
+    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
+    const SR= Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
+
+    if(SR <= 0) return null;
+    else return SR;
+}
+
+// WIN/LOSS ------------------------------------------------------------------------------------------------------------
+
+/**
+ * A adjusting function to smooth stuff out :D
+ *
+ * This does smooth out the winrate between 0 and 2
+ * values are capped at 6.8
+ *
+ * https://www.wolframalpha.com/input/?i=plot+%5B-cos((x+%2B+3)%2Fpi),+tan((x+-+3)%2Fpi)+%2B+0.35%5D+between+0+and+7
+ * plot [-cos((x + 3)/pi), tan((x - 3)/pi) + 0.35] between 0 and 7
+ *
+ * @param {number} v
+ * @param {number} averageRatio
+ * @returns {number}
+ */
+function adjust_2_wl(v : number, averageRatio : number){
+    const adjust = 2.027 - averageRatio;
+    if(v > 6.896 - adjust) return 2;
+    else if(v > 2.027) return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
+    else if(v <= 0.027 || v <= 0.027 - adjust) return 0;
+    else return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
+}
+
+function calculateWL(wins : number , losses : number){
+    if(losses == null || wins == null ) return null;
+    return round(wins / losses, 100);
+}
+
+// DHP -----------------------------------------------------------------------------------------------------------------
+
+/**
+ * Smooth and cap the DHP per game
+ * it is capped at 2 times the average value
+ *
+ * https://www.wolframalpha.com/input/?i=plot+%5B-cos(x*PI%2F2)%5D+between+0+and+2
+ * plot [-cos(x*PI/2)] between 0 and 2
+ *
+ * @param {number} v
+ * @param {number} average
+ * @returns {number}
+ */
+function adjust_dhp(v : number, average : number){
+    const x = v / average;
+    if(x >= 2) return 2;
+    else if(x <= 0) return 0;
+    else return Math.cos((x * Math.PI) / 2 + Math.PI) + 1;
+}
+
+function calculateDHP(dmg : number, heal : number, prevented : number, plays : number | null){
+    if(dmg == null || heal == null || prevented == null || plays == null) return null;
+    return Math.round((dmg  + heal + prevented)/plays);
+}
+
+/**
+ * Punish  defender n00bs ;)
+ * They need an average of 40.000 damage prevented per game and also 3.000 heal.
+ * @param {number} dmg
+ * @param {number} heal
+ * @param {number} prevented
+ * @param {number} plays
+ * @returns {any}
+ */
+function antiDefenderNoobDHP(dmg : number, heal : number, prevented : number, plays : number){
+    if(dmg == null || heal == null || prevented == null) return null;
+    const penalty = Math.log2((prevented/plays/ ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED) + (heal/plays/ ANTI_DEFENDER_NOOB_THRESHOLD_HEAL) + 1);
+    return Math.round(((dmg + heal + prevented) * penalty)/plays);
+}
+
+/**
+ * Punish those freaking snipers ;)
+ * A real pyro should have at least 15.000 prevented damage and 7500 healzzzz per game (values might be too low)
+ * @param {number} dmg
+ * @param {number} heal
+ * @param {number} prevented
+ * @param {number} plays
+ * @returns {any}
+ */
+function antiSniperDHP(dmg : number, heal : number, prevented : number, plays : number){
+    if(dmg == null || heal == null || prevented == null) return null;
+    const penalty = Math.log2(((prevented + heal)/plays / ANTI_SNIPER_TRESHOLD) + 1);
+    return Math.round(((dmg + heal + prevented) * penalty)/plays);
+}
+
+// OTHER ---------------------------------------------------------------------------------------------------------------
+
+function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays){
+    if(magePlays == null) magePlays = 0;
+    if(palPlays == null) palPlays = 0;
+    if(shaPlays == null) shaPlays = 0;
+    if(warPlays == null) warPlays = 0;
+
+    return magePlays + palPlays + shaPlays + warPlays;
+}
+
+function calculateKD(kills : number, deaths: number) : number | null{
+    if(kills == null || deaths == null) return null;
+    return round(kills / deaths, 100);
+}
+
+function calculateKDA(kills : number, deaths: number, assists : number) : number | null{
+    if(kills == null || deaths == null || assists == null) return null;
+    return round((kills + assists) / deaths, 100);
+}
+
+// MATH.shit -----------------------------------------------------------------------------------------------------------
+
+function round(zahl,n_stelle) {
+    zahl = (Math.round(zahl * n_stelle) / n_stelle);
+    return zahl;
+}
+
+/**
+ * Does return 0 if the value is null
+ * @param {number | null} value
+ * @returns {number}
+ */
+function vOr0(value : number | null) : number{
+    if(value == null) return 0;
+    return value;
+}
+
+
+//NOT USED #############################################################################################################
+
+/**
+ * A adjusting function to smooth stuff out :D
+ *
+ * https://www.wolframalpha.com/input/?i=plot+%5B(cos((x%2Fpi+%2B+pi))+%2B+0.8),+log10(x+%2B+0.5)+-+0.397%5D+between+0+and+10
+ * plot [(cos((x/pi + pi)) + 0.8), log10(x + 0.5) - 0.397] between 0 and 10
+ *
+ * TODO: not in use
+ *
+ * @param {number} v
+ * @param {number} averageRatio
+ * @returns {number}
+ */
+function adjust_1_wl(v : number, averageRatio : number){
+    const adjust = 2 - averageRatio;
+    if(v > 10) return 1.8;
+    else if(v > 2) return Math.cos(((v + adjust) / Math.PI) + Math.PI) + 0.8;
+    else if(v <= adjust || v <= 0) return 0;
+    else return Math.log10(v + 0.5 + adjust) - 0.398;
+}
+
+function adjustV(valuePerGame : number, average : number) : number{
+    return log10_x2(Math.log2( (valuePerGame / average)+ 1)) + 1
+}
+
+function av10(valuePerGame : number, average : number) : number | null{
+    const adjust = adjustV(valuePerGame, average);
+    if(adjust <= 0) return null;
+    return valuePerGame * adjust;
+}
+
+function av2(valuePerGame : number, average : number){
+    return log10_1At1(valuePerGame / average)
+}
+
+function log10_1At1(value : number){
+    return Math.log10(value + 0.5) - 0.176
+}
+
+function log10_x2(value : number){
+    return Math.log10(value * value)
+}
+
+// EW Typescript #######################################################################################################
+
 function newWarlordsSr() : IWarlordsSR{
     return {
         SR :  null,
@@ -287,117 +478,3 @@ function newWarlordsSr() : IWarlordsSR{
         }
     };
 }
-
-
-function vOr0(value : number | null) : number{
-    if(value == null) return 0;
-    return value;
-}
-
-function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays){
-    if(magePlays == null) magePlays = 0;
-    if(palPlays == null) palPlays = 0;
-    if(shaPlays == null) shaPlays = 0;
-    if(warPlays == null) warPlays = 0;
-
-    return magePlays + palPlays + shaPlays + warPlays;
-}
-
-function calculateWL(wins : number , losses : number){
-    if(losses == null || wins == null ) return null;
-    return round(wins / losses, 100);
-}
-
-function calculateKD(kills : number, deaths: number) : number | null{
-    if(kills == null || deaths == null) return null;
-    return round(kills / deaths, 100);
-}
-
-function calculateKDA(kills : number, deaths: number, assists : number) : number | null{
-    if(kills == null || deaths == null || assists == null) return null;
-    return round((kills + assists) / deaths, 100);
-}
-
-function antiDefenderNoobDHP(dmg : number, heal : number, prevented : number, plays : number){
-    if(dmg == null || heal == null || prevented == null) return null;
-    const penalty = Math.log2((prevented/plays/ ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED) + (heal/plays/ ANTI_DEFENDER_NOOB_THRESHOLD_HEAL) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty)/plays);
-}
-
-function antiSniperDHP(dmg : number, heal : number, prevented : number, plays : number){
-    if(dmg == null || heal == null || prevented == null) return null;
-    const penalty = Math.log2(((prevented + heal)/plays / ANTI_SNIPER_TRESHOLD) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty)/plays);
-}
-
-function calculateDHP(dmg : number, heal : number, prevented : number, plays : number | null){
-    if(dmg == null || heal == null || prevented == null || plays == null) return null;
-    return Math.round((dmg  + heal + prevented)/plays);
-}
-
-function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, kda : number | null, average : Average, plays : number | null, penalty : number){
-    if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null ||  kda == null || specPlays < 100) return null;
-    const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
-    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
-    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
-    const SR= Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
-
-    if(SR <= 0) return null;
-    else return SR;
-}
-
-// plot [(cos((x/pi + pi)) + 0.8), log10(x + 0.5) - 0.397] between 0 and 10
-function adjust_1_wl(v : number, averageRatio : number){
-    const adjust = 2 - averageRatio;
-    if(v > 10) return 1.8;
-    else if(v > 2) return Math.cos(((v + adjust) / Math.PI) + Math.PI) + 0.8;
-    else if(v <= adjust || v <= 0) return 0;
-    else return Math.log10(v + 0.5 + adjust) - 0.398;
-}
-
-// plot [-cos((x + 3)/pi), tan((x - 3)/pi) + 0.35] between 0 and 7
-function adjust_2_wl(v : number, averageRatio : number){
-    const adjust = 2.027 - averageRatio;
-    if(v > 6.896 - adjust) return 2;
-    else if(v > 2.027) return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
-    else if(v <= 0.027 || v <= 0.027 - adjust) return 0;
-    else return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
-}
-
-// plot [-cos(x*PI/2)] between 0 and 2
-function adjust_dhp(v : number, average : number){
-    const x = v / average;
-    if(x >= 2) return 2;
-    else if(x <= 0) return 0;
-    else return Math.cos((x * Math.PI) / 2 + Math.PI) + 1;
-}
-
-function adjustV(valuePerGame : number, average : number) : number{
-    return log10_x2(Math.log2( (valuePerGame / average)+ 1)) + 1
-}
-
-function av10(valuePerGame : number, average : number) : number | null{
-    const adjust = adjustV(valuePerGame, average);
-    if(adjust <= 0) return null;
-    return valuePerGame * adjust;
-}
-
-function av2(valuePerGame : number, average : number){
-    return log10_1At1(valuePerGame / average)
-}
-
-function log10_1At1(value : number){
-    return Math.log10(value + 0.5) - 0.176
-}
-
-function log10_x2(value : number){
-    return Math.log10(value * value)
-}
-
-
-function round(zahl,n_stelle) {
-    zahl = (Math.round(zahl * n_stelle) / n_stelle);
-    return zahl;
-}
-

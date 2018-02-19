@@ -89,6 +89,120 @@ function calculateSR(player) {
     return sr;
 }
 exports.calculateSR = calculateSR;
+function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
+    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || specPlays < 100)
+        return null;
+    const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
+    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
+    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
+    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
+    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
+    if (SR <= 0)
+        return null;
+    else
+        return SR;
+}
+function adjust_2_wl(v, averageRatio) {
+    const adjust = 2.027 - averageRatio;
+    if (v > 6.896 - adjust)
+        return 2;
+    else if (v > 2.027)
+        return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
+    else if (v <= 0.027 || v <= 0.027 - adjust)
+        return 0;
+    else
+        return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
+}
+function calculateWL(wins, losses) {
+    if (losses == null || wins == null)
+        return null;
+    return round(wins / losses, 100);
+}
+function adjust_dhp(v, average) {
+    const x = v / average;
+    if (x >= 2)
+        return 2;
+    else if (x <= 0)
+        return 0;
+    else
+        return Math.cos((x * Math.PI) / 2 + Math.PI) + 1;
+}
+function calculateDHP(dmg, heal, prevented, plays) {
+    if (dmg == null || heal == null || prevented == null || plays == null)
+        return null;
+    return Math.round((dmg + heal + prevented) / plays);
+}
+function antiDefenderNoobDHP(dmg, heal, prevented, plays) {
+    if (dmg == null || heal == null || prevented == null)
+        return null;
+    const penalty = Math.log2((prevented / plays / ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED) + (heal / plays / ANTI_DEFENDER_NOOB_THRESHOLD_HEAL) + 1);
+    return Math.round(((dmg + heal + prevented) * penalty) / plays);
+}
+function antiSniperDHP(dmg, heal, prevented, plays) {
+    if (dmg == null || heal == null || prevented == null)
+        return null;
+    const penalty = Math.log2(((prevented + heal) / plays / ANTI_SNIPER_TRESHOLD) + 1);
+    return Math.round(((dmg + heal + prevented) * penalty) / plays);
+}
+function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays) {
+    if (magePlays == null)
+        magePlays = 0;
+    if (palPlays == null)
+        palPlays = 0;
+    if (shaPlays == null)
+        shaPlays = 0;
+    if (warPlays == null)
+        warPlays = 0;
+    return magePlays + palPlays + shaPlays + warPlays;
+}
+function calculateKD(kills, deaths) {
+    if (kills == null || deaths == null)
+        return null;
+    return round(kills / deaths, 100);
+}
+function calculateKDA(kills, deaths, assists) {
+    if (kills == null || deaths == null || assists == null)
+        return null;
+    return round((kills + assists) / deaths, 100);
+}
+function round(zahl, n_stelle) {
+    zahl = (Math.round(zahl * n_stelle) / n_stelle);
+    return zahl;
+}
+function vOr0(value) {
+    if (value == null)
+        return 0;
+    return value;
+}
+function adjust_1_wl(v, averageRatio) {
+    const adjust = 2 - averageRatio;
+    if (v > 10)
+        return 1.8;
+    else if (v > 2)
+        return Math.cos(((v + adjust) / Math.PI) + Math.PI) + 0.8;
+    else if (v <= adjust || v <= 0)
+        return 0;
+    else
+        return Math.log10(v + 0.5 + adjust) - 0.398;
+}
+function adjustV(valuePerGame, average) {
+    return log10_x2(Math.log2((valuePerGame / average) + 1)) + 1;
+}
+function av10(valuePerGame, average) {
+    const adjust = adjustV(valuePerGame, average);
+    if (adjust <= 0)
+        return null;
+    return valuePerGame * adjust;
+}
+function av2(valuePerGame, average) {
+    return log10_1At1(valuePerGame / average);
+}
+function log10_1At1(value) {
+    return Math.log10(value + 0.5) - 0.176;
+}
+function log10_x2(value) {
+    return Math.log10(value * value);
+}
 function newWarlordsSr() {
     return {
         SR: null,
@@ -130,118 +244,4 @@ function newWarlordsSr() {
             earthwarden: { SR: null, DHP: null, WL: null },
         }
     };
-}
-function vOr0(value) {
-    if (value == null)
-        return 0;
-    return value;
-}
-function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays) {
-    if (magePlays == null)
-        magePlays = 0;
-    if (palPlays == null)
-        palPlays = 0;
-    if (shaPlays == null)
-        shaPlays = 0;
-    if (warPlays == null)
-        warPlays = 0;
-    return magePlays + palPlays + shaPlays + warPlays;
-}
-function calculateWL(wins, losses) {
-    if (losses == null || wins == null)
-        return null;
-    return round(wins / losses, 100);
-}
-function calculateKD(kills, deaths) {
-    if (kills == null || deaths == null)
-        return null;
-    return round(kills / deaths, 100);
-}
-function calculateKDA(kills, deaths, assists) {
-    if (kills == null || deaths == null || assists == null)
-        return null;
-    return round((kills + assists) / deaths, 100);
-}
-function antiDefenderNoobDHP(dmg, heal, prevented, plays) {
-    if (dmg == null || heal == null || prevented == null)
-        return null;
-    const penalty = Math.log2((prevented / plays / ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED) + (heal / plays / ANTI_DEFENDER_NOOB_THRESHOLD_HEAL) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty) / plays);
-}
-function antiSniperDHP(dmg, heal, prevented, plays) {
-    if (dmg == null || heal == null || prevented == null)
-        return null;
-    const penalty = Math.log2(((prevented + heal) / plays / ANTI_SNIPER_TRESHOLD) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty) / plays);
-}
-function calculateDHP(dmg, heal, prevented, plays) {
-    if (dmg == null || heal == null || prevented == null || plays == null)
-        return null;
-    return Math.round((dmg + heal + prevented) / plays);
-}
-function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
-    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || specPlays < 100)
-        return null;
-    const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
-    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
-    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
-    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
-    if (SR <= 0)
-        return null;
-    else
-        return SR;
-}
-function adjust_1_wl(v, averageRatio) {
-    const adjust = 2 - averageRatio;
-    if (v > 10)
-        return 1.8;
-    else if (v > 2)
-        return Math.cos(((v + adjust) / Math.PI) + Math.PI) + 0.8;
-    else if (v <= adjust || v <= 0)
-        return 0;
-    else
-        return Math.log10(v + 0.5 + adjust) - 0.398;
-}
-function adjust_2_wl(v, averageRatio) {
-    const adjust = 2.027 - averageRatio;
-    if (v > 6.896 - adjust)
-        return 2;
-    else if (v > 2.027)
-        return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
-    else if (v <= 0.027 || v <= 0.027 - adjust)
-        return 0;
-    else
-        return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
-}
-function adjust_dhp(v, average) {
-    const x = v / average;
-    if (x >= 2)
-        return 2;
-    else if (x <= 0)
-        return 0;
-    else
-        return Math.cos((x * Math.PI) / 2 + Math.PI) + 1;
-}
-function adjustV(valuePerGame, average) {
-    return log10_x2(Math.log2((valuePerGame / average) + 1)) + 1;
-}
-function av10(valuePerGame, average) {
-    const adjust = adjustV(valuePerGame, average);
-    if (adjust <= 0)
-        return null;
-    return valuePerGame * adjust;
-}
-function av2(valuePerGame, average) {
-    return log10_1At1(valuePerGame / average);
-}
-function log10_1At1(value) {
-    return Math.log10(value + 0.5) - 0.176;
-}
-function log10_x2(value) {
-    return Math.log10(value * value);
-}
-function round(zahl, n_stelle) {
-    zahl = (Math.round(zahl * n_stelle) / n_stelle);
-    return zahl;
 }

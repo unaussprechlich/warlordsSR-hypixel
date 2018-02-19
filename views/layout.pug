@@ -48,6 +48,16 @@ html(lang='de')
 
     link(href='/stylesheets/style.css', rel='stylesheet')
 
+    // Global site tag (gtag.js) - Google Analytics
+    script(async='', src='https://www.googletagmanager.com/gtag/js?id=UA-71681855-4')
+    script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'UA-71681855-4');
+
     //- Include template-specific stylesheets by extending the css block
     block css
 
