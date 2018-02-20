@@ -30,6 +30,7 @@ const ANTI_SNIPER_TRESHOLD = 15000 + 7500; //averagePrevented = 13431 averageHea
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000; //average = 2640
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
 const AVERAGE_KDA = 7; //real: 6.86034034034034;
+const GAMES_PLAYED_TO_RANK = 80;
 
 
 
@@ -252,7 +253,7 @@ export function calculateSR(player : IPlayer) {
  * @returns {any}
  */
 function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, kda : number | null, average : Average, plays : number | null, penalty : number){
-    if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null ||  kda == null || specPlays < 100) return null;
+    if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null ||  kda == null || specPlays < GAMES_PLAYED_TO_RANK) return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
     const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);

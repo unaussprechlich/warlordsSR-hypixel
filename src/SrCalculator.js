@@ -22,6 +22,7 @@ const ANTI_SNIPER_TRESHOLD = 15000 + 7500;
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000;
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000;
 const AVERAGE_KDA = 7;
+const GAMES_PLAYED_TO_RANK = 80;
 function calculateSR(player) {
     const stats = player.warlords;
     const sr = newWarlordsSr();
@@ -89,7 +90,7 @@ function calculateSR(player) {
 }
 exports.calculateSR = calculateSR;
 function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
-    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || specPlays < 100)
+    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || specPlays < GAMES_PLAYED_TO_RANK)
         return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
