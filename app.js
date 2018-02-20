@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const path = require("path");
@@ -26,16 +18,13 @@ const warrior = require("./routes/warrior");
 const shaman = require("./routes/shaman");
 exports.app = express();
 mongoose.connect('mongodb://localhost/hypixel');
-function reloadSR() {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log("Reloading SR ...");
-        const players = yield PlayerDB_1.PlayerModel.find({});
-        players.forEach(value => {
-            value.save().catch(err => console.log(err));
-        });
+async function reloadSR() {
+    console.log("Reloading SR ...");
+    const players = await PlayerDB_1.PlayerModel.find({});
+    players.forEach(value => {
+        value.save().catch(err => console.log(err));
     });
 }
-reloadSR().catch(err => console.log(err));
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');
 exports.app.use(logger('dev'));

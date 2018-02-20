@@ -237,7 +237,6 @@ export function calculateSR(player : IPlayer) {
     sr.SR = Math.round(((vOr0(sr.paladin.SR) + vOr0(sr.mage.SR) + vOr0(sr.shaman.SR) + vOr0(sr.warrior.SR))/4));
 
     if(sr.SR == 0) sr.SR = null;
-    console.log(sr.SR);
     return sr;
 }
 

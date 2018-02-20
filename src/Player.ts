@@ -1,14 +1,40 @@
-import {IPlayer, PlayerModel} from "./PlayerDB";
+import {IPlayer, IWarlordsHypixelAPI, PlayerModel} from "./PlayerDB";
 import UUID from "hypixel-api-typescript/src/UUID";
 import * as HypixelAPI from "hypixel-api-typescript";
 import * as Ranking from "./Ranking";
 import * as Cache from "cache";
+import {Queue} from "./Queue";
+import Exception from "hypixel-api-typescript/src/Exceptions";
 
 const API_KEY = UUID.fromString("0e867be9-477c-4b6f-8f58-7b3a035c7e0d");
+const q = new Queue();
+const INTERVAL_TIME = 5 * 1000; //5 sec
+const CACHE_TIME = 5 * 60 * 1000; // 5 min
 
 export class PlayerCache{
 
-    _cache = new Cache(5 * 60 * 1000);
+    private _cache = new Cache(CACHE_TIME);
+    private _interval;
+
+    constructor(){
+        this._interval = setInterval(async () => {
+            try{
+
+                const playerDB = await PlayerModel.aggregate([
+                    { $sample: { size: 1 } },
+                    { $project: {_id : 0, uuid : 1}}
+                ]).exec() ;
+
+                const uuid = UUID.fromShortString(playerDB[0].uuid);
+                const player = await this.get(uuid);
+
+                console.log("[PlayerCache|RandomReload] " + player.data.uuid + " -> " + player.data.warlords_sr.SR + " SR");
+
+            } catch(err){
+                console.error("[PlayerCache] something went wrong while reloading a random player: " + err);
+            }
+        }, INTERVAL_TIME)
+    }
 
     async get(uuid : UUID) : Promise<Player>{
         if(this._cache.get(uuid)) return this._cache.get(uuid);
@@ -36,35 +62,34 @@ export class Player{
         this._data = data;
     }
 
-    static async init(uuid : UUID){
+    static async init(uuid : UUID) : Promise<Player>{
         if(defaultCache.contains(uuid)) return defaultCache.getDirect(uuid);
 
         const data = await PlayerModel.findOne({uuid : uuid.toShortString()}).exec();
-        if(data && data.uuid == uuid.toShortString()) return new Player(data);
 
-        const hypixelPlayer = await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
+        if(data && data.uuid == uuid.toShortString()){
+            const player = new Player(data);
+            await player.reloadHypixelStats()
+            return player;
+        } else {
+            const hypixelPlayer = await Player.loadHypixelStats(uuid);
 
-        if(!hypixelPlayer) throw "[HypixelAPI] EMPTY RESPONSE";
-        if(!hypixelPlayer.stats) throw "[HypixelAPI] empty STATS";
-        if(!hypixelPlayer.stats.Battleground) throw "[HypixelAPI] empty stats for BATTLEGROUND(Warlords)";
+            const model = new PlayerModel({
+                uuid: hypixelPlayer.uuid,
+                name : hypixelPlayer.displayname,
+                warlords : this.getWarlordsStatsFromHypixelStats(hypixelPlayer)
+            });
 
-        const model = new PlayerModel({
-            uuid: hypixelPlayer.uuid,
-            name : hypixelPlayer.displayname,
-
-            warlords : hypixelPlayer.stats.Battleground
-        });
-
-        await model.save();
-
-        return new Player(model);
+            await model.save();
+            return new Player(model);
+        }
     }
 
     get data(){
         return this._data;
     }
 
-    async reloadStats(){
+    async recalculateSr(){
         await this._data.save();
         return this._data;
     }
@@ -72,8 +97,26 @@ export class Player{
     async getRanking() {
         return Ranking.defaultCache.get(this._data.uuid)
     }
+
+    async reloadHypixelStats(){
+        const stats = await Player.loadHypixelStats(UUID.fromShortString(this._data.uuid as string));
+        this._data.warlords = Player.getWarlordsStatsFromHypixelStats(stats);
+        return await this.recalculateSr();
+    }
+
+    static getWarlordsStatsFromHypixelStats(hypixelPlayer : HypixelAPI.Player){
+        if(!hypixelPlayer || !hypixelPlayer.stats) throw Exception.NULL_POINTER;
+        return hypixelPlayer.stats.Battleground as IWarlordsHypixelAPI;
+    }
+
+    static async loadHypixelStats(uuid : UUID){
+        return await q.add(async () => {
+            return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
+        }, {
+            heat : 1,
+            queueTimeout : 5 * 1000
+        });
+    }
 }
 
 export const defaultCache = new PlayerCache();
-
-
