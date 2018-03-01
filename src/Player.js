@@ -10,7 +10,7 @@ const Exceptions_1 = require("hypixel-api-typescript/src/Exceptions");
 const API_KEY = UUID_1.default.fromString("0e867be9-477c-4b6f-8f58-7b3a035c7e0d");
 const q = new Queue_1.Queue();
 const INTERVAL_TIME = 5 * 1000;
-const CACHE_TIME = 5 * 60 * 1000;
+const CACHE_TIME = 10 * 60 * 1000;
 const REALDEAL_UUID = UUID_1.default.fromShortString("a0b2152f24a948ceb4f5c980b33939e7");
 const ZWERGI_UUID = UUID_1.default.fromShortString("f144204d72de440799d4a1fbed50437b");
 class PlayerCache {
@@ -99,7 +99,7 @@ class Player {
             return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
         }, {
             heat: 1,
-            queueTimeout: 5 * 1000
+            queueTimeout: 15 * 1000
         });
     }
 }

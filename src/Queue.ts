@@ -104,7 +104,6 @@ export class Queue {
 
     private _timeout : Timer | null = null;
 
-
     private _heat : number = 0;
     private _lastHeatReset : number = Date.now();
     private _lastExecutionCycle : number = Date.now();
