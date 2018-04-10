@@ -7,7 +7,6 @@ import {PlayerModel} from "./src/PlayerDB"
 
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
-import * as sassMiddleware from 'node-sass-middleware'
 
 import index = require('./routes/index');
 import player = require('./routes/player');
@@ -42,12 +41,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-app.use(sassMiddleware({
-    src: path.join(__dirname, 'public'),
-    dest: path.join(__dirname, 'public'),
-    outputStyle: 'compressed'
-}));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
