@@ -29,7 +29,7 @@ export class PlayerCache{
                 ]).exec() ;
 
                 const uuid = UUID.fromShortString(playerDB[0].uuid);
-                const player = await this.get(uuid);
+                const player = await this.get(uuid, false);
 
                 console.log("[PlayerCache|RandomReload] " + player.data.uuid + " -> " + player.data.warlords_sr.SR + " SR");
 
@@ -39,10 +39,10 @@ export class PlayerCache{
         }, INTERVAL_TIME)
     }
 
-    async get(uuid : UUID) : Promise<Player>{
+    async get(uuid : UUID, isHighPriority : boolean = true) : Promise<Player>{
         if(this._cache.get(uuid)) return this._cache.get(uuid);
         else{
-            const result = await Player.init(uuid);
+            const result = await Player.init(uuid, isHighPriority);
             this._cache.put(uuid, result);
             return result;
         }
@@ -65,17 +65,17 @@ export class Player{
         this._data = data;
     }
 
-    static async init(uuid : UUID) : Promise<Player>{
+    static async init(uuid : UUID, isHighPriority : boolean = false) : Promise<Player>{
         if(defaultCache.contains(uuid)) return defaultCache.getDirect(uuid);
 
         const data = await PlayerModel.findOne({uuid : uuid.toShortString()}).exec();
 
         if(data && data.uuid == uuid.toShortString()){
             const player = new Player(data);
-            await player.reloadHypixelStats()
+            await player.reloadHypixelStats(isHighPriority);
             return player;
         } else {
-            const hypixelPlayer = await Player.loadHypixelStats(uuid);
+            const hypixelPlayer = await Player.loadHypixelStats(uuid, isHighPriority);
 
             const model = new PlayerModel({
                 uuid: hypixelPlayer.uuid,
@@ -101,8 +101,8 @@ export class Player{
         return Ranking.defaultCache.get(this._data.uuid)
     }
 
-    async reloadHypixelStats(){
-        const stats = await Player.loadHypixelStats(UUID.fromShortString(this._data.uuid as string));
+    async reloadHypixelStats(isHighPriority : boolean){
+        const stats = await Player.loadHypixelStats(UUID.fromShortString(this._data.uuid as string), isHighPriority);
         this._data.warlords = Player.getWarlordsStatsFromHypixelStats(stats);
         return await this.recalculateSr();
     }
@@ -112,14 +112,14 @@ export class Player{
         return hypixelPlayer.stats.Battleground as IWarlordsHypixelAPI;
     }
 
-    static async loadHypixelStats(uuid : UUID){
-        if(uuid.toString() == REALDEAL_UUID.toString())
-            uuid = ZWERGI_UUID;
+    static async loadHypixelStats(uuid : UUID, isHighPriority : boolean){
         return await q.add(async () => {
             return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
         }, {
+            priority : isHighPriority ? 1 : 0,
             heat : 1,
-            queueTimeout : 15 * 1000
+            queueTimeout : isHighPriority ? 20 * 1000 : 10 * 1000,
+            executionTimeout : isHighPriority ? 15 * 1000 : 5 * 1000
         });
     }
 }
