@@ -8,7 +8,6 @@ require("mongoose").Promise = global.Promise;
 const PlayerDB_1 = require("./src/PlayerDB");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const sassMiddleware = require("node-sass-middleware");
 const index = require("./routes/index");
 const player = require("./routes/player");
 const overview = require("./routes/overview");
@@ -31,11 +30,6 @@ exports.app.use(logger('dev'));
 exports.app.use(bodyParser.json());
 exports.app.use(bodyParser.urlencoded({ extended: false }));
 exports.app.use(cookieParser());
-exports.app.use(sassMiddleware({
-    src: path.join(__dirname, 'public'),
-    dest: path.join(__dirname, 'public'),
-    outputStyle: 'compressed'
-}));
 exports.app.use(express.static(path.join(__dirname, 'public')));
 exports.app.use('/', index);
 exports.app.use('/overview', overview);
