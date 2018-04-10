@@ -1,14 +1,15 @@
-import * as express from "express"
+
 import * as path from "path"
 import * as logger from 'morgan'
 import * as mongoose from "mongoose"
 require("mongoose").Promise = global.Promise;
+import * as session from "express-session"
+
 import {PlayerModel} from "./src/PlayerDB"
 
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
 import * as sassMiddleware from 'node-sass-middleware'
-
 import index = require('./routes/index');
 import player = require('./routes/player');
 import overview = require('./routes/overview');
@@ -16,8 +17,13 @@ import paladin = require('./routes/paladin');
 import mage = require('./routes/mage');
 import warrior = require('./routes/warrior');
 import shaman = require('./routes/shaman');
+import rateme = require('./routes/rateme');
+import login = require('./routes/login');
 
+import * as express from "express";
 export const app = express();
+
+const SECRET = "UAG2H~+VhaiE;=/+kX/^a?!Uc5!t";
 
 mongoose.connect('mongodb://localhost/hypixel');
 
@@ -43,6 +49,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(session({
+    secret : SECRET,
+    cookie: {
+        secure: true
+    },
+    resave: false,
+    saveUninitialized: false
+}));
+
 app.use(sassMiddleware({
     src: path.join(__dirname, 'public'),
     dest: path.join(__dirname, 'public'),
@@ -51,13 +66,15 @@ app.use(sassMiddleware({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/overview', overview);
+app.use('/',        index);
+app.use('/overview',overview);
 app.use('/paladin', paladin);
-app.use('/mage', mage);
+app.use('/mage',    mage);
 app.use('/warrior', warrior);
-app.use('/shaman', shaman);
-app.use("/player", player);
+app.use('/shaman',  shaman);
+app.use("/player",  player);
+app.use("/login",   login);
+app.use("/rateme",  rateme);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

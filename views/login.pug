@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  #content.topspacing
+    .container
+      .row
+        .col-lg-12
+          .card
+            .card-header
+              h3 Sign-in to rate Players
+            .card-body
+              form(method='post')
+                .row
+                  .col-lg-12
+                    .form-group
+                      input#username(type='text', name='username', placeholder="Username")
+                    .form-group
+                      input#password(type='password', name='password', placeholder="Password")
+                    .form-group
+                      button.btn.btn-primary.my-2.my-sm-0(type='submit') Login
+

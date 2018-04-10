@@ -1,1 +1,1 @@
-export declare const app: any;
+export {};
