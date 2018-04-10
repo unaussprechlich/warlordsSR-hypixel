@@ -93,8 +93,6 @@ class Player {
         return hypixelPlayer.stats.Battleground;
     }
     static async loadHypixelStats(uuid, isHighPriority) {
-        if (uuid.toString() == REALDEAL_UUID.toString())
-            uuid = ZWERGI_UUID;
         return await q.add(async () => {
             return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
         }, {

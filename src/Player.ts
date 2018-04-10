@@ -113,8 +113,6 @@ export class Player{
     }
 
     static async loadHypixelStats(uuid : UUID, isHighPriority : boolean){
-        if(uuid.toString() == REALDEAL_UUID.toString())
-            uuid = ZWERGI_UUID;
         return await q.add(async () => {
             return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
         }, {
