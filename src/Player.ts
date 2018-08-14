@@ -11,8 +11,8 @@ const q = new Queue();
 const INTERVAL_TIME = 5 * 1000; //5 sec
 const CACHE_TIME = 10 * 60 * 1000; // 5 min
 
-const REALDEAL_UUID = UUID.fromShortString("a0b2152f24a948ceb4f5c980b33939e7");
-const ZWERGI_UUID = UUID.fromShortString("f144204d72de440799d4a1fbed50437b");
+const YOTUBE_UUID = UUID.fromShortString("928d19951c9347c2a5eeb7316ebf865d");
+const BART_UUID = UUID.fromShortString("a8e0f47a442e4d8aaac13acb8c102e57");
 
 export class PlayerCache{
 
@@ -113,6 +113,10 @@ export class Player{
     }
 
     static async loadHypixelStats(uuid : UUID, isHighPriority : boolean){
+
+        if(uuid.toShortString() == YOTUBE_UUID.toShortString() )
+            uuid = BART_UUID;
+
         return await q.add(async () => {
             return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
         }, {
