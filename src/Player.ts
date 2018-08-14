@@ -11,9 +11,6 @@ const q = new Queue();
 const INTERVAL_TIME = 5 * 1000; //5 sec
 const CACHE_TIME = 10 * 60 * 1000; // 5 min
 
-const YOTUBE_UUID = UUID.fromShortString("928d19951c9347c2a5eeb7316ebf865d");
-const BART_UUID = UUID.fromShortString("a8e0f47a442e4d8aaac13acb8c102e57");
-
 export class PlayerCache{
 
     private _cache = new Cache(CACHE_TIME);
@@ -103,6 +100,7 @@ export class Player{
 
     async reloadHypixelStats(isHighPriority : boolean){
         const stats = await Player.loadHypixelStats(UUID.fromShortString(this._data.uuid as string), isHighPriority);
+        this._data.name = stats.displayname;
         this._data.warlords = Player.getWarlordsStatsFromHypixelStats(stats);
         return await this.recalculateSr();
     }
@@ -113,10 +111,6 @@ export class Player{
     }
 
     static async loadHypixelStats(uuid : UUID, isHighPriority : boolean){
-
-        if(uuid.toShortString() == YOTUBE_UUID.toShortString() )
-            uuid = BART_UUID;
-
         return await q.add(async () => {
             return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
         }, {

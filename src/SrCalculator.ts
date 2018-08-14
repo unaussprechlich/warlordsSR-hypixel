@@ -32,6 +32,43 @@ const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
 const AVERAGE_KDA = 7; //real: 6.86034034034034;
 const GAMES_PLAYED_TO_RANK = 80;
 
+interface IWarlord {
+    name : string
+    specs : string []
+}
+
+const WARLORDS : IWarlord[] = [
+    {
+        name : "mage",
+        specs : [
+            "pyromancer",
+            "aquamancer",
+            "cryomancer",
+        ]
+    },
+    {
+        name : "paladin",
+        specs : [
+            "avenger",
+            "crusader",
+            "protector"
+        ]
+    },
+    {
+        name : "shaman",
+        specs : [
+            "thunderlord",
+            "earthwarden"
+        ]
+    },
+    {
+        name : "warrior",
+        specs : [
+            "berserker",
+            "defender"
+        ]
+    }
+];
 
 
 export function calculateSR(player : IPlayer) {
@@ -43,49 +80,23 @@ export function calculateSR(player : IPlayer) {
 
     sr.plays = calculateOverallPlays(stats.mage_plays, stats.paladin_plays, stats.shaman_plays, stats.warrior_plays);
 
-
-    //WL
-    sr.WL = calculateWL(stats.wins, stats.losses);
-
-    sr.mage.WL = calculateWL(stats.wins_mage, stats.losses_mage);
-    sr.mage.pyromancer.WL = calculateWL(stats.wins_pyromancer, stats.losses_pyromancer);
-    sr.mage.aquamancer.WL = calculateWL(stats.wins_aquamancer, stats.losses_aquamancer);
-    sr.mage.cryomancer.WL = calculateWL(stats.wins_cryomancer, stats.losses_cryomancer);
-
-    sr.paladin.WL = calculateWL(stats.wins_paladin, stats.losses_paladin);
-    sr.paladin.avenger.WL = calculateWL(stats.wins_avenger, stats.losses_avenger);
-    sr.paladin.crusader.WL = calculateWL(stats.wins_crusader, stats.losses_crusader);
-    sr.paladin.protector.WL = calculateWL(stats.wins_protector, stats.losses_protector);
-
-    sr.shaman.WL = calculateWL(stats.wins_shaman, stats.losses_shaman);
-    sr.shaman.thunderlord.WL = calculateWL(stats.wins_thunderlord, stats.losses_thunderlord);
-    sr.shaman.earthwarden.WL = calculateWL(stats.wins_earthwarden, stats.losses_earthwarden);
-
-    sr.warrior.WL = calculateWL(stats.wins_warrior, stats.losses_warrior);
-    sr.warrior.berserker.WL = calculateWL(stats.wins_berserker, stats.losses_berserker);
-    sr.warrior.defender.WL = calculateWL(stats.wins_defender, stats.losses_defender);
-
-    //DHP
+    const plays = stats.mage_plays + stats.paladin_plays + stats.shaman_plays + stats.warrior_plays;
+    sr.WL = calculateWL(stats.wins, plays);
+    stats.losses = plays - stats.wins;
     sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
 
-    sr.mage.DHP = calculateDHP(stats.damage_mage, stats.heal_mage, stats.damage_prevented_mage, stats.mage_plays);
-    sr.mage.pyromancer.DHP = calculateDHP(stats.damage_pyromancer, stats.heal_pyromancer, stats.damage_prevented_pyromancer, stats.pyromancer_plays);
-    sr.mage.aquamancer.DHP = calculateDHP(stats.damage_aquamancer, stats.heal_aquamancer, stats.damage_prevented_aquamancer, stats.aquamancer_plays);
-    sr.mage.cryomancer.DHP = calculateDHP(stats.damage_cryomancer, stats.heal_cryomancer, stats.damage_prevented_cryomancer, stats.cryomancer_plays);
+    for(const warlord of WARLORDS){
 
-    sr.paladin.DHP = calculateDHP(stats.damage_paladin, stats.heal_paladin, stats.damage_prevented_paladin, stats.paladin_plays);
-    sr.paladin.avenger.DHP = calculateDHP(stats.damage_avenger, stats.heal_avenger, stats.damage_prevented_avenger, stats.avenger_plays);
-    sr.paladin.crusader.DHP = calculateDHP(stats.damage_crusader, stats.heal_crusader, stats.damage_prevented_crusader, stats.crusader_plays);
-    sr.paladin.protector.DHP = calculateDHP(stats.damage_protector, stats.heal_protector, stats.damage_prevented_protector, stats.protector_plays);
+        stats["losses_" + warlord.name] = stats[warlord.name + "_plays"] - stats["wins_" + warlord.name];
+        sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
+        sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
 
-    sr.shaman.DHP = calculateDHP(stats.damage_shaman, stats.heal_shaman, stats.damage_prevented_shaman, stats.shaman_plays);
-    sr.shaman.thunderlord.DHP = calculateDHP(stats.damage_thunderlord, stats.heal_thunderlord, stats.damage_prevented_thunderlord, stats.thunderlord_plays);
-    sr.shaman.earthwarden.DHP = calculateDHP(stats.damage_earthwarden, stats.heal_earthwarden, stats.damage_prevented_earthwarden, stats.earthwarden_plays);
-
-    sr.warrior.DHP = calculateDHP(stats.damage_warrior, stats.heal_warrior, stats.damage_prevented_warrior, stats.warrior_plays);
-    sr.warrior.berserker.DHP = calculateDHP(stats.damage_berserker, stats.heal_berserker, stats.damage_prevented_berserker, stats.berserker_plays);
-    sr.warrior.defender.DHP = calculateDHP(stats.damage_defender, stats.heal_defender, stats.damage_prevented_defender, stats.defender_plays);
-
+        for (const spec of warlord.specs){
+            stats["losses_" + spec] = stats[spec + "_plays"] - stats["wins_" + spec];
+            sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
+            sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
+        }
+    }
 
     const antiSniperDHPValue = antiSniperDHP(
         stats.damage_pyromancer,
@@ -287,9 +298,9 @@ function adjust_2_wl(v : number, averageRatio : number){
     else return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
 }
 
-function calculateWL(wins : number , losses : number){
-    if(losses == null || wins == null ) return null;
-    return round(wins / losses, 100);
+function calculateWL(wins : number , plays : number){
+    if(plays == null || wins == null ) return null;
+    return round(wins / (plays - wins), 100);
 }
 
 // DHP -----------------------------------------------------------------------------------------------------------------

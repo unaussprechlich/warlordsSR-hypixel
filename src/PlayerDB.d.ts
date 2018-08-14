@@ -1,4 +1,3 @@
-/// <reference types="mongoose" />
 import * as mongoose from "mongoose";
 export declare const PlayerModel: mongoose.Model<IPlayer>;
 export interface IStats {

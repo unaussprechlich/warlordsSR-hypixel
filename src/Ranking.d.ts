@@ -26,7 +26,7 @@ export interface Ranking {
 export declare class RankingCache {
     _cache: any;
     get(uuid: String): Promise<Ranking>;
-    private static loadRankFromDatabase(srField, uuid);
-    private static loadFromDatabase(uuid);
+    private static loadRankFromDatabase;
+    private static loadFromDatabase;
 }
 export declare const defaultCache: RankingCache;

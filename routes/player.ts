@@ -15,7 +15,11 @@ router.get('/', async function(req, res, next) {
 
         if(req.query.uuid == null && req.query.name != null){
             if(!minecraftPlayernamePattern.test(req.query.name)) throw "Misformatted NAME!";
-            uuid = await MinecraftAPI.uuidForName(req.query.name);
+            try{
+                uuid = await MinecraftAPI.uuidForName(req.query.name);
+            }catch (e) {
+                throw {message : "PLAYER NOT FOUND!", error : {code : 404}};
+            }
         } else if(req.query.uuid != null){
             if(!uuidShortPattern.test(req.query.uuid)) throw "Misformatted UUID!";
             uuid = req.query.uuid;
@@ -35,7 +39,7 @@ router.get('/', async function(req, res, next) {
         });
 
     }catch (err){
-        next(err)
+        next(err);
     }
 });
 
