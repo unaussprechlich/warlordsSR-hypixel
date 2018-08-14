@@ -15,6 +15,7 @@ import paladin = require('./routes/paladin');
 import mage = require('./routes/mage');
 import warrior = require('./routes/warrior');
 import shaman = require('./routes/shaman');
+import {loadAverage} from "./src/SrCalculator";
 
 export const app = express();
 
@@ -23,12 +24,15 @@ mongoose.connect('mongodb://localhost/hypixel');
 async function reloadSR(){
     console.log("Reloading SR ...");
     const players = await PlayerModel.find({});
+    await loadAverage(players);
+    console.log("Loaded Average ...");
     players.forEach(value => {
         value.save().catch(err => console.log(err))
     })
 }
 
-//reloadSR().catch(err => console.log(err));
+
+reloadSR().catch(err => console.log(err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

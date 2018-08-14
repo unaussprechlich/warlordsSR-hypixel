@@ -15,15 +15,19 @@ const paladin = require("./routes/paladin");
 const mage = require("./routes/mage");
 const warrior = require("./routes/warrior");
 const shaman = require("./routes/shaman");
+const SrCalculator_1 = require("./src/SrCalculator");
 exports.app = express();
 mongoose.connect('mongodb://localhost/hypixel');
 async function reloadSR() {
     console.log("Reloading SR ...");
     const players = await PlayerDB_1.PlayerModel.find({});
+    await SrCalculator_1.loadAverage(players);
+    console.log("Loaded Average ...");
     players.forEach(value => {
         value.save().catch(err => console.log(err));
     });
 }
+reloadSR().catch(err => console.log(err));
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');
 exports.app.use(logger('dev'));

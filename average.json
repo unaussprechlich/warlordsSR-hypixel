@@ -1,0 +1,102 @@
+{
+  "pyromancer": {
+    "damage": 58351351250,
+    "prevented": 9698751964,
+    "heal": 5171888656,
+    "dhp": 104265,
+    "wins": 370708,
+    "losses": 331561,
+    "plays": 702269,
+    "wl": 1.12
+  },
+  "cryomancer": {
+    "damage": 20540621684,
+    "prevented": 9312249664,
+    "heal": 3017724046,
+    "dhp": 100633,
+    "wins": 195591,
+    "losses": 131046,
+    "plays": 326637,
+    "wl": 1.49
+  },
+  "aquamancer": {
+    "damage": 6258244066,
+    "prevented": 3063510653.03,
+    "heal": 19614866500,
+    "dhp": 108214,
+    "wins": 141320,
+    "losses": 126083,
+    "plays": 267403,
+    "wl": 1.12
+  },
+  "avenger": {
+    "damage": 37760834975,
+    "prevented": 2716518771,
+    "heal": 7069088577,
+    "dhp": 105102,
+    "wins": 255696,
+    "losses": 196689,
+    "plays": 452385,
+    "wl": 1.3
+  },
+  "crusader": {
+    "damage": 15728043563,
+    "prevented": 4262300808,
+    "heal": 4196743747,
+    "dhp": 95260,
+    "wins": 152226,
+    "losses": 101679,
+    "plays": 253905,
+    "wl": 1.5
+  },
+  "protector": {
+    "damage": 12578951745,
+    "prevented": 1163785707,
+    "heal": 16753099037,
+    "dhp": 130110,
+    "wins": 130719,
+    "losses": 103666,
+    "plays": 234385,
+    "wl": 1.26
+  },
+  "thunderlord": {
+    "damage": 39974834988,
+    "prevented": 4914628747,
+    "heal": 4750959709,
+    "dhp": 110220,
+    "wins": 241906,
+    "losses": 208469,
+    "plays": 450375,
+    "wl": 1.16
+  },
+  "earthwarden": {
+    "damage": 15038481916,
+    "prevented": 2728789823,
+    "heal": 12325171368,
+    "dhp": 115068,
+    "wins": 135150,
+    "losses": 126368,
+    "plays": 261518,
+    "wl": 1.07
+  },
+  "berserker": {
+    "damage": 36491370873,
+    "prevented": 2471382061,
+    "heal": 7872419998,
+    "dhp": 96062,
+    "wins": 280536,
+    "losses": 207015,
+    "plays": 487551,
+    "wl": 1.36
+  },
+  "defender": {
+    "damage": 11795501541,
+    "prevented": 6623453635,
+    "heal": 538851181,
+    "dhp": 97384,
+    "wins": 111488,
+    "losses": 83183,
+    "plays": 194671,
+    "wl": 1.34
+  }
+}

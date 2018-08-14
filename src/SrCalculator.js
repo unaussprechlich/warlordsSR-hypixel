@@ -1,92 +1,174 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Average {
-    constructor(ADJUST, DHP, WL) {
-        this.ADJUST = ADJUST;
-        this.DHP = DHP;
-        this.WL = WL;
+const WARLORDS = [
+    {
+        name: "mage",
+        specs: [{
+                name: "pyromancer",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            },
+            {
+                name: "aquamancer",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            },
+            {
+                name: "cryomancer",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            }
+        ]
+    },
+    {
+        name: "paladin",
+        specs: [{
+                name: "avenger",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            },
+            {
+                name: "crusader",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            },
+            {
+                name: "protector",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            }
+        ]
+    },
+    {
+        name: "shaman",
+        specs: [{
+                name: "thunderlord",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            },
+            {
+                name: "earthwarden",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            }
+        ]
+    },
+    {
+        name: "warrior",
+        specs: [{
+                name: "berserker",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            },
+            {
+                name: "defender",
+                average: {
+                    dhp: 0,
+                    wl: 0
+                }
+            }
+        ]
     }
+];
+async function loadAverage(players) {
+    const v = AddAllPlayers();
+    for (const player of players) {
+        for (const warlord of WARLORDS) {
+            for (const spec of warlord.specs) {
+                v[spec.name].damage += vOr0(player.warlords["damage_" + spec.name]);
+                v[spec.name].prevented += vOr0(player.warlords["damage_prevented_" + spec.name]);
+                v[spec.name].heal += vOr0(player.warlords["heal_" + spec.name]);
+                v[spec.name].wins += vOr0(player.warlords["wins_" + spec.name]);
+                v[spec.name].plays += vOr0(player.warlords[spec.name + "_plays"]);
+            }
+        }
+    }
+    for (const warlord of WARLORDS) {
+        for (const spec of warlord.specs) {
+            v[spec.name].losses = v[spec.name].plays - v[spec.name].wins;
+            v[spec.name].wl = calculateWL(v[spec.name].wins, v[spec.name].plays);
+            v[spec.name].dhp = calculateDHP(v[spec.name].damage, v[spec.name].heal, v[spec.name].prevented, v[spec.name].plays);
+        }
+    }
+    for (const warlord of WARLORDS) {
+        for (const spec of warlord.specs) {
+            spec.average = {
+                dhp: v[spec.name].dhp,
+                wl: v[spec.name].wl
+            };
+        }
+    }
+    console.log(JSON.stringify(v));
 }
-const PYROMANCER = new Average(110, 103187, 1.76);
-const CRYOMANCER = new Average(90, 99546, 2.77);
-const AQUAMANCER = new Average(135, 105896, 1.93);
-const AVENGER = new Average(60, 104286, 2.21);
-const CRUSADER = new Average(170, 93370, 2.77);
-const PROTECTOR = new Average(100, 127081, 2.02);
-const THUNDERLORD = new Average(155, 109217, 1.82);
-const EARTHWARDEN = new Average(85, 111751, 1.90);
-const BERSERKER = new Average(10, 94848, 2.65);
-const DEFENDER = new Average(-10, 97136, 2.54);
+exports.loadAverage = loadAverage;
+function AddAllPlayers() {
+    return {
+        pyromancer: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        cryomancer: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        aquamancer: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        avenger: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        crusader: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        protector: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        thunderlord: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        earthwarden: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        berserker: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+        defender: { damage: 0, prevented: 0, heal: 0, dhp: 0, wins: 0, losses: 0, plays: 0, wl: 0 },
+    };
+}
 const LEAVING_PUNISHMENT = 15;
 const ANTI_SNIPER_TRESHOLD = 18000 + 10000;
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000;
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000;
 const AVERAGE_KDA = 7;
+const AVERAGE_KD = 1;
 const GAMES_PLAYED_TO_RANK = 80;
-const WARLORDS = [
-    {
-        name: "mage",
-        specs: [
-            "pyromancer",
-            "aquamancer",
-            "cryomancer",
-        ]
-    },
-    {
-        name: "paladin",
-        specs: [
-            "avenger",
-            "crusader",
-            "protector"
-        ]
-    },
-    {
-        name: "shaman",
-        specs: [
-            "thunderlord",
-            "earthwarden"
-        ]
-    },
-    {
-        name: "warrior",
-        specs: [
-            "berserker",
-            "defender"
-        ]
-    }
-];
 function calculateSR(player) {
     const stats = player.warlords;
     const sr = newWarlordsSr();
     sr.KD = calculateKD(stats.kills, stats.deaths);
     sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
     sr.plays = calculateOverallPlays(stats.mage_plays, stats.paladin_plays, stats.shaman_plays, stats.warrior_plays);
-    const plays = stats.mage_plays + stats.paladin_plays + stats.shaman_plays + stats.warrior_plays;
-    sr.WL = calculateWL(stats.wins, plays);
-    stats.losses = plays - stats.wins;
+    sr.WL = calculateWL(stats.wins, vOr0(sr.plays));
+    stats.losses = vOr0(sr.plays) - stats.wins;
     sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
+    const antiSniperDHPValue = antiSniperDHP(stats.damage_pyromancer, stats.heal_pyromancer, stats.damage_prevented_pyromancer, stats.pyromancer_plays);
+    const antiDefenderN00bDHP = antiDefenderNoobDHP(stats.damage_defender, stats.heal_defender, stats.damage_prevented_defender, stats.defender_plays);
     for (const warlord of WARLORDS) {
         stats["losses_" + warlord.name] = stats[warlord.name + "_plays"] - stats["wins_" + warlord.name];
         sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
         sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
         for (const spec of warlord.specs) {
-            stats["losses_" + spec] = stats[spec + "_plays"] - stats["wins_" + spec];
-            sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
-            sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
+            stats["losses_" + spec.name] = stats[spec.name + "_plays"] - stats["wins_" + spec.name];
+            sr[warlord.name][spec.name].WL = calculateWL(stats["wins_" + spec.name], stats[spec.name + "_plays"]);
+            sr[warlord.name][spec.name].DHP = calculateDHP(stats["damage_" + spec.name], stats["heal_" + spec.name], stats["damage_prevented_" + spec.name], stats[spec.name + "_plays"]);
+            let dhp = sr[warlord.name][spec.name].DHP;
+            if (spec.name === "pyromancer") {
+                dhp = antiSniperDHPValue;
+            }
+            else if (spec.name === "defender") {
+                dhp = antiDefenderN00bDHP;
+            }
+            sr[warlord.name][spec.name].SR = calculateSr(dhp, stats[spec.name + "_plays"], sr[warlord.name][spec.name].WL, sr.KDA, spec.average, sr.plays, stats.penalty, sr.KD);
         }
     }
-    const antiSniperDHPValue = antiSniperDHP(stats.damage_pyromancer, stats.heal_pyromancer, stats.damage_prevented_pyromancer, stats.pyromancer_plays);
-    sr.mage.pyromancer.SR = calculateSr(antiSniperDHPValue, stats.pyromancer_plays, sr.mage.pyromancer.WL, sr.KDA, PYROMANCER, sr.plays, stats.penalty);
-    sr.mage.aquamancer.SR = calculateSr(sr.mage.aquamancer.DHP, stats.aquamancer_plays, sr.mage.aquamancer.WL, sr.KDA, AQUAMANCER, sr.plays, stats.penalty);
-    sr.mage.cryomancer.SR = calculateSr(sr.mage.cryomancer.DHP, stats.cryomancer_plays, sr.mage.cryomancer.WL, sr.KDA, CRYOMANCER, sr.plays, stats.penalty);
-    sr.paladin.avenger.SR = calculateSr(sr.paladin.avenger.DHP, stats.avenger_plays, sr.paladin.avenger.WL, sr.KDA, AVENGER, sr.plays, stats.penalty);
-    sr.paladin.crusader.SR = calculateSr(sr.paladin.crusader.DHP, stats.crusader_plays, sr.paladin.crusader.WL, sr.KDA, CRUSADER, sr.plays, stats.penalty);
-    sr.paladin.protector.SR = calculateSr(sr.paladin.protector.DHP, stats.protector_plays, sr.paladin.protector.WL, sr.KDA, PROTECTOR, sr.plays, stats.penalty);
-    sr.shaman.thunderlord.SR = calculateSr(sr.shaman.thunderlord.DHP, stats.thunderlord_plays, sr.shaman.thunderlord.WL, sr.KDA, THUNDERLORD, sr.plays, stats.penalty);
-    sr.shaman.earthwarden.SR = calculateSr(sr.shaman.earthwarden.DHP, stats.earthwarden_plays, sr.shaman.earthwarden.WL, sr.KDA, EARTHWARDEN, sr.plays, stats.penalty);
-    sr.warrior.berserker.SR = calculateSr(sr.warrior.berserker.DHP, stats.berserker_plays, sr.warrior.berserker.WL, sr.KDA, BERSERKER, sr.plays, stats.penalty);
-    const antiDefenderN00bDHP = antiDefenderNoobDHP(stats.damage_defender, stats.heal_defender, stats.damage_prevented_defender, stats.defender_plays);
-    sr.warrior.defender.SR = calculateSr(antiDefenderN00bDHP, stats.defender_plays, sr.warrior.defender.WL, sr.KDA, DEFENDER, sr.plays, stats.penalty);
     sr.mage.SR = Math.round((vOr0(sr.mage.pyromancer.SR) + vOr0(sr.mage.aquamancer.SR) + vOr0(sr.mage.cryomancer.SR)) / 3);
     sr.paladin.SR = Math.round((vOr0(sr.paladin.avenger.SR) + vOr0(sr.paladin.crusader.SR) + vOr0(sr.paladin.protector.SR)) / 3);
     sr.shaman.SR = Math.round((vOr0(sr.shaman.thunderlord.SR) + vOr0(sr.shaman.earthwarden.SR)) / 2);
@@ -105,24 +187,26 @@ function calculateSR(player) {
     return sr;
 }
 exports.calculateSR = calculateSR;
-function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
-    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || specPlays < GAMES_PLAYED_TO_RANK)
+function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty, kd) {
+    if (dhp == null || specPlays == null || plays == null || wl == null || penalty == null || kda == null || kd == null || specPlays < GAMES_PLAYED_TO_RANK)
         return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
-    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_3_wl(wl / penaltyPerPlay, average.WL);
-    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
-    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
+    const dhpAdjusted = adjust_dhp(dhp, average.dhp);
+    const wlAdjusted = adjust_3_wl(wl / penaltyPerPlay, average.wl);
+    const kdaAdjusted = adjust_dhp(kda, AVERAGE_KDA);
+    const kdAdjusted = adjust_dhp(kd, AVERAGE_KD);
+    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjusted / 4) + (kdAdjusted / 4)) * 1000);
     if (SR <= 0)
         return null;
     else
         return SR;
 }
 function adjust_3_wl(v, averageRatio) {
-    if (v > 10 / 3)
+    v = v - (1 - averageRatio);
+    if (v > 10 / 4)
         return 2;
     else
-        return Math.cos(((v) / Math.PI) + Math.PI) * 3 + 1;
+        return (0 - Math.cos(((v) / Math.PI) + Math.PI) * 4) + 1;
 }
 function adjust_2_wl(v, averageRatio) {
     const adjust = 2.027 - averageRatio;
@@ -175,7 +259,7 @@ function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays) {
         shaPlays = 0;
     if (warPlays == null)
         warPlays = 0;
-    return magePlays + palPlays + shaPlays + warPlays;
+    return vOr0(magePlays + palPlays + shaPlays + warPlays);
 }
 function calculateKD(kills, deaths) {
     if (kills == null || deaths == null)
