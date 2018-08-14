@@ -24,6 +24,7 @@ async function reloadSR() {
         value.save().catch(err => console.log(err));
     });
 }
+reloadSR().catch(err => console.log(err));
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');
 exports.app.use(logger('dev'));

@@ -28,7 +28,7 @@ async function reloadSR(){
     })
 }
 
-//reloadSR().catch(err => console.log(err));
+reloadSR().catch(err => console.log(err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
