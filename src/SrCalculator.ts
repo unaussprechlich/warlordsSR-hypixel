@@ -26,7 +26,7 @@ const BERSERKER  = new Average(10, 94848 , 2.65);
 const DEFENDER   = new Average(-10, 97136 , 2.54);
 
 const LEAVING_PUNISHMENT = 15;
-const ANTI_SNIPER_TRESHOLD = 15000 + 7500; //averagePrevented = 13431 averageHeals = 7215
+const ANTI_SNIPER_TRESHOLD = 18000 + 10000; //averagePrevented = 13431 averageHeals = 7215
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000; //average = 2640
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
 const AVERAGE_KDA = 7; //real: 6.86034034034034;
@@ -267,15 +267,34 @@ function calculateSr(dhp : number | null, specPlays : number,  wl : number | nul
     if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null ||  kda == null || specPlays < GAMES_PLAYED_TO_RANK) return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
+    const wlAdjusted = adjust_3_wl(wl / penaltyPerPlay, average.WL);
     const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
-    const SR= Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
+    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
 
     if(SR <= 0) return null;
     else return SR;
 }
 
 // WIN/LOSS ------------------------------------------------------------------------------------------------------------
+
+/**
+ * A adjusting function to smooth stuff out :D
+ *
+ * This does smooth out the winrate between 0 and 2
+ * values are capped at 3.33
+ *
+ * https://www.wolframalpha.com/input/?i=plot+%5B-cos((x+%2B+3)%2Fpi),+tan((x+-+3)%2Fpi)+%2B+0.35%5D+between+0+and+7
+ * plot [-cos((x + 3)/pi), tan((x - 3)/pi) + 0.35] between 0 and 7
+ *
+ * @param {number} v
+ * @param {number} averageRatio
+ * @returns {number}
+ */
+function adjust_3_wl(v : number, averageRatio : number){
+    //const adjust = 2.027 - averageRatio;
+    if(v > 10 / 3) return 2;
+    else return Math.cos(((v) / Math.PI) + Math.PI) * 3 + 1;
+}
 
 /**
  * A adjusting function to smooth stuff out :D

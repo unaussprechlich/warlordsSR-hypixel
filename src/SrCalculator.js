@@ -18,7 +18,7 @@ const EARTHWARDEN = new Average(85, 111751, 1.90);
 const BERSERKER = new Average(10, 94848, 2.65);
 const DEFENDER = new Average(-10, 97136, 2.54);
 const LEAVING_PUNISHMENT = 15;
-const ANTI_SNIPER_TRESHOLD = 15000 + 7500;
+const ANTI_SNIPER_TRESHOLD = 18000 + 10000;
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000;
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000;
 const AVERAGE_KDA = 7;
@@ -110,13 +110,19 @@ function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
         return null;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
+    const wlAdjusted = adjust_3_wl(wl / penaltyPerPlay, average.WL);
     const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
     const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
     if (SR <= 0)
         return null;
     else
         return SR;
+}
+function adjust_3_wl(v, averageRatio) {
+    if (v > 10 / 3)
+        return 2;
+    else
+        return Math.cos(((v) / Math.PI) + Math.PI) * 3 + 1;
 }
 function adjust_2_wl(v, averageRatio) {
     const adjust = 2.027 - averageRatio;
