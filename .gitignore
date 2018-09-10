@@ -33,5 +33,4 @@ node_modules
 /public/styles/style.css
 /.idea/
 /website.iml
-package-lock.json
 /public/uploads/
