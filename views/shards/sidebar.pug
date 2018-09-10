@@ -1,0 +1,65 @@
+.sidebar-wrappe
+  nav#sidebar
+    #dismiss
+      i.fas.fa-lg.fa-angle-left
+    .sidebar-header
+      h3 Warlords SkillRating
+    .m-2.mb-4
+      .input-group
+        input#searchPlayerInput.form-control(type='search', placeholder='Playername' aria-label='Playername' name= "name")
+        .input-group-append
+          button#searchPlayerButton.btn
+            i.fas.fa-search
+    ul.list-unstyled.components
+      li(class= PAGE_TITLE === "LB | General" ? "active" : "")
+        a(href='/lb') General
+      li
+        a(href='#paladinSubmenu', data-toggle='collapse', aria-expanded='false') Paladin
+        ul#paladinSubmenu.collapse.list-unstyled
+          li(class= PAGE_TITLE === "LB | Paladin" ? "active" : "")
+            a(href='/lb/paladin') General
+          li(class= PAGE_TITLE === "LB | Avenger" ? "active" : "")
+            a(href='/lb/paladin/avenger') Avenger
+          li(class= PAGE_TITLE === "LB | Crusader" ? "active" : "")
+            a(href='/lb/paladin/crusader') Crusader
+          li(class= PAGE_TITLE === "LB | Protector" ? "active" : "")
+            a(href='/lb/paladin/protector') Protector
+      li
+        a(href='#warriorSubmenu', data-toggle='collapse', aria-expanded='false') Warrior
+        ul#warriorSubmenu.collapse.list-unstyled
+          li(class= PAGE_TITLE === "LB | Warrior" ? "active" : "")
+            a(href='/lb/warrior') Warrior
+          li(class= PAGE_TITLE === "LB | Berserker" ? "active" : "")
+            a(href='/lb/warrior/berserker') Berserker
+          li(class= PAGE_TITLE === "LB | Defender" ? "active" : "")
+            a(href='/lb/warrior/defender') Defender
+      li
+        a(href='#mageSubmenu', data-toggle='collapse', aria-expanded='false') Mage
+        ul#mageSubmenu.collapse.list-unstyled
+          li(class= PAGE_TITLE === "LB | Mage" ? "active" : "")
+            a(href='/lb/mage') Mage
+          li(class= PAGE_TITLE === "LB | Pyromancer" ? "active" : "")
+            a(href='/lb/mage/pyromancer') Pyromancer
+          li(class= PAGE_TITLE === "LB | Cryomancer" ? "active" : "")
+            a(href='/lb/mage/cryomancer') Cryomancer
+          li(class= PAGE_TITLE === "LB | Aquamancer" ? "active" : "")
+            a(href='/lb/mage/aquamancer') Aquamancer
+      li
+        a(href='#shamanSubmenu', data-toggle='collapse', aria-expanded='false') Shaman
+        ul#shamanSubmenu.collapse.list-unstyled
+          li(class= PAGE_TITLE === "LB | Shaman" ? "active" : "")
+            a(href='/lb/shaman') Shaman
+          li(class= PAGE_TITLE === "LB | Thunderlord" ? "active" : "")
+            a(href='/lb/shaman/thunderlord') Thunderlord
+          li(class= PAGE_TITLE === "LB | Earthwarden" ? "active" : "")
+            a(href='/lb/shaman/earthwarden') Earthwarden
+
+    .footer
+      a(href='/about') About
+      br
+      a(href='https://github.com/unaussprechlich/warlordsSR-hypixel') Github
+      br
+      a(href='/impressum') Impressum & Datenschutz
+
+script
+  include sidebar.js

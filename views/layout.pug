@@ -1,11 +1,5 @@
 include ./mixins/flash-messages
 
-mixin isActive(active)
-  if(title === shouldEqual)
-    li.active
-  else
-    li
-
 doctype html
 html(lang='de')
 
@@ -18,46 +12,41 @@ html(lang='de')
     meta(name='description', content='A SR system for the gamemode Warlords on the Hypixel-Network.')
     meta(name='author', content='unaussprechlich')
 
-    //link( rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png")
-    //link( rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png")
-    //link( rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png")
-    //link( rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png")
-    //link( rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png")
-    //link( rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png")
-    //link( rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png")
-    //link( rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png")
-    //link( rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png")
-    //link( rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png")
-    //link( rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png")
-    //link( rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png")
-    //link( rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png")
-    //link( rel="manifest" href="/favicon/manifest.json")
-    //meta( name="msapplication-TileColor" content="#7FBA00")
-    //meta( name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png")
-    //meta( name="theme-color" content="#7FBA00")
-
-    link(href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet")
+    link(rel="apple-touch-icon", sizes="57x57", href="/favicon/apple-icon-57x57.png")
+    link(rel="apple-touch-icon", sizes="60x60", href="/favicon/apple-icon-60x60.png")
+    link(rel="apple-touch-icon", sizes="72x72", href="/favicon/apple-icon-72x72.png")
+    link(rel="apple-touch-icon", sizes="76x76", href="/favicon/apple-icon-76x76.png")
+    link(rel="apple-touch-icon", sizes="114x114", href="/favicon/apple-icon-114x114.png")
+    link(rel="apple-touch-icon", sizes="120x120", href="/favicon/apple-icon-120x120.png")
+    link(rel="apple-touch-icon", sizes="144x144", href="/favicon/apple-icon-144x144.png")
+    link(rel="apple-touch-icon", sizes="152x152", href="/favicon/apple-icon-152x152.png")
+    link(rel="apple-touch-icon", sizes="180x180", href="/favicon/apple-icon-180x180.png")
+    link(rel="icon", type="image/png", sizes="192x192", href="/favicon/android-icon-192x192.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/favicon/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="96x96", href="/favicon/favicon-96x96.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/favicon/favicon-16x16.png")
+    link(rel="manifest", href="/favicon/manifest.json")
+    meta(name="msapplication-TileColor", content="#ffffff")
+    meta(name="msapplication-TileImage", content="/favicon/ms-icon-144x144.png")
+    meta(name="theme-color", content="#23272A")
 
     title= PAGE_TITLE
 
     //cloudflare CDN for better performance more likely to be cached
-    link(href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/css/bootstrap.min.css', rel='stylesheet')
-    link(href="https://cdn.datatables.net/v/bs4/dt-1.10.16/fh-3.1.3/datatables.min.css", rel='stylesheet')
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css', integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO', crossorigin='anonymous')
+    link(rel='stylesheet', href='https://use.fontawesome.com/releases/v5.3.1/css/all.css', integrity='sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU', crossorigin='anonymous')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css')
+    link(href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css", rel='stylesheet')
 
-    script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+    script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js', integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo', crossorigin='anonymous')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', integrity='sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49', crossorigin='anonymous')
+    script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js', integrity='sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy', crossorigin='anonymous')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js')
+    script(src='https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js')
+    script(src='https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js')
 
 
     link(href='/stylesheets/style.css', rel='stylesheet')
-
-    // Global site tag (gtag.js) - Google Analytics
-    script(async='', src='https://www.googletagmanager.com/gtag/js?id=UA-71681855-4')
-    script.
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'UA-71681855-4');
 
     block headscripts
 
@@ -73,66 +62,17 @@ html(lang='de')
 
   //- HTML BODY
   body
+    include ./shards/sidebar
 
     #header
       block header
 
-
-    #body
-
-      //- NOTE:
-      //- There is no .container wrapping class around body blocks to allow more flexibility in design.
-      //- Remember to include it in your templates when you override the intro and content blocks!
-
-      //- The Intro block appears above flash messages (used for temporary information display)
-      section#sidebar
-        .row
-           nav
-            ul
-              if(PAGE_TITLE === "Overview|WarlordsSR")
-                li.active
-                  a#overview_link(href='overview')
-              else
-                li
-                 a#overview_link(href='overview')
-              if(PAGE_TITLE === "Paladin|WarlordsSR")
-                li.active
-                  a#paladin_link(href='paladin')
-              else
-                li
-                  a#paladin_link(href='paladin')
-              if(PAGE_TITLE === "Warrior|WarlordsSR")
-                li.active
-                  a#warrior_link(href='warrior')
-              else
-                li
-                  a#warrior_link(href='warrior')
-              if(PAGE_TITLE === "Mage|WarlordsSR")
-                li.active
-                  a#mage_link(href='mage')
-              else
-                li
-                  a#mage_link(href='mage')
-              if(PAGE_TITLE === "Shaman|WarlordsSR")
-                li.active
-                  a#shaman_link(href='shaman')
-              else
-                li
-                  a#shaman_link(href='shaman')
-
-      //- Flash messages allow you to display once-off status messages to users, e.g. form
-      //- validation errors, success messages, etc.
+    #content.sidebar-dismiss
       +flash-messages(messages)
-
-      //- The content block should contain the body of your template's content
       block content
-
 
     //- JAVASCRIPT
 
-    //script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js')
-    script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.min.js')
-    script(type='text/javascript', src="https://cdn.datatables.net/v/bs4/dt-1.10.16/fh-3.1.3/datatables.min.js")
 
 
     //- Add scripts that are globally required by your site here.

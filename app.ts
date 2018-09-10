@@ -8,22 +8,89 @@ import {PlayerModel} from "./src/PlayerDB"
 import cookieParser = require('cookie-parser');
 import bodyParser = require('body-parser');
 
-import index = require('./routes/index');
 import player = require('./routes/player');
-import overview = require('./routes/overview');
-import paladin = require('./routes/paladin');
-import mage = require('./routes/mage');
-import warrior = require('./routes/warrior');
-import shaman = require('./routes/shaman');
-import * as MinecraftAPI from "minecraft-api";
-import * as Player from "./src/Player";
-import UUID from "hypixel-api-typescript/src/UUID";
+import lb = require('./routes/lb');
 
 export const app = express();
+const debug = require('debug')('warlordssr-hypixel:server');
+import http = require('http');
 
-mongoose.connect('mongodb://localhost/hypixel');
-const uuidShortPattern = RegExp('^[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}?').compile();
-const minecraftPlayernamePattern = RegExp("[a-zA-Z0-9_]{1,16}").compile();
+if(!process.env.MONGO_DB) throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
+mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true});
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+    const port = parseInt(val, 10);
+
+    if (isNaN(port)) return val;
+    if (port >= 0) return port;
+
+    return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+    if (error.syscall !== 'listen') throw error;
+
+    const bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+    const addr = server.address();
+    const bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+}
+
+
 
 async function reloadSR(){
     console.log("Reloading SR ...");
@@ -49,52 +116,24 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/overview', overview);
-app.use('/paladin', paladin);
-app.use('/mage', mage);
-app.use('/warrior', warrior);
-app.use('/shaman', shaman);
-app.use("/player", player);
+// @ts-ignore
+app.use('/player/*', player);
+// @ts-ignore
+app.use('/lb*', lb);
 
-app.get("/api", async (req, res, next) => {
-    try{
-        if(req.query.uuid == null && req.query.name == null) throw "No query provided!";
-
-        let uuid;
-
-        if(req.query.uuid == null && req.query.name != null){
-            if(!minecraftPlayernamePattern.test(req.query.name)) throw "Misformatted NAME!";
-            try{
-                uuid = await MinecraftAPI.uuidForName(req.query.name);
-            }catch (e) {
-                throw {message : "PLAYER NOT FOUND!", error : {code : 404}};
-            }
-        } else if(req.query.uuid != null){
-            if(!uuidShortPattern.test(req.query.uuid)) throw "Misformatted UUID!";
-            uuid = req.query.uuid;
-        } else {
-            throw "Your query has to contain a name or uuid field!"
-        }
-
-        const player = await Player.defaultCache.get(UUID.fromShortString(uuid));
-        const ranking = await player.getRanking();
-
-        if(player == null) throw "Player with UUID:" + req.query.uuid + " not found!";
-
-        res.json({
-            success : true,
-            player : player.data,
-            ranking : ranking
-        });
-
-    }catch (err){
-        res.json({
-            success : false,
-            error : err
-        })
-    }
+app.get("/impressum", function (req, res) {
+   res.render("impressum", {PAGE_TITLE : "Impressum"});
 });
+
+app.get("/about", function (req, res) {
+    res.render("about", {PAGE_TITLE : "About"});
+});
+
+app.get("/", function (req, res) {
+    res.redirect("/lb");
+});
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -105,7 +144,7 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    res.locals.error = err;
 
     // render the error page
     res.status(err.status|| 500);

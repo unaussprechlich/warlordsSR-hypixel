@@ -1,0 +1,98 @@
+extends layout
+
+mixin td_item(item)
+  if item
+    td= item
+  else
+    td= ""
+
+mixin td_entry(p, stat)
+  if CLAZZ
+    if SPEC
+      + td_item(p.warlords_sr[CLAZZ][SPEC][stat])
+    else
+      + td_item(p.warlords_sr[CLAZZ][stat])
+  else
+    + td_item(p.warlords_sr[stat])
+
+mixin lb_spec()
+  thead
+    tr
+      th(scope="col")  #
+      th(scope="col") Name
+      th(scope="col") SR
+      th(scope="col") WL
+      th(scope="col") DHP
+  tbody
+    - var rank = 1
+    for player in PLAYERS
+      tr(onclick = "window.location.href = '/player/" + player.uuid + "';")
+        th(scope="row")= rank
+        +td_item(player.name)
+        +td_entry(player, "SR")
+        +td_entry(player, "WL")
+        +td_entry(player, "DHP")
+      - rank++
+
+mixin lb_class()
+  thead
+    tr
+      th(scope="col")  #
+      th(scope="col") Name
+      th(scope="col") SR
+      th(scope="col") WL
+      th(scope="col") DHP
+      for spec in SPECS
+        th(scope="col")= spec.toUpperCase()
+  tbody
+    - var rank = 1
+    for player in PLAYERS
+      tr(onclick = "window.location.href = '/player/" + player.uuid + "';")
+        th(scope="row")= rank
+        +td_item(player.name)
+        +td_entry(player, "SR")
+        +td_entry(player, "WL")
+        +td_entry(player, "DHP")
+        for spec in SPECS
+          +td_item(player.warlords_sr[CLAZZ][spec].SR)
+      - rank++
+
+mixin lb_overview()
+  thead
+    tr
+      th(scope="col")  #
+      th(scope="col") Name
+      th(scope="col") SR
+      th(scope="col") WL
+      th(scope="col") DHP
+      for clazz in CLAZZES
+        th(scope="col")= clazz.toUpperCase()
+  tbody
+    - var rank = 1
+    for player in PLAYERS
+      tr(onclick = "window.location.href = '/player/" + player.uuid + "';")
+        th(scope="row")= rank
+        +td_item(player.name)
+        +td_entry(player, "SR")
+        +td_entry(player, "WL")
+        +td_entry(player, "DHP")
+        for clazz in CLAZZES
+          +td_item(player.warlords_sr[clazz].SR)
+      - rank++
+
+
+block content
+  #content.container-fluid
+    .table-responsive
+      table.table.table-striped.table-hover#sr_table
+        if CLAZZ
+          if SPEC
+            + lb_spec
+          else
+            + lb_class
+        else
+          + lb_overview
+
+block js
+  script
+    include tablesorter.js

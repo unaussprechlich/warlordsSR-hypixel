@@ -1,19 +1,28 @@
-@import "shards/_footer";
 @import "shards/_sidebar";
 @import "shards/_preloader";
-@import "shards/_navbar_main";
 @import "shards/_player";
 
-#content{
-  margin-left: 65px;
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fafafa;
+}
+
+p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1em;
+  font-weight: 300;
+  line-height: 1.7em;
+  color: #999;
+}
+
+a, a:hover, a:focus {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.3s;
 }
 
 .topspacing{
   margin-top: 35px;
 }
-
-#sr_table_wrapper{
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-

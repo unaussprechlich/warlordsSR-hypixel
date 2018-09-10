@@ -37,7 +37,7 @@ interface IWarlord {
     specs : string []
 }
 
-const WARLORDS : IWarlord[] = [
+export const WARLORDS : IWarlord[] = [
     {
         name : "mage",
         specs : [
@@ -69,6 +69,8 @@ const WARLORDS : IWarlord[] = [
         ]
     }
 ];
+
+export const CLAZZES = WARLORDS.map(value => value.name);
 
 
 export function calculateSR(player : IPlayer) {

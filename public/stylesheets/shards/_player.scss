@@ -21,12 +21,6 @@
 }
 
 .card-body{
-  .statitem{
-    span{
-      font-weight: bold;
-    }
-    margin: 0;
-  }
 
   .statstable{
     margin-top: 15px;
@@ -59,14 +53,13 @@
 
   margin-left: 15px;
   display: inline-block;
-  width: 100px;
+  width: 125px;
   border-width: 3px !important;
   position: absolute;
   right: 1.25rem;
 
   div{
     display: inline-block;
-    padding: 4px;
     margin: 0;
 
     p{
@@ -76,13 +69,15 @@
   }
 
   .srtext{
-    width: 35px;
+    width: 40px;
     padding-left: 7px;
     padding-right: 7px;
   }
 
   .srvalue{
-    width: 59px;
+    position: absolute;
+    right: 0;
+    width: 65px;
     padding-left: 10px;
     padding-right: 10px;
   }

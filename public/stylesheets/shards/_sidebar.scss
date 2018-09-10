@@ -1,122 +1,118 @@
-/* Sidebar */
 @import "_var";
 
-$palette: (
-        bg:					#312450,
-        bg-alt:				darken(#312450, 5),
-        fg:					rgba(255,255,255,0.55),
-        fg-bold:			#ffffff,
-        fg-light:			rgba(255,255,255,0.35),
-        border:				rgba(255,255,255,0.15),
-        border-bg:			rgba(255,255,255,0.05),
-        accent1:			#5e42a6,
-        accent1-alt:		darken(#5e42a6, 10),
-        accent2:			#5052b5,
-        accent2-alt:		darken(#5052b5, 10),
-        accent3:			#b74e91,
-        accent3-alt:		darken(#b74e91, 10)
-);
+#dismiss {
+  width: 36px;
+  height: 36px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-align: center;
+  .fas {
+    margin-top: 10px;
+  }
+}
 
-// Misc.
-$misc: (
-        z-index-base:		10000,
-        max-features:		20,
-        max-sidebar-links:	20
-);
-
-// Duration.
-$duration: (
-        transition:			0.2s,
-        activation:			1s
-);
-
-// Size.
-$size: (
-        border-radius:		0.25em,
-        border-width:		1px,
-        element-height:		2.75em,
-        element-margin:		2em,
-        sidebar-width:		18em,
-        sidebar-height:		3.5em,	// when <=large is active
-        inner-width:		75em
-);
-
-// Font.
-$font: (
-        family:				(Arial, Helvetica, sans-serif),
-        family-fixed:		('Courier New', monospace),
-        weight:				normal,
-        weight-bold:		bold,
-        kerning-alt:		0.25em
-);
-
-
+.sidebar-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
 
 #sidebar {
-  padding: 65px 15px 0 15px;
-  background: $backgroundColor_DEF;
+  min-width: 250px;
+  max-width: 250px;
   height: 100vh;
-  left: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
   position: fixed;
   top: 0;
-  width: 65px;
+  left: 0;
+  z-index: 9999;
 
-  nav {
-    > ul {
-      list-style: none;
-      padding: 0;
-      > li {
-        opacity: 1;
-        position: relative;
-        width: 65px;
-        height: 65px;
-        padding: 15px;
+  margin-left: -250px;
 
-        &:first-child {
-          margin: 0;
-        }
-      }
-    }
+  background: $dark;
+  color: $white;
+  transition: all 0.3s;
 
-    li.active{
-      background-color: lighten($backgroundColor_DEF, 7);
-      border: 0 solid $backgroundColor_LIGHT_1;
-      border-left-width: 3px;
-      padding-left: 12px;
+  .sidebar-header {
+    padding: 20px;
+    h3 {
+      margin: 0;
     }
+  }
 
-    li:hover{
-      background-color: lighten($backgroundColor_DEF, 5 );
-    }
+  form .input-group-append button {
+    background-color: $highlight;
+    color: $white;
+  }
 
-    a {
-      border: 0;
-      display: block;
-      position: relative;
-      text-decoration: none;
-      text-transform: uppercase;
-      background-size: contain;
-      width: 35px;
-      height: 35px;
-    }
+  ul p {
+    color: $white;
+    padding: 10px;
+  }
 
-    #overview_link{
-      background-image: url("../images/icon_warlords.png");
-    }
+  ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+  }
 
-    #warrior_link{
-      background-image: url("../images/icon_warrior.png");
+  ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: $darker;
+  }
+
+  ul li a:hover {
+    color: $dark;
+    background: $white;
+  }
+
+
+  ul li.active > a, a[aria-expanded="true"] {
+    color: #ffffff;
+    background: $darker;
+  }
+
+  ul li.active {
+    border-left: $highlight 3px solid;
+  }
+
+  .footer{
+    padding: 10px;
+    width: 250px;
+    position: fixed;
+    bottom: 0;
+    background-color: $darker;
+    a{
+      font-weight: 100;
     }
-    #paladin_link{
-      background-image: url("../images/icon_paladin.png");
-    }
-    #mage_link{
-      background-image: url("../images/icon_mage.png");
-    }
-    #shaman_link{
-      background-image: url("../images/icon_shaman.png");
-    }
+  }
+
+}
+
+#sidebar.active {
+  margin-left: 0 !important;
+}
+
+
+
+a[data-toggle="collapse"] {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+  #sidebar {
+    margin-left: -250px;
+  }
+  #sidebar.active {
+    margin-left: 0;
   }
 }

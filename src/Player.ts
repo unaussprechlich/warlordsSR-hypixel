@@ -6,7 +6,8 @@ import * as Cache from "cache";
 import {Queue} from "./Queue";
 import Exception from "hypixel-api-typescript/src/Exceptions";
 
-const API_KEY = UUID.fromString("0e867be9-477c-4b6f-8f58-7b3a035c7e0d");
+if(!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
+const API_KEY = UUID.fromString(process.env.API_KEY);
 const q = new Queue();
 const INTERVAL_TIME = 5 * 1000; //5 sec
 const CACHE_TIME = 10 * 60 * 1000; // 5 min

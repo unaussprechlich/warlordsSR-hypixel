@@ -23,7 +23,7 @@ const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000;
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000;
 const AVERAGE_KDA = 7;
 const GAMES_PLAYED_TO_RANK = 80;
-const WARLORDS = [
+exports.WARLORDS = [
     {
         name: "mage",
         specs: [
@@ -55,6 +55,7 @@ const WARLORDS = [
         ]
     }
 ];
+exports.CLAZZES = exports.WARLORDS.map(value => value.name);
 function calculateSR(player) {
     const stats = player.warlords;
     const sr = newWarlordsSr();
@@ -65,7 +66,7 @@ function calculateSR(player) {
     sr.WL = calculateWL(stats.wins, plays);
     stats.losses = plays - stats.wins;
     sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
-    for (const warlord of WARLORDS) {
+    for (const warlord of exports.WARLORDS) {
         stats["losses_" + warlord.name] = stats[warlord.name + "_plays"] - stats["wins_" + warlord.name];
         sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
         sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);

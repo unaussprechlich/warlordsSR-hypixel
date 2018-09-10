@@ -246,7 +246,7 @@ mixin shaman()
 mixin srdisplaythingy(value)
     .srtext.rounded-left
       p SR
-    .srvalue.bronze
+    .srvalue
       p= value
 
 mixin sritem(value)
@@ -298,14 +298,14 @@ block content
                   a.btn.btn-primary(href= planckeLink) show on plancke.io
 
         .col-lg-12
-          .accordion
+          .accordion#classaccordion
             .card
               .card-header#heading-general(data-toggle = "collapse" data-target = "#collapse-general" aria-controls="collapse-general")
                 h3.mb-0
                   +RankingNullCheck(RANKING.overall)
                   | Overall
                 +sritem(PLAYER.warlords_sr.SR)
-              #collapse-general.collapse(aria-labelledby="heading-general" data-parent="#accordion")
+              #collapse-general.collapse(aria-labelledby="heading-general" data-parent="#classaccordion")
                 .card-body
                   +overview()
 
@@ -316,7 +316,7 @@ block content
                   +RankingNullCheck(RANKING.paladin.overall)
                   | Paladin
                 +sritem(PLAYER.warlords_sr.paladin.SR)
-              #collapse-paladin.collapse(aria-labelledby="heading-paladin" data-parent="#accordion")
+              #collapse-paladin.collapse(aria-labelledby="heading-paladin" data-parent="#classaccordion")
                 .card-body
                   +paladin()
 
@@ -326,7 +326,7 @@ block content
                   +RankingNullCheck(RANKING.mage.overall)
                   | Mage
                 +sritem(PLAYER.warlords_sr.mage.SR)
-              #collapse-mage.collapse(aria-labelledby="heading-mage" data-parent="#accordion")
+              #collapse-mage.collapse(aria-labelledby="heading-mage" data-parent="#classaccordion")
                 .card-body
                   +mage()
 
@@ -336,7 +336,7 @@ block content
                   +RankingNullCheck(RANKING.shaman.overall)
                   | Shaman
                 +sritem(PLAYER.warlords_sr.shaman.SR)
-              #collapse-shaman.collapse(aria-labelledby="heading-shaman" data-parent="#accordion")
+              #collapse-shaman.collapse(aria-labelledby="heading-shaman" data-parent="#classaccordion")
                 .card-body
                   +shaman()
 
@@ -346,6 +346,6 @@ block content
                   +RankingNullCheck(RANKING.warrior.overall)
                   | Warrior
                 +sritem(PLAYER.warlords_sr.warrior.SR)
-              #collapse-warrior.collapse(aria-labelledby="heading-warrior" data-parent="#accordion")
+              #collapse-warrior.collapse(aria-labelledby="heading-warrior" data-parent="#classaccordion")
                 .card-body
                   +warrior()
