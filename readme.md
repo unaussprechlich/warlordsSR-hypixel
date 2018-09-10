@@ -1,6 +1,6 @@
-# A SR system for the Gamemode Warlords on Hypixel.net
+# Warlords SR
 
-This discord bot makes your server NO FUN.
+A SR system for the Gamemode Warlords on Hypixel.net
 
 ### Docker Hub [link](https://hub.docker.com/r/unaussprechlich/warlordsSR-hypixel/)
 `docker pull unaussprechlich/warlordsSR-hypixel`
