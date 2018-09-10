@@ -1,13 +1,46 @@
 /* Sidebar */
 @import "_var";
 
+#classaccordion{
+  .card-body{
+    p {
+      margin-bottom: 0;
+    }
+  }
+}
+
 .playerside{
   margin-top: 40px;
 }
 
 .accordion{
-  .card{
+  .card-body{
     margin-top: 15px;
+
+    .statstable{
+      margin-top: 15px;
+      th, td{
+        padding: 7px;
+      }
+    }
+
+    .divider {
+      height: 1px;
+      width:100%;
+      display:block;
+      margin: 15px 0;
+      overflow: hidden;
+      background-color: #e5e5e5;
+    }
+
+    .spec{
+      h4{
+        display: inline-block;
+        span {
+          font-weight: normal;
+        }
+      }
+    }
   }
 }
 
@@ -20,40 +53,10 @@
   }
 }
 
-.card-body{
-
-  .statstable{
-    margin-top: 15px;
-    th, td{
-      padding: 7px;
-    }
-  }
-
-  .divider {
-    height: 1px;
-    width:100%;
-    display:block;
-    margin: 15px 0;
-    overflow: hidden;
-    background-color: #e5e5e5;
-  }
-
-  .spec{
-    h4{
-      display: inline-block;
-      span {
-        font-weight: normal;
-      }
-    }
-  }
-}
-
-
 .sr{
-
   margin-left: 15px;
   display: inline-block;
-  width: 125px;
+  width: 91px;
   border-width: 3px !important;
   position: absolute;
   right: 1.25rem;
@@ -69,17 +72,16 @@
   }
 
   .srtext{
-    width: 40px;
-    padding-left: 7px;
-    padding-right: 7px;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
   .srvalue{
     position: absolute;
     right: 0;
-    width: 70px;
-    padding-left: 10px;
-    padding-right: 10px;
+    width: 55px;
+    padding-left: 5px;
+    padding-right: 5px;
     text-align: right;
   }
 }

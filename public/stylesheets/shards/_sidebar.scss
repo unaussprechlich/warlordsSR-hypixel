@@ -12,6 +12,10 @@
   }
 }
 
+#dismiss:hover{
+  background-color: $darker;
+}
+
 .sidebar-wrapper {
   display: flex;
   width: 100%;
@@ -93,8 +97,6 @@
 #sidebar.active {
   margin-left: 0 !important;
 }
-
-
 
 a[data-toggle="collapse"] {
   position: relative;
