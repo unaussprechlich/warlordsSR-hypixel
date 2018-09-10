@@ -82,11 +82,19 @@ exports.app.get("/", function (req, res) {
     res.redirect("/lb");
 });
 exports.app.use(function (req, res, next) {
-    next(404);
+    next({
+        status: 404
+    });
 });
 exports.app.use(function (err, req, res, next) {
     res.locals.message = err.message;
     res.locals.error = err;
+    res.locals.PAGE_TITLE = "Error | " + err.status || 500;
     res.status(err.status || 500);
-    res.render('error.pug');
+    if (err.status === 404) {
+        res.render('errors/404.pug');
+    }
+    else {
+        res.render("errors/500.pug");
+    }
 });

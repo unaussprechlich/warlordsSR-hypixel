@@ -15,18 +15,24 @@ router.get('/*', async function (req, res, next) {
         if (!url[2])
             throw "No name/uuid provided";
         let uuid;
-        if (uuidShortPattern.test(url[2])) {
-            uuid = UUID_1.default.fromShortString(url[2]);
-        }
-        else if (uuidLongPatter.test(url[2])) {
-            uuid = UUID_1.default.fromString(url[2]);
+        if (url[2] === "uuid" && url[3]) {
+            if (uuidShortPattern.test(url[3])) {
+                uuid = UUID_1.default.fromShortString(url[3]);
+            }
+            else if (uuidLongPatter.test(url[3])) {
+                uuid = UUID_1.default.fromString(url[3]);
+            }
+            else {
+                throw { message: "UUID is in the wrong format!" };
+            }
         }
         else if (minecraftPlayernamePattern.test(url[2])) {
             try {
-                uuid = UUID_1.default.fromShortString(await MinecraftAPI.uuidForName(url[2]));
+                const uuid_string = await MinecraftAPI.uuidForName(url[2]);
+                uuid = UUID_1.default.fromString(uuid_string);
             }
             catch (e) {
-                throw { message: "PLAYER NOT FOUND!", error: e };
+                throw { message: "This player doesn't exist!", status: 404 };
             }
         }
         else {
@@ -35,7 +41,10 @@ router.get('/*', async function (req, res, next) {
         const player = await Player.defaultCache.get(uuid);
         const ranking = await player.getRanking();
         if (player == null)
-            throw "Player with UUID:" + uuid.toString() + " not found!";
+            throw {
+                message: "Player with UUID:" + uuid.toString() + " not found!",
+                status: 404
+            };
         res.render('player', {
             PAGE_TITLE: "Player | " + player.data.name,
             PLAYER: player.data,

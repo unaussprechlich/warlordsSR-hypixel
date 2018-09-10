@@ -13,7 +13,7 @@
     ul.list-unstyled.components
       li(class= PAGE_TITLE === "LB | General" ? "active" : "")
         a(href='/lb') General
-      li
+      li(class= PAGE_TITLE === "LB | Paladin" || PAGE_TITLE === "LB | Avenger" || PAGE_TITLE === "LB | Crusader" || PAGE_TITLE === "LB | Protector"? "active" : "")
         a(href='#paladinSubmenu', data-toggle='collapse', aria-expanded='false') Paladin
         ul#paladinSubmenu.collapse.list-unstyled
           li(class= PAGE_TITLE === "LB | Paladin" ? "active" : "")
@@ -24,7 +24,7 @@
             a(href='/lb/paladin/crusader') Crusader
           li(class= PAGE_TITLE === "LB | Protector" ? "active" : "")
             a(href='/lb/paladin/protector') Protector
-      li
+      li(class= PAGE_TITLE === "LB | Warrior" || PAGE_TITLE === "LB | Berserker" || PAGE_TITLE === "LB | Defender"? "active" : "")
         a(href='#warriorSubmenu', data-toggle='collapse', aria-expanded='false') Warrior
         ul#warriorSubmenu.collapse.list-unstyled
           li(class= PAGE_TITLE === "LB | Warrior" ? "active" : "")
@@ -33,7 +33,7 @@
             a(href='/lb/warrior/berserker') Berserker
           li(class= PAGE_TITLE === "LB | Defender" ? "active" : "")
             a(href='/lb/warrior/defender') Defender
-      li
+      li(class= PAGE_TITLE === "LB | Mage" || PAGE_TITLE === "LB | Pyromancer" || PAGE_TITLE === "LB | Cryomancer" || PAGE_TITLE === "LB | Aquamancer"? "active" : "")
         a(href='#mageSubmenu', data-toggle='collapse', aria-expanded='false') Mage
         ul#mageSubmenu.collapse.list-unstyled
           li(class= PAGE_TITLE === "LB | Mage" ? "active" : "")
@@ -44,7 +44,7 @@
             a(href='/lb/mage/cryomancer') Cryomancer
           li(class= PAGE_TITLE === "LB | Aquamancer" ? "active" : "")
             a(href='/lb/mage/aquamancer') Aquamancer
-      li
+      li(class= PAGE_TITLE === "LB | Shaman" || PAGE_TITLE === "LB | Thunderlord" || PAGE_TITLE === "LB | Earthwarden"? "active" : "")
         a(href='#shamanSubmenu', data-toggle='collapse', aria-expanded='false') Shaman
         ul#shamanSubmenu.collapse.list-unstyled
           li(class= PAGE_TITLE === "LB | Shaman" ? "active" : "")
