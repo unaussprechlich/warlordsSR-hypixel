@@ -238,7 +238,7 @@ a, a:hover, a:focus {
 .topspacing {
   margin-top: 35px; }
 
-#content .container-fluid {
+#content .container-fluid, #content .container {
   margin-top: 15px;
   margin-bottom: 15px; }
 
