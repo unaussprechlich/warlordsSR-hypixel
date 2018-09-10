@@ -159,9 +159,10 @@ a[data-toggle="collapse"] {
   .sr .srvalue {
     position: absolute;
     right: 0;
-    width: 65px;
+    width: 70px;
     padding-left: 10px;
-    padding-right: 10px; }
+    padding-right: 10px;
+    text-align: right; }
 
 .sr.bronze {
   border-color: #905923 !important; }
@@ -226,5 +227,9 @@ a, a:hover, a:focus {
 
 .topspacing {
   margin-top: 35px; }
+
+#content .container-fluid {
+  margin-top: 15px;
+  margin-bottom: 15px; }
 
 /*# sourceMappingURL=style.css.map */

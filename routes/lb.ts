@@ -17,7 +17,7 @@ router.get('/*', async function(req, res, next) {
 
         console.log(sortBY);
 
-        const players = await PlayerModel.find({}, {name : 1, uuid : 1, warlords_sr : 1}).sort("-" + sortBY).limit(1000).lean(true);
+        const players = await PlayerModel.find({}, {name : 1, uuid : 1, warlords_sr : 1, warlords : 1}).sort("-" + sortBY).limit(1000).lean(true);
         res.render('lb', {
             PAGE_TITLE: "LB | " + capitalizeFirstLetter(clazz ? (spec ? spec : clazz) : "General"),
             CLAZZ : clazz,

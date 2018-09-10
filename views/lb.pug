@@ -23,6 +23,7 @@ mixin lb_spec()
       th(scope="col") SR
       th(scope="col") WL
       th(scope="col") DHP
+      th(scope="col") Wins
   tbody
     - var rank = 1
     for player in PLAYERS
@@ -32,6 +33,7 @@ mixin lb_spec()
         +td_entry(player, "SR")
         +td_entry(player, "WL")
         +td_entry(player, "DHP")
+        +td_item(player.warlords["wins_" + SPEC])
       - rank++
 
 mixin lb_class()
@@ -42,6 +44,7 @@ mixin lb_class()
       th(scope="col") SR
       th(scope="col") WL
       th(scope="col") DHP
+      th(scope="col") Wins
       for spec in SPECS
         th(scope="col")= spec.toUpperCase()
   tbody
@@ -53,6 +56,7 @@ mixin lb_class()
         +td_entry(player, "SR")
         +td_entry(player, "WL")
         +td_entry(player, "DHP")
+        +td_item(player.warlords["wins_" + CLAZZ])
         for spec in SPECS
           +td_item(player.warlords_sr[CLAZZ][spec].SR)
       - rank++
@@ -82,7 +86,7 @@ mixin lb_overview()
 
 
 block content
-  #content.container-fluid
+  .container-fluid
     .table-responsive
       table.table.table-striped.table-hover#sr_table
         if CLAZZ

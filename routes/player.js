@@ -15,19 +15,19 @@ router.get('/*', async function (req, res, next) {
         if (!url[2])
             throw "No name/uuid provided";
         let uuid;
-        if (minecraftPlayernamePattern.test(url[2])) {
-            try {
-                uuid = UUID_1.default.fromShortString(await MinecraftAPI.uuidForName(url[2]));
-            }
-            catch (e) {
-                throw { message: "PLAYER NOT FOUND!", error: { code: 404 } };
-            }
-        }
-        else if (uuidShortPattern.test(url[2])) {
+        if (uuidShortPattern.test(url[2])) {
             uuid = UUID_1.default.fromShortString(url[2]);
         }
         else if (uuidLongPatter.test(url[2])) {
             uuid = UUID_1.default.fromString(url[2]);
+        }
+        else if (minecraftPlayernamePattern.test(url[2])) {
+            try {
+                uuid = UUID_1.default.fromShortString(await MinecraftAPI.uuidForName(url[2]));
+            }
+            catch (e) {
+                throw { message: "PLAYER NOT FOUND!", error: e };
+            }
         }
         else {
             throw "The provided path is not of type uuid or username.";
