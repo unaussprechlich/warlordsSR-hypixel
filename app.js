@@ -91,6 +91,7 @@ exports.app.use(function (err, req, res, next) {
     res.locals.error = err;
     res.locals.PAGE_TITLE = "Error | " + err.status || 500;
     res.status(err.status || 500);
+    console.error(err);
     if (err.status === 404) {
         res.render('errors/404.pug');
     }

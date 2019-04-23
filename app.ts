@@ -144,6 +144,7 @@ app.use(function(err, req, res, next) {
 
     // render the error page
     res.status(err.status|| 500);
+    console.error(err);
     if(err.status === 404){
         res.render('errors/404.pug');
     } else {

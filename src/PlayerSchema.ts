@@ -131,6 +131,14 @@ export const PlayerSchema = new mongoose.Schema({
         wins_berserker: Number,
         losses_berserker: Number,
 
+        //REV --------------------------------------------------------------------------------------------------------//
+        wins_revenant: Number,
+        damage_revenant: Number,
+        revenant_plays: Number,
+        damage_prevented_revenant: Number,
+        heal_revenant: Number,
+        losses_revenant: Number,
+
         //DEF --------------------------------------------------------------------------------------------------------//
         wins_defender: Number,
         damage_defender: Number,
@@ -219,6 +227,15 @@ export const PlayerSchema = new mongoose.Schema({
         losses_thunderlord: Number,
         damage_prevented_thunderlord: Number,
         wins_thunderlord: Number,
+
+        //SPIRIT -----------------------------------------------------------------------------------------------------//
+        damage_prevented_spiritguard: Number,
+        losses_spiritguard: Number,
+        damage_spiritguard: Number,
+        heal_spiritguard: Number,
+        spiritguard_plays: Number,
+        wins_spiritguard: Number,
+
 
         //EARTH ------------------------------------------------------------------------------------------------------//
         damage_prevented_earthwarden: Number,

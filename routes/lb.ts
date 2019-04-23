@@ -1,6 +1,6 @@
 import * as express from 'express'
 import {PlayerModel} from "../src/PlayerDB";
-import {CLAZZES, WARLORDS} from "../src/SrCalculator";
+import {CLAZZES, WARLORDS} from "../src/Warlords";
 const router = express.Router();
 
 /* GET home page. */
@@ -15,9 +15,8 @@ router.get('/*', async function(req, res, next) {
 
         const sortBY = "warlords_sr." + (clazz ? (spec ? clazz + "." + spec + "." : clazz + ".") : "") + "SR";
 
-        console.log(sortBY);
 
-        const players = await PlayerModel.find({}, {name : 1, uuid : 1, warlords_sr : 1, warlords : 1}).sort("-" + sortBY).limit(1000).lean(true);
+        const players = await PlayerModel.find({[sortBY] : {$exists : true}}, {name : 1, uuid : 1, warlords_sr : 1, warlords : 1}).sort("-" + sortBY).limit(1000).lean(true);
         res.render('lb', {
             PAGE_TITLE: "LB | " + capitalizeFirstLetter(clazz ? (spec ? spec : clazz) : "General"),
             CLAZZ : clazz,
@@ -27,7 +26,8 @@ router.get('/*', async function(req, res, next) {
             PLAYERS : players
         });
     }catch (err){
-        next(err)
+        next(err);
+        console.error(err);
     }
 });
 

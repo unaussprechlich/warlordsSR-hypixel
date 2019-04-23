@@ -5,7 +5,7 @@ import {PlayerSchema} from "./PlayerSchema";
 export const PlayerModel = mongoose.model<IPlayer>('Player', PlayerSchema);
 
 PlayerSchema.pre('save', function(next) {
-    this["warlords_sr"] = SrCalculator.calculateSR(this as IPlayer);
+    this.warlords_sr = SrCalculator.calculateSR(this as IPlayer);
     next()
 });
 
@@ -193,7 +193,7 @@ export interface IWarlordsHypixelAPI{
     damage_prevented_thunderlord: number,
     wins_thunderlord: number,
 
-    //REV ------------------------------------------------------------------------------------------------------//
+    //SPIRIT ------------------------------------------------------------------------------------------------------//
     damage_prevented_spiritguard: number,
     losses_spiritguard: number,
     damage_spiritguard: number,
