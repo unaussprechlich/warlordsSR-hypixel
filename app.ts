@@ -90,8 +90,6 @@ function onListening() {
     debug('Listening on ' + bind);
 }
 
-
-
 async function reloadSR(){
     console.log("Reloading SR ...");
     const players = await PlayerModel.find({});

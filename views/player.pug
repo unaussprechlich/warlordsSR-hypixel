@@ -213,6 +213,15 @@ mixin warrior()
     PLAYER.warlords.wins_defender,
     PLAYER.warlords.losses_defender
   )
+  +spec("Revenant", PLAYER.warlords_sr.warrior.revenant, RANKING.warrior.revenant)
+  +stats(
+      PLAYER.warlords.damage_revenant,
+      PLAYER.warlords.damage_prevented_revenant,
+      PLAYER.warlords.heal_revenant,
+      PLAYER.warlords.revenant_plays,
+      PLAYER.warlords.wins_revenant,
+      PLAYER.warlords.losses_revenant
+  )
 
 mixin shaman()
   +class(PLAYER.warlords_sr.shaman)
@@ -233,6 +242,15 @@ mixin shaman()
     PLAYER.warlords.wins_thunderlord,
     PLAYER.warlords.losses_thunderlord
   )
+  +spec("Spiritguard", PLAYER.warlords_sr.shaman.spiritguard, RANKING.shaman.spiritguard)
+  +stats(
+      PLAYER.warlords.damage_spiritguard,
+      PLAYER.warlords.damage_prevented_spiritguard,
+      PLAYER.warlords.heal_spiritguard,
+      PLAYER.warlords.spiritguard_plays,
+      PLAYER.warlords.wins_spiritguard,
+      PLAYER.warlords.losses_spiritguard
+  )
   +spec("Earthwarden", PLAYER.warlords_sr.shaman.earthwarden, RANKING.shaman.earthwarden)
   +stats(
     PLAYER.warlords.damage_earthwarden,
@@ -242,6 +260,7 @@ mixin shaman()
     PLAYER.warlords.wins_earthwarden,
     PLAYER.warlords.losses_earthwarden
   )
+
 
 mixin srdisplaythingy(value)
     .srtext.rounded-left

@@ -67,6 +67,11 @@ export const PlayerSchema = new mongoose.Schema({
                 DHP : Number,
                 SR : Number,
                 WL : Number
+            },
+            revenant : {
+                DHP : Number,
+                SR : Number,
+                WL : Number
             }
         },
 
@@ -75,6 +80,11 @@ export const PlayerSchema = new mongoose.Schema({
             SR : Number,
             WL : Number,
             thunderlord : {
+                DHP : Number,
+                SR : Number,
+                WL : Number
+            },
+            spiritguard : {
                 DHP : Number,
                 SR : Number,
                 WL : Number

@@ -5,7 +5,7 @@ import {PlayerSchema} from "./PlayerSchema";
 export const PlayerModel = mongoose.model<IPlayer>('Player', PlayerSchema);
 
 PlayerSchema.pre('save', function(next) {
-    this.warlords_sr = SrCalculator.calculateSR(this);
+    this["warlords_sr"] = SrCalculator.calculateSR(this as IPlayer);
     next()
 });
 
@@ -49,6 +49,7 @@ export interface IWarlordsSR{
         WL : number | null,
         berserker : IStats
         defender : IStats
+        revenant : IStats
     },
 
     shaman : {
@@ -57,6 +58,7 @@ export interface IWarlordsSR{
         WL : number | null,
         thunderlord : IStats
         earthwarden : IStats
+        spiritguard : IStats
     }
 }
 
@@ -101,6 +103,14 @@ export interface IWarlordsHypixelAPI{
     damage_prevented_defender: number,
     heal_defender: number,
     losses_defender: number,
+
+    //REV ------------------------------------------------------------------------------------------------------//
+    damage_prevented_revenant: number,
+    losses_revenant: number,
+    damage_revenant: number,
+    heal_revenant: number,
+    revenant_plays: number,
+    wins_revenant: number,
 
     //Paladin ######################################################################################################
     damage_prevented_paladin: number,
@@ -182,6 +192,14 @@ export interface IWarlordsHypixelAPI{
     losses_thunderlord: number,
     damage_prevented_thunderlord: number,
     wins_thunderlord: number,
+
+    //REV ------------------------------------------------------------------------------------------------------//
+    damage_prevented_spiritguard: number,
+    losses_spiritguard: number,
+    damage_spiritguard: number,
+    heal_spiritguard: number,
+    spiritguard_plays: number,
+    wins_spiritguard: number,
 
     //EARTH ------------------------------------------------------------------------------------------------------//
     damage_prevented_earthwarden: number,

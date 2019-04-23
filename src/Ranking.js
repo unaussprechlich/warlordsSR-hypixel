@@ -73,6 +73,7 @@ class RankingCache {
                 overall: await RankingCache.loadRankFromDatabase("warlords_sr.warrior.SR", uuid),
                 berserker: await RankingCache.loadRankFromDatabase("warlords_sr.warrior.berserker.SR", uuid),
                 defender: await RankingCache.loadRankFromDatabase("warlords_sr.warrior.defender.SR", uuid),
+                revenant: await RankingCache.loadRankFromDatabase("warlords_sr.warrior.revenant.SR", uuid),
             },
             mage: {
                 overall: await RankingCache.loadRankFromDatabase("warlords_sr.mage.SR", uuid),
@@ -83,6 +84,7 @@ class RankingCache {
             shaman: {
                 overall: await RankingCache.loadRankFromDatabase("warlords_sr.shaman.SR", uuid),
                 thunderlord: await RankingCache.loadRankFromDatabase("warlords_sr.shaman.thunderlord.SR", uuid),
+                spiritguard: await RankingCache.loadRankFromDatabase("warlords_sr.shaman.spiritguard.SR", uuid),
                 earthwarden: await RankingCache.loadRankFromDatabase("warlords_sr.shaman.earthwarden.SR", uuid),
             }
         };

@@ -21,16 +21,18 @@ const AVENGER    = new Average(60, 104286, 2.21);
 const CRUSADER   = new Average(170, 93370 , 2.77);
 const PROTECTOR  = new Average(100, 127081, 2.02);
 const THUNDERLORD= new Average(155, 109217, 1.82);
+const SPIRITGUARD= new Average(155, 129217, 1.82);
 const EARTHWARDEN= new Average(85, 111751, 1.90);
 const BERSERKER  = new Average(10, 94848 , 2.65);
 const DEFENDER   = new Average(-10, 97136 , 2.54);
+const REVENANT   = new Average(100, 127081 , 2.02);
 
 const LEAVING_PUNISHMENT = 15;
 const ANTI_SNIPER_TRESHOLD = 15000 + 7500; //averagePrevented = 13431 averageHeals = 7215
 const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000; //average = 2640
 const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
 const AVERAGE_KDA = 7; //real: 6.86034034034034;
-const GAMES_PLAYED_TO_RANK = 80;
+const GAMES_PLAYED_TO_RANK = 50;
 
 interface IWarlord {
     name : string
@@ -58,6 +60,7 @@ export const WARLORDS : IWarlord[] = [
         name : "shaman",
         specs : [
             "thunderlord",
+            "spiritguard",
             "earthwarden"
         ]
     },
@@ -65,13 +68,13 @@ export const WARLORDS : IWarlord[] = [
         name : "warrior",
         specs : [
             "berserker",
-            "defender"
+            "defender",
+            "revenant"
         ]
     }
 ];
 
 export const CLAZZES = WARLORDS.map(value => value.name);
-
 
 export function calculateSR(player : IPlayer) {
     const stats = player.warlords;
@@ -194,6 +197,18 @@ export function calculateSR(player : IPlayer) {
         stats.penalty,
     );
 
+    sr.shaman.spiritguard.SR = calculateSr(
+        sr.shaman.spiritguard.DHP,
+        stats.spiritguard_plays,
+        sr.shaman.spiritguard.WL,
+        sr.KDA,
+
+        SPIRITGUARD,
+
+        sr.plays,
+        stats.penalty,
+    );
+
     sr.shaman.earthwarden.SR = calculateSr(
         sr.shaman.earthwarden.DHP,
         stats.earthwarden_plays,
@@ -238,6 +253,18 @@ export function calculateSR(player : IPlayer) {
         stats.penalty,
     );
 
+    sr.warrior.revenant.SR = calculateSr(
+        sr.warrior.revenant.DHP,
+        stats.revenant_plays,
+        sr.warrior.revenant.WL,
+        sr.KDA,
+
+        REVENANT,
+
+        sr.plays,
+        stats.penalty,
+    );
+
     sr.mage.SR = Math.round((vOr0(sr.mage.pyromancer.SR) + vOr0(sr.mage.aquamancer.SR) + vOr0(sr.mage.cryomancer.SR)) / 3);
     sr.paladin.SR = Math.round((vOr0(sr.paladin.avenger.SR) + vOr0(sr.paladin.crusader.SR) + vOr0(sr.paladin.protector.SR))/3);
     sr.shaman.SR = Math.round((vOr0(sr.shaman.thunderlord.SR) + vOr0(sr.shaman.earthwarden.SR))/2);
@@ -266,7 +293,8 @@ export function calculateSR(player : IPlayer) {
  * @returns {any}
  */
 function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, kda : number | null, average : Average, plays : number | null, penalty : number){
-    if(dhp == null || specPlays == null || plays == null || wl == null || penalty == null ||  kda == null || specPlays < GAMES_PLAYED_TO_RANK) return null;
+    if(dhp == null || specPlays == null || plays == null || wl == null ||  kda == null || specPlays < GAMES_PLAYED_TO_RANK) return null;
+    if(penalty == null) penalty = 0;
     const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
     const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
@@ -480,6 +508,7 @@ function newWarlordsSr() : IWarlordsSR{
             WL :  null,
             berserker : {SR : null, DHP : null, WL : null},
             defender : {SR : null, DHP : null, WL : null},
+            revenant : {SR : null, DHP : null, WL : null}
         },
 
         shaman : {
@@ -488,6 +517,7 @@ function newWarlordsSr() : IWarlordsSR{
             WL :  null,
             thunderlord : {SR : null, DHP : null, WL : null},
             earthwarden : {SR : null, DHP : null, WL : null},
+            spiritguard : {SR : null, DHP : null, WL : null}
         }
     };
 }
