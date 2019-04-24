@@ -18,7 +18,7 @@ function calculateSR(player) {
         sr.plays = calculateOverallPlays(stats.mage_plays, stats.paladin_plays, stats.shaman_plays, stats.warrior_plays);
         const plays = stats.mage_plays + stats.paladin_plays + stats.shaman_plays + stats.warrior_plays;
         sr.WL = calculateWL(stats.wins, plays);
-        stats.losses = plays - stats.wins;
+        player.warlords.losses = plays - stats.wins;
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
         for (const warlord of Warlords_1.WARLORDS) {
             player.warlords["losses_" + warlord.name] = stats[warlord.name + "_plays"] - stats["wins_" + warlord.name];
@@ -50,7 +50,8 @@ function calculateSR(player) {
     catch (e) {
         console.error(e);
     }
-    return sr;
+    player.warlords_sr = sr;
+    return player;
 }
 exports.calculateSR = calculateSR;
 function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {

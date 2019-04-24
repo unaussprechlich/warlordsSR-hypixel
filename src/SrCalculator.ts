@@ -10,18 +10,18 @@ const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
 const AVERAGE_KDA = 7; //real: 6.86034034034034;
 const GAMES_PLAYED_TO_RANK = 30;
 
-export function calculateSR(player : IPlayer) {
+export function calculateSR(player : IPlayer) : IPlayer {
     const stats = player.warlords;
     const sr = newWarlordsSr();
     try{
-        sr.KD = calculateKD(stats.kills, stats.deaths);
+        sr.KD  = calculateKD(stats.kills, stats.deaths);
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
 
         sr.plays = calculateOverallPlays(stats.mage_plays, stats.paladin_plays, stats.shaman_plays, stats.warrior_plays);
 
         const plays = stats.mage_plays + stats.paladin_plays + stats.shaman_plays + stats.warrior_plays;
         sr.WL = calculateWL(stats.wins, plays);
-        stats.losses = plays - stats.wins;
+        player.warlords.losses = plays - stats.wins;
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
 
         for(const warlord of WARLORDS){
@@ -46,14 +46,14 @@ export function calculateSR(player : IPlayer) {
             }
         }
 
-        sr.mage.SR = Math.round((vOr0(sr.mage.pyromancer.SR) + vOr0(sr.mage.aquamancer.SR) + vOr0(sr.mage.cryomancer.SR)) / 3);
-        sr.paladin.SR = Math.round((vOr0(sr.paladin.avenger.SR) + vOr0(sr.paladin.crusader.SR) + vOr0(sr.paladin.protector.SR))/3);
-        sr.shaman.SR = Math.round((vOr0(sr.shaman.thunderlord.SR) + vOr0(sr.shaman.spiritguard.SR) + vOr0(sr.shaman.earthwarden.SR))/3);
-        sr.warrior.SR = Math.round((vOr0(sr.warrior.berserker.SR) + vOr0(sr.warrior.defender.SR) + vOr0(sr.warrior.revenant.SR))/3);
+        sr.mage.SR    = Math.round((vOr0(sr.mage.pyromancer.SR)    + vOr0(sr.mage.aquamancer.SR)    + vOr0(sr.mage.cryomancer.SR)) / 3);
+        sr.paladin.SR = Math.round((vOr0(sr.paladin.avenger.SR)    + vOr0(sr.paladin.crusader.SR)   + vOr0(sr.paladin.protector.SR))/3);
+        sr.shaman.SR  = Math.round((vOr0(sr.shaman.thunderlord.SR) + vOr0(sr.shaman.spiritguard.SR) + vOr0(sr.shaman.earthwarden.SR))/3);
+        sr.warrior.SR = Math.round((vOr0(sr.warrior.berserker.SR)  + vOr0(sr.warrior.defender.SR)   + vOr0(sr.warrior.revenant.SR))/3);
 
-        if(sr.mage.SR == 0) sr.mage.SR = null;
+        if(sr.mage.SR == 0)    sr.mage.SR    = null;
         if(sr.paladin.SR == 0) sr.paladin.SR = null;
-        if(sr.shaman.SR == 0) sr.shaman.SR = null;
+        if(sr.shaman.SR == 0)  sr.shaman.SR  = null;
         if(sr.warrior.SR == 0) sr.warrior.SR = null;
 
         sr.SR = Math.round(((vOr0(sr.paladin.SR) + vOr0(sr.mage.SR) + vOr0(sr.shaman.SR) + vOr0(sr.warrior.SR))/4));
@@ -63,7 +63,9 @@ export function calculateSR(player : IPlayer) {
     }catch (e) {
         console.error(e)
     }
-    return sr;
+
+    player.warlords_sr = sr;
+    return player;
 
 }
 

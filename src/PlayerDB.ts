@@ -4,8 +4,10 @@ import {PlayerSchema} from "./PlayerSchema";
 
 export const PlayerModel = mongoose.model<IPlayer>('Player', PlayerSchema);
 
-PlayerSchema.pre('save', function(next) {
-    this.warlords_sr = SrCalculator.calculateSR(this as IPlayer);
+PlayerSchema.pre<IPlayer>('save', function(next) {
+    const result  = SrCalculator.calculateSR(this as IPlayer);
+    this.warlords_sr = result.warlords_sr;
+    this.warlords = result.warlords;
     next()
 });
 

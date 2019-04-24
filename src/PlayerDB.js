@@ -5,6 +5,8 @@ const SrCalculator = require("./SrCalculator");
 const PlayerSchema_1 = require("./PlayerSchema");
 exports.PlayerModel = mongoose.model('Player', PlayerSchema_1.PlayerSchema);
 PlayerSchema_1.PlayerSchema.pre('save', function (next) {
-    this.warlords_sr = SrCalculator.calculateSR(this);
+    const result = SrCalculator.calculateSR(this);
+    this.warlords_sr = result.warlords_sr;
+    this.warlords = result.warlords;
     next();
 });
