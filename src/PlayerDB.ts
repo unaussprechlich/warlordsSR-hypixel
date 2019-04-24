@@ -1,15 +1,7 @@
 import * as mongoose from "mongoose";
-import * as SrCalculator from "./SrCalculator"
 import {PlayerSchema} from "./PlayerSchema";
 
 export const PlayerModel = mongoose.model<IPlayer>('Player', PlayerSchema);
-
-PlayerSchema.pre<IPlayer>('save', function(next) {
-    const result  = SrCalculator.calculateSR(this as IPlayer);
-    this.warlords_sr = result.warlords_sr;
-    this.warlords = result.warlords;
-    next()
-});
 
 export interface IStats{
     DHP : number | null,

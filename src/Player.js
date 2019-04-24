@@ -7,6 +7,7 @@ const Ranking = require("./Ranking");
 const Cache = require("cache");
 const Queue_1 = require("./Queue");
 const Exceptions_1 = require("hypixel-api-typescript/src/Exceptions");
+const SrCalculator_1 = require("./SrCalculator");
 if (!process.env.API_KEY)
     throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID_1.default.fromString(process.env.API_KEY);
@@ -63,11 +64,12 @@ class Player {
         }
         else {
             const hypixelPlayer = await Player.loadHypixelStats(uuid, isHighPriority);
-            const model = new PlayerDB_1.PlayerModel({
+            let model = new PlayerDB_1.PlayerModel({
                 uuid: hypixelPlayer.uuid,
                 name: hypixelPlayer.displayname,
                 warlords: this.getWarlordsStatsFromHypixelStats(hypixelPlayer)
             });
+            model = SrCalculator_1.calculateSR(model);
             await model.save();
             return new Player(model);
         }
@@ -76,6 +78,7 @@ class Player {
         return this._data;
     }
     async recalculateSr() {
+        this._data = SrCalculator_1.calculateSR(this._data);
         await this._data.save();
         return this._data;
     }

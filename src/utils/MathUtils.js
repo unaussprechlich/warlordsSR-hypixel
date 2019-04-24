@@ -6,11 +6,19 @@ function round(zahl, n_stelle) {
 }
 exports.round = round;
 function vOr0(value) {
-    if (value == null)
+    if (!value || isNaN(value) || value < 0)
         return 0;
     return value;
 }
 exports.vOr0 = vOr0;
+function vOr1(value) {
+    if (!value || isNaN(value) || value <= 0)
+        return 1;
+    return value;
+}
+exports.vOr1 = vOr1;
+function NumOr0(target, propertyKey, parameterIndex) {
+}
 function adjust_1_wl(v, averageRatio) {
     const adjust = 2 - averageRatio;
     if (v > 10)

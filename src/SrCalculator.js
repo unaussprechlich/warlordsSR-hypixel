@@ -15,17 +15,16 @@ function calculateSR(player) {
     try {
         sr.KD = calculateKD(stats.kills, stats.deaths);
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
-        sr.plays = calculateOverallPlays(stats.mage_plays, stats.paladin_plays, stats.shaman_plays, stats.warrior_plays);
-        const plays = stats.mage_plays + stats.paladin_plays + stats.shaman_plays + stats.warrior_plays;
-        sr.WL = calculateWL(stats.wins, plays);
-        player.warlords.losses = plays - stats.wins;
+        sr.plays = MathUtils_1.vOr0(stats.mage_plays) + MathUtils_1.vOr0(stats.paladin_plays) + MathUtils_1.vOr0(stats.shaman_plays) + MathUtils_1.vOr0(stats.warrior_plays);
+        sr.WL = calculateWL(stats.wins, sr.plays);
+        player.warlords.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
         for (const warlord of Warlords_1.WARLORDS) {
-            player.warlords["losses_" + warlord.name] = stats[warlord.name + "_plays"] - stats["wins_" + warlord.name];
+            player.warlords["losses_" + warlord.name] = MathUtils_1.vOr0(stats[warlord.name + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + warlord.name]);
             sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
             for (const spec of warlord.specs) {
-                player.warlords["losses_" + spec] = stats[spec + "_plays"] - stats["wins_" + spec];
+                player.warlords["losses_" + spec] = MathUtils_1.vOr0(stats[spec + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + spec]);
                 sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].SR = calculateSr(sr[warlord.name][spec].DHP, stats[spec + "_plays"], sr[warlord.name][spec].WL, sr.KDA, Average[spec.toLocaleUpperCase()], sr.plays, stats.penalty);
@@ -81,9 +80,7 @@ function adjust_2_wl(v, averageRatio) {
         return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
 }
 function calculateWL(wins, plays) {
-    if (plays == null || wins == null)
-        return null;
-    return MathUtils_1.round(wins / (plays - wins), 100);
+    return MathUtils_1.round(MathUtils_1.vOr0(wins) / MathUtils_1.vOr1(MathUtils_1.vOr0(plays) - MathUtils_1.vOr0(wins)), 100);
 }
 function adjust_dhp(v, average) {
     const x = v / average;
@@ -95,9 +92,7 @@ function adjust_dhp(v, average) {
         return Math.cos((x * Math.PI) / 2 + Math.PI) + 1;
 }
 function calculateDHP(dmg, heal, prevented, plays) {
-    if (dmg == null || heal == null || prevented == null || plays == null)
-        return null;
-    return Math.round((dmg + heal + prevented) / plays);
+    return Math.round((MathUtils_1.vOr0(dmg) + MathUtils_1.vOr0(heal) + MathUtils_1.vOr0(prevented)) / MathUtils_1.vOr1(plays));
 }
 function antiDefenderNoobDHP(dmg, heal, prevented, plays) {
     if (dmg == null || heal == null || prevented == null)
@@ -111,24 +106,9 @@ function antiSniperDHP(dmg, heal, prevented, plays) {
     const penalty = Math.log2(((prevented + heal) / plays / ANTI_SNIPER_TRESHOLD) + 1);
     return Math.round(((dmg + heal + prevented) * penalty) / plays);
 }
-function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays) {
-    if (magePlays == null)
-        magePlays = 0;
-    if (palPlays == null)
-        palPlays = 0;
-    if (shaPlays == null)
-        shaPlays = 0;
-    if (warPlays == null)
-        warPlays = 0;
-    return magePlays + palPlays + shaPlays + warPlays;
-}
 function calculateKD(kills, deaths) {
-    if (kills == null || deaths == null)
-        return null;
-    return MathUtils_1.round(kills / deaths, 100);
+    return MathUtils_1.round(MathUtils_1.vOr0(kills) / MathUtils_1.vOr1(deaths), 100);
 }
 function calculateKDA(kills, deaths, assists) {
-    if (kills == null || deaths == null || assists == null)
-        return null;
-    return MathUtils_1.round((kills + assists) / deaths, 100);
+    return MathUtils_1.round((MathUtils_1.vOr0(kills) + MathUtils_1.vOr0(assists)) / MathUtils_1.vOr1(deaths), 100);
 }

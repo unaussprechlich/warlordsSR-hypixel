@@ -1,5 +1,5 @@
-import {IPlayer, IWarlordsSR} from "./PlayerDB";
-import {round, vOr0} from "./utils/MathUtils";
+import {IPlayer} from "./PlayerDB";
+import {round, vOr0, vOr1} from "./utils/MathUtils";
 import {newWarlordsSr, WARLORDS} from "./Warlords";
 import * as Average from "./Average";
 
@@ -17,21 +17,19 @@ export function calculateSR(player : IPlayer) : IPlayer {
         sr.KD  = calculateKD(stats.kills, stats.deaths);
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
 
-        sr.plays = calculateOverallPlays(stats.mage_plays, stats.paladin_plays, stats.shaman_plays, stats.warrior_plays);
-
-        const plays = stats.mage_plays + stats.paladin_plays + stats.shaman_plays + stats.warrior_plays;
-        sr.WL = calculateWL(stats.wins, plays);
-        player.warlords.losses = plays - stats.wins;
+        sr.plays = vOr0(stats.mage_plays) + vOr0(stats.paladin_plays) + vOr0(stats.shaman_plays) + vOr0(stats.warrior_plays);
+        sr.WL = calculateWL(stats.wins, sr.plays);
+        player.warlords.losses = sr.plays - vOr0(stats.wins);
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
 
         for(const warlord of WARLORDS){
 
-            player.warlords["losses_" + warlord.name] = stats[warlord.name + "_plays"] - stats["wins_" + warlord.name];
+            player.warlords["losses_" + warlord.name] = vOr0(stats[warlord.name + "_plays"]) - vOr0(stats["wins_" + warlord.name]);
             sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
 
             for (const spec of warlord.specs){
-                player.warlords["losses_" + spec] = stats[spec + "_plays"] - stats["wins_" + spec];
+                player.warlords["losses_" + spec] = vOr0(stats[spec + "_plays"]) - vOr0(stats["wins_" + spec]);
                 sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].SR = calculateSr(
@@ -117,8 +115,7 @@ function adjust_2_wl(v : number, averageRatio : number){
 }
 
 function calculateWL(wins : number , plays : number){
-    if(plays == null || wins == null ) return null;
-    return round(wins / (plays - wins), 100);
+    return round(vOr0(wins) / vOr1(vOr0(plays) - vOr0(wins)), 100);
 }
 
 // DHP -----------------------------------------------------------------------------------------------------------------
@@ -142,8 +139,7 @@ function adjust_dhp(v : number, average : number){
 }
 
 function calculateDHP(dmg : number, heal : number, prevented : number, plays : number | null){
-    if(dmg == null || heal == null || prevented == null || plays == null) return null;
-    return Math.round((dmg  + heal + prevented)/plays);
+    return Math.round((vOr0(dmg)  + vOr0(heal) + vOr0(prevented))/vOr1(plays));
 }
 
 /**
@@ -178,23 +174,12 @@ function antiSniperDHP(dmg : number, heal : number, prevented : number, plays : 
 
 // OTHER ---------------------------------------------------------------------------------------------------------------
 
-function calculateOverallPlays(magePlays, palPlays, shaPlays, warPlays){
-    if(magePlays == null) magePlays = 0;
-    if(palPlays == null) palPlays = 0;
-    if(shaPlays == null) shaPlays = 0;
-    if(warPlays == null) warPlays = 0;
-
-    return magePlays + palPlays + shaPlays + warPlays;
-}
-
 function calculateKD(kills : number, deaths: number) : number | null{
-    if(kills == null || deaths == null) return null;
-    return round(kills / deaths, 100);
+    return round(vOr0(kills) / vOr1(deaths), 100);
 }
 
 function calculateKDA(kills : number, deaths: number, assists : number) : number | null{
-    if(kills == null || deaths == null || assists == null) return null;
-    return round((kills + assists) / deaths, 100);
+    return round((vOr0(kills) + vOr0(assists)) / vOr1(deaths), 100);
 }
 
 

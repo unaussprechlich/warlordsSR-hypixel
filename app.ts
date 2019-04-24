@@ -14,6 +14,7 @@ import lb = require('./routes/lb');
 export const app = express();
 const debug = require('debug')('warlordssr-hypixel:server');
 import http = require('http');
+import {calculateSR} from "./src/SrCalculator";
 
 if(!process.env.MONGO_DB) throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
 mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true});
@@ -94,11 +95,12 @@ async function reloadSR(){
     console.log("Reloading SR ...");
     const players = await PlayerModel.find({});
     players.forEach(value => {
-        value.save().catch(err => console.log(err))
+        calculateSR(value).save().catch(err => console.log(err));
+        console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
     })
 }
 
-//reloadSR().catch(err => console.log(err));
+reloadSR().catch(err => console.log(err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

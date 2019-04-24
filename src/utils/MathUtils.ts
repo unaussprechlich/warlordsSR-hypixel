@@ -10,9 +10,19 @@ export function round(zahl,n_stelle) {
  * @param {number | null} value
  * @returns {number}
  */
-export function vOr0(value : number | null) : number{
-    if(value == null) return 0;
+export function vOr0(value : any) : number{
+    if(!value || isNaN(value) || value < 0) return 0;
     return value;
+}
+
+export function vOr1(value : any) : number{
+    if(!value || isNaN(value) || value <= 0) return 1;
+    return value;
+}
+
+
+function NumOr0(target: any, propertyKey: string | symbol, parameterIndex: number) {
+
 }
 
 

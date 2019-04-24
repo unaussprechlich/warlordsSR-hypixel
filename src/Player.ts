@@ -5,6 +5,7 @@ import * as Ranking from "./Ranking";
 import * as Cache from "cache";
 import {Queue} from "./Queue";
 import Exception from "hypixel-api-typescript/src/Exceptions";
+import {calculateSR} from "./SrCalculator";
 
 if(!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID.fromString(process.env.API_KEY);
@@ -57,7 +58,7 @@ export class PlayerCache{
 
 export class Player{
 
-    private readonly _data : IPlayer;
+    private _data : IPlayer;
 
     private constructor(data : IPlayer){
         this._data = data;
@@ -75,11 +76,13 @@ export class Player{
         } else {
             const hypixelPlayer = await Player.loadHypixelStats(uuid, isHighPriority);
 
-            const model = new PlayerModel({
+            let model = new PlayerModel({
                 uuid: hypixelPlayer.uuid,
                 name : hypixelPlayer.displayname,
                 warlords : this.getWarlordsStatsFromHypixelStats(hypixelPlayer)
             });
+
+            model = calculateSR(model);
 
             await model.save();
             return new Player(model);
@@ -91,6 +94,7 @@ export class Player{
     }
 
     async recalculateSr(){
+        this._data = calculateSR(this._data);
         await this._data.save();
         return this._data;
     }
