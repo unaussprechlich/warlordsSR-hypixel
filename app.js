@@ -65,7 +65,6 @@ async function reloadSR() {
         console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
     });
 }
-reloadSR().catch(err => console.log(err));
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');
 exports.app.use(logger('dev'));
