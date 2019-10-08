@@ -90,7 +90,7 @@ function onListening() {
         : 'port ' + addr.port;
     debug('Listening on ' + bind);
 }
-
+/*
 async function reloadSR(){
     console.log("Reloading SR ...");
     const players = await PlayerModel.find({});
@@ -99,7 +99,7 @@ async function reloadSR(){
         console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
     })
 }
-
+*/
 //reloadSR().catch(err => console.log(err));
 
 // view engine setup

@@ -69,7 +69,7 @@ class Player {
                 name: hypixelPlayer.displayname,
                 warlords: this.getWarlordsStatsFromHypixelStats(hypixelPlayer)
             });
-            model = SrCalculator_1.calculateSR(model);
+            model = await SrCalculator_1.calculateSR(model);
             await model.save();
             return new Player(model);
         }
@@ -78,7 +78,7 @@ class Player {
         return this._data;
     }
     async recalculateSr() {
-        this._data = SrCalculator_1.calculateSR(this._data);
+        this._data = await SrCalculator_1.calculateSR(this._data);
         await this._data.save();
         return this._data;
     }
