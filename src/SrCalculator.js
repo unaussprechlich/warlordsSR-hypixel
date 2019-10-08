@@ -52,6 +52,7 @@ async function calculateSR(player) {
         console.error(e);
     }
     if (player.name == "sumSmash") {
+        sr.WL = 0.01;
         const Koary = await Player_1.Player.init(UUID_1.default.fromString("01c4a20e-0a60-466f-bd98-ea71c346e5e4"), true);
         if (Koary) {
             sr.SR = MathUtils_1.vOr0(Koary.data.warlords_sr.SR) + 1;
