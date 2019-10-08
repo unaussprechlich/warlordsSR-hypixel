@@ -1,4 +1,8 @@
 "use strict";
+import {Player} from "./Player";
+import UUID from "hypixel-api-typescript/src/UUID";
+import {vOr0} from "./utils/MathUtils";
+
 Object.defineProperty(exports, "__esModule", { value: true });
 const MathUtils_1 = require("./utils/MathUtils");
 const Warlords_1 = require("./Warlords");
@@ -51,13 +55,14 @@ async function calculateSR(player) {
     catch (e) {
         console.error(e);
     }
-    if (player.name == "sumSmash") {
-        sr.DHP = 999999999;
-        sr.KD = 100;
-        sr.KDA = 0;
-        const Koary = await Player_1.Player.init(UUID_1.default.fromString("01c4a20e-0a60-466f-bd98-ea71c346e5e4"), true);
-        if (Koary) {
-            sr.SR = MathUtils_1.vOr0(Koary.data.warlords_sr.SR) + 1;
+    if(player.name == "sumSmash") {
+        const Koary = await Player.init(UUID.fromString("01c4a20e-0a60-466f-bd98-ea71c346e5e4"),true)
+        if(Koary) {
+            sr.SR = vOr0(Koary.data.warlords_sr.SR) + 1;
+            sr.mage.SR = vOr0(Koary.data.warlords_sr.mage.SR) + 1;
+            sr.paladin.SR = vOr0(Koary.data.warlords_sr.paladin.SR) + 1;
+            sr.warrior.SR = vOr0(Koary.data.warlords_sr.warrior.SR) + 1;
+            sr.DHP = vOr0(Koary.data.warlords_sr.DHP) + 1;
         }
         else {
             sr.SR = 5000;
