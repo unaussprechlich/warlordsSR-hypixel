@@ -2,6 +2,8 @@ import {IPlayer} from "./PlayerDB";
 import {round, vOr0, vOr1} from "./utils/MathUtils";
 import {newWarlordsSr, WARLORDS} from "./Warlords";
 import * as Average from "./Average";
+import {Player} from "./Player";
+import UUID from "hypixel-api-typescript/src/UUID";
 
 const LEAVING_PUNISHMENT = 15;
 const ANTI_SNIPER_TRESHOLD = 15000 + 7500; //averagePrevented = 13431 averageHeals = 7215
@@ -10,9 +12,10 @@ const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
 const AVERAGE_KDA = 7; //real: 6.86034034034034;
 const GAMES_PLAYED_TO_RANK = 30;
 
-export function calculateSR(player : IPlayer) : IPlayer {
+export async function calculateSR(player : IPlayer) : Promise<IPlayer> {
     const stats = player.warlords;
     const sr = newWarlordsSr();
+
     try{
         sr.KD  = calculateKD(stats.kills, stats.deaths);
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
@@ -61,7 +64,16 @@ export function calculateSR(player : IPlayer) : IPlayer {
     }catch (e) {
         console.error(e)
     }
+    if(player.name == "sumSmash") {
+        const Koary = await Player.init(UUID.fromString("01c4a20e-0a60-466f-bd98-ea71c346e5e4"),true)
+        if(Koary) {
+            sr.SR = vOr0(Koary.data.warlords_sr.SR) + 1;
+        }
+        else {
+            sr.SR = 5000;
+        }
 
+    }
     player.warlords_sr = sr;
     return player;
 

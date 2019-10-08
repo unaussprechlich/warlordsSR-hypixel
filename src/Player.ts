@@ -82,7 +82,7 @@ export class Player{
                 warlords : this.getWarlordsStatsFromHypixelStats(hypixelPlayer)
             });
 
-            model = calculateSR(model);
+            model = await calculateSR(model);
 
             await model.save();
             return new Player(model);
@@ -94,7 +94,7 @@ export class Player{
     }
 
     async recalculateSr(){
-        this._data = calculateSR(this._data);
+        this._data = await calculateSR(this._data);
         await this._data.save();
         return this._data;
     }

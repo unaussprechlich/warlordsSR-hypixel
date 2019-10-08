@@ -5,7 +5,6 @@ const path = require("path");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 require("mongoose").Promise = global.Promise;
-const PlayerDB_1 = require("./src/PlayerDB");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const player = require("./routes/player");
@@ -13,7 +12,6 @@ const lb = require("./routes/lb");
 exports.app = express();
 const debug = require('debug')('warlordssr-hypixel:server');
 const http = require("http");
-const SrCalculator_1 = require("./src/SrCalculator");
 if (!process.env.MONGO_DB)
     throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
 mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true });
@@ -56,14 +54,6 @@ function onListening() {
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     debug('Listening on ' + bind);
-}
-async function reloadSR() {
-    console.log("Reloading SR ...");
-    const players = await PlayerDB_1.PlayerModel.find({});
-    players.forEach(value => {
-        SrCalculator_1.calculateSR(value).save().catch(err => console.log(err));
-        console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
-    });
 }
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');
