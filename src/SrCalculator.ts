@@ -71,6 +71,7 @@ export async function calculateSR(player : IPlayer) : Promise<IPlayer> {
             sr.mage.SR = vOr0(Koary.data.warlords_sr.mage.SR) + 1;
             sr.paladin.SR = vOr0(Koary.data.warlords_sr.paladin.SR) + 1;
             sr.warrior.SR = vOr0(Koary.data.warlords_sr.warrior.SR) + 1;
+            sr.shaman.SR = vOr0(Koary.data.warlords_sr.shaman.SR) + 1;
             sr.DHP = vOr0(Koary.data.warlords_sr.DHP) + 1;
         }
         else {
