@@ -8,7 +8,7 @@ const DISQUALIFY = {
     PERCENT_LEFT: 5
 };
 const AVERAGE_KDA = 5;
-const GAMES_PLAYED_TO_RANK = 30;
+const GAMES_PLAYED_TO_RANK = 50;
 function calculateSR(player) {
     const stats = player.warlords;
     const sr = Warlords_1.newWarlordsSr();

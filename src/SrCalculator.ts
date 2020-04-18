@@ -9,7 +9,7 @@ const DISQUALIFY = {
 }
 
 const AVERAGE_KDA = 5; //real: 6.86034034034034;
-const GAMES_PLAYED_TO_RANK = 30;
+const GAMES_PLAYED_TO_RANK = 50;
 
 export function calculateSR(player : IPlayer) : IPlayer {
     const stats = player.warlords;
