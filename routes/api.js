@@ -25,7 +25,8 @@ router.get('/*', function (req, res, next) {
             if (!url[2])
                 throw {
                     message: "You did not Provide a UUID or Username!",
-                    status: HttpStatusCodes.BAD_REQUEST
+                    status: HttpStatusCodes.BAD_REQUEST,
+                    apiError: true
                 };
             let uuid;
             if (url[2] === "uuid" && url[3]) {
@@ -36,10 +37,11 @@ router.get('/*', function (req, res, next) {
                     uuid = UUID_1.default.fromString(url[3]);
                 }
                 else {
-                    throw {
-                        message: "UUID is in the wrong format!",
-                        status: HttpStatusCodes.BAD_REQUEST
-                    };
+                    return next({
+                        message: "Can't parse UUID!",
+                        status: HttpStatusCodes.BAD_REQUEST,
+                        apiError: true
+                    });
                 }
             }
             else if (minecraftPlayernamePattern.test(url[2])) {
@@ -47,37 +49,55 @@ router.get('/*', function (req, res, next) {
                 if (!uuid_string)
                     throw {
                         message: "Player with NAME:" + url[2].toString() + " not found!",
-                        status: HttpStatusCodes.NOT_FOUND
+                        status: HttpStatusCodes.NOT_FOUND,
+                        apiError: true
                     };
                 uuid = UUID_1.default.fromString(uuid_string);
             }
             else {
                 throw {
-                    message: "You did not Specify a Username or UUID!",
-                    status: HttpStatusCodes.BAD_REQUEST
+                    message: "The requested path is no Username or UUID!",
+                    status: HttpStatusCodes.BAD_REQUEST,
+                    apiError: true
                 };
             }
             const player = yield Player.defaultCache.get(uuid);
-            if (player == null)
+            if (player == null) {
                 throw {
                     message: "Player with UUID:" + uuid.toString() + " not found!",
-                    status: HttpStatusCodes.NOT_FOUND
+                    status: HttpStatusCodes.NOT_FOUND,
+                    apiError: true
                 };
+            }
             const [ranking, nameHistory] = yield Promise.all([
                 player.getRanking(),
-                player.getNameHistoryString()
+                player.getNameHistory()
             ]);
-            res.render('player', {
-                PAGE_TITLE: "Player | " + player.data.name,
-                PLAYER: player.data,
-                RANKING: ranking,
-                NAME_HISTORY: nameHistory
+            res.status(200).json({
+                success: true,
+                data: {
+                    playername: player.data.name,
+                    uuid: player.data.uuid,
+                    warlords_sr: player.data.warlords_sr,
+                    warlords_hypixel: player.data.warlords,
+                    ranking: ranking,
+                    name_history: nameHistory
+                }
             });
         }
         catch (err) {
-            next(err);
+            if (err.apiError) {
+                next(err);
+            }
+            else {
+                next({
+                    message: "Internal Server Error!",
+                    status: HttpStatusCodes.INTERNAL_SERVER_ERROR,
+                    apiError: true
+                });
+            }
         }
     });
 });
 module.exports = router;
-//# sourceMappingURL=player.js.map
+//# sourceMappingURL=api.js.map

@@ -49,34 +49,43 @@ function newWarlordsSr() {
             DHP: null,
             SR: null,
             WL: null,
-            avenger: { SR: null, DHP: null, WL: null },
-            crusader: { SR: null, DHP: null, WL: null },
-            protector: { SR: null, DHP: null, WL: null },
+            LEVEL: null,
+            WINS: null,
+            avenger: { SR: null, DHP: null, WL: null, WINS: null },
+            crusader: { SR: null, DHP: null, WL: null, WINS: null },
+            protector: { SR: null, DHP: null, WL: null, WINS: null },
         },
         mage: {
             SR: null,
             WL: null,
             DHP: null,
-            pyromancer: { SR: null, DHP: null, WL: null },
-            aquamancer: { SR: null, DHP: null, WL: null },
-            cryomancer: { SR: null, DHP: null, WL: null },
+            LEVEL: null,
+            WINS: null,
+            pyromancer: { SR: null, DHP: null, WL: null, WINS: null },
+            aquamancer: { SR: null, DHP: null, WL: null, WINS: null },
+            cryomancer: { SR: null, DHP: null, WL: null, WINS: null },
         },
         warrior: {
             DHP: null,
             SR: null,
             WL: null,
-            berserker: { SR: null, DHP: null, WL: null },
-            defender: { SR: null, DHP: null, WL: null },
-            revenant: { SR: null, DHP: null, WL: null }
+            LEVEL: null,
+            WINS: null,
+            berserker: { SR: null, DHP: null, WL: null, WINS: null },
+            defender: { SR: null, DHP: null, WL: null, WINS: null },
+            revenant: { SR: null, DHP: null, WL: null, WINS: null }
         },
         shaman: {
             DHP: null,
             SR: null,
             WL: null,
-            thunderlord: { SR: null, DHP: null, WL: null },
-            earthwarden: { SR: null, DHP: null, WL: null },
-            spiritguard: { SR: null, DHP: null, WL: null }
+            LEVEL: null,
+            WINS: null,
+            thunderlord: { SR: null, DHP: null, WL: null, WINS: null },
+            earthwarden: { SR: null, DHP: null, WL: null, WINS: null },
+            spiritguard: { SR: null, DHP: null, WL: null, WINS: null }
         }
     };
 }
 exports.newWarlordsSr = newWarlordsSr;
+//# sourceMappingURL=Warlords.js.map

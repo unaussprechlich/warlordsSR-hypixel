@@ -1,23 +1,19 @@
-import * as express from "express"
+import * as express from 'express';
+import {NextFunction, Request, Response} from 'express';
 import * as path from "path"
 import * as logger from 'morgan'
 import * as mongoose from "mongoose"
+import * as HttpStatusCodes from "http-status-codes"
+
 require("mongoose").Promise = global.Promise;
-import {PlayerModel} from "./src/PlayerDB"
-
-import cookieParser = require('cookie-parser');
-import bodyParser = require('body-parser');
-
-import player = require('./routes/player');
-import lb = require('./routes/lb');
 
 export const app = express();
-const debug = require('debug')('warlordssr-hypixel:server');
-import http = require('http');
+
 import {calculateSR} from "./src/SrCalculator";
+import {PlayerModel} from "./src/PlayerDB";
 
 if(!process.env.MONGO_DB) throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true});
+mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true}).then(value => console.log("Connected!"));
 
 /**
  * Get port from environment and store in Express.
@@ -30,7 +26,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
+const server = require('http').createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -85,21 +81,22 @@ function onError(error) {
 
 function onListening() {
     const addr = server.address();
-    const bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    // @ts-ignore
+    const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+    console.info('Listening on ' + bind);
 }
-/*
+
 async function reloadSR(){
     console.log("Reloading SR ...");
     const players = await PlayerModel.find({});
+    console.log("Players found:" + players.length);
+
     players.forEach(value => {
         calculateSR(value).save().catch(err => console.log(err));
         console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
     })
 }
-*/
+
 //reloadSR().catch(err => console.log(err));
 
 // view engine setup
@@ -107,49 +104,63 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(require("cookie-parser")());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// @ts-ignore
-app.use('/player/*', player);
-// @ts-ignore
-app.use('/lb*', lb);
+/** ROUTES ###################################################################### */
 
-app.get("/impressum", function (req, res) {
+app.use('/player/*', require('./routes/player'));
+app.use('/lb*', require('./routes/lb'));
+app.use('/api/*', require('./routes/api'));
+
+app.get("/impressum", function (req : Request, res : Response) {
    res.render("impressum", {PAGE_TITLE : "Impressum"});
 });
 
-app.get("/about", function (req, res) {
+app.get("/about", function (req : Request, res : Response) {
     res.render("about", {PAGE_TITLE : "About"});
 });
 
-app.get("/", function (req, res) {
+app.get("/", function (req : Request, res : Response) {
     res.redirect("/lb");
 });
+
+/** ERROR ###################################################################### */
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next({
-        status : 404
+        status : HttpStatusCodes.NOT_FOUND
     });
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = err;
-    res.locals.PAGE_TITLE = "Error | " + err.status || 500;
-
-    // render the error page
-    res.status(err.status|| 500);
-    console.error(err);
-    if(err.status === 404){
-        res.render('errors/404.pug');
+app.use(function(err, req : Request, res : Response, next : NextFunction) {
+    if(err.apiError){
+        res.status(err.status|| HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+            success : false,
+            message : err.message
+        })
     } else {
-        res.render("errors/500.pug")
+        // set locals, only providing error in development
+        res.locals.message = err.message;
+        res.locals.error = err;
+        res.locals.PAGE_TITLE = "Error | " + err.status || HttpStatusCodes.INTERNAL_SERVER_ERROR;
+
+        // render the error page
+        res.status(err.status|| HttpStatusCodes.INTERNAL_SERVER_ERROR);
+        console.error(err);
+        if(err.status === HttpStatusCodes.NOT_FOUND){
+            res.render('errors/404.pug');
+        } else if(err.status === HttpStatusCodes.BAD_REQUEST){
+            res.render("errors/400.pug")
+        } else {
+            res.render("errors/500.pug")
+        }
     }
+    console.error(err);
+    next()
 });

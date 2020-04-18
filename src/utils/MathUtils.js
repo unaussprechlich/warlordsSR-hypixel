@@ -54,3 +54,4 @@ function log10_x2(value) {
     return Math.log10(value * value);
 }
 exports.log10_x2 = log10_x2;
+//# sourceMappingURL=MathUtils.js.map

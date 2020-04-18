@@ -8,15 +8,16 @@ class Average {
     }
 }
 exports.Average = Average;
-exports.PYROMANCER = new Average(110, 103187, 1.76);
-exports.CRYOMANCER = new Average(90, 99546, 2.77);
-exports.AQUAMANCER = new Average(135, 105896, 1.93);
-exports.AVENGER = new Average(60, 104286, 2.21);
-exports.CRUSADER = new Average(170, 93370, 2.77);
-exports.PROTECTOR = new Average(100, 127081, 2.02);
-exports.THUNDERLORD = new Average(155, 109217, 1.82);
-exports.SPIRITGUARD = new Average(155, 129217, 1.82);
-exports.EARTHWARDEN = new Average(85, 111751, 1.90);
-exports.BERSERKER = new Average(10, 94848, 2.65);
-exports.DEFENDER = new Average(-10, 97136, 2.54);
-exports.REVENANT = new Average(100, 127081, 2.02);
+exports.PYROMANCER = new Average(0, 90000, 1);
+exports.CRYOMANCER = new Average(0, 90000, 1);
+exports.AQUAMANCER = new Average(0, 90000, 1);
+exports.AVENGER = new Average(0, 90000, 1);
+exports.CRUSADER = new Average(0, 90000, 1);
+exports.PROTECTOR = new Average(0, 90000, 1);
+exports.THUNDERLORD = new Average(0, 90000, 1);
+exports.SPIRITGUARD = new Average(0, 90000, 1);
+exports.EARTHWARDEN = new Average(0, 90000, 1);
+exports.BERSERKER = new Average(0, 90000, 1);
+exports.DEFENDER = new Average(0, 90000, 1);
+exports.REVENANT = new Average(0, 90000, 1);
+//# sourceMappingURL=Average.js.map

@@ -3,15 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const MathUtils_1 = require("./utils/MathUtils");
 const Warlords_1 = require("./Warlords");
 const Average = require("./Average");
-const Player_1 = require("./Player");
-const UUID_1 = require("hypixel-api-typescript/src/UUID");
-const LEAVING_PUNISHMENT = 15;
-const ANTI_SNIPER_TRESHOLD = 15000 + 7500;
-const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000;
-const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000;
-const AVERAGE_KDA = 7;
+const DISQUALIFY = {
+    MAX_WL: 5,
+    PERCENT_LEFT: 5
+};
+const AVERAGE_KDA = 5;
 const GAMES_PLAYED_TO_RANK = 30;
-async function calculateSR(player) {
+function calculateSR(player) {
     const stats = player.warlords;
     const sr = Warlords_1.newWarlordsSr();
     try {
@@ -25,11 +23,14 @@ async function calculateSR(player) {
             player.warlords["losses_" + warlord.name] = MathUtils_1.vOr0(stats[warlord.name + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + warlord.name]);
             sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
+            sr[warlord.name].LEVEL = calculateLevel(warlord.name, stats);
+            sr[warlord.name].WINS = stats["wins_" + warlord.name];
             for (const spec of warlord.specs) {
                 player.warlords["losses_" + spec] = MathUtils_1.vOr0(stats[spec + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + spec]);
                 sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].SR = calculateSr(sr[warlord.name][spec].DHP, stats[spec + "_plays"], sr[warlord.name][spec].WL, sr.KDA, Average[spec.toLocaleUpperCase()], sr.plays, stats.penalty);
+                sr[warlord.name][spec].WINS = stats["wins_" + spec];
             }
         }
         sr.mage.SR = Math.round((MathUtils_1.vOr0(sr.mage.pyromancer.SR) + MathUtils_1.vOr0(sr.mage.aquamancer.SR) + MathUtils_1.vOr0(sr.mage.cryomancer.SR)) / 3);
@@ -51,49 +52,53 @@ async function calculateSR(player) {
     catch (e) {
         console.error(e);
     }
-    if (player.name == "sumSmash") {
-        const Koary = await Player_1.Player.init(UUID_1.default.fromString("01c4a20e-0a60-466f-bd98-ea71c346e5e4"), true);
-        if (Koary) {
-            sr.SR = MathUtils_1.vOr0(Koary.data.warlords_sr.SR) + 1;
-            sr.mage.SR = MathUtils_1.vOr0(Koary.data.warlords_sr.mage.SR) + 1;
-            sr.paladin.SR = MathUtils_1.vOr0(Koary.data.warlords_sr.paladin.SR) + 1;
-            sr.warrior.SR = MathUtils_1.vOr0(Koary.data.warlords_sr.warrior.SR) + 1;
-            sr.shaman.SR = MathUtils_1.vOr0(Koary.data.warlords_sr.shaman.SR) + 1;
-            sr.DHP = MathUtils_1.vOr0(Koary.data.warlords_sr.DHP) + 1;
-        }
-        else {
-            sr.SR = 5000;
-        }
-    }
     player.warlords_sr = sr;
     return player;
 }
 exports.calculateSR = calculateSR;
+function calculateLevel(warlord, stats) {
+    return MathUtils_1.vOr0(stats[warlord + "_skill1"])
+        + MathUtils_1.vOr0(stats[warlord + "_skill2"])
+        + MathUtils_1.vOr0(stats[warlord + "_skill3"])
+        + MathUtils_1.vOr0(stats[warlord + "_skill4"])
+        + MathUtils_1.vOr0(stats[warlord + "_skill5"])
+        + MathUtils_1.vOr0(stats[warlord + "_cooldown"])
+        + MathUtils_1.vOr0(stats[warlord + "_critchance"])
+        + MathUtils_1.vOr0(stats[warlord + "_critmultiplier"])
+        + MathUtils_1.vOr0(stats[warlord + "_energy"])
+        + MathUtils_1.vOr0(stats[warlord + "_health"]);
+}
 function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
     if (dhp == null || specPlays == null || plays == null || wl == null || kda == null || specPlays < GAMES_PLAYED_TO_RANK)
         return null;
-    if (penalty == null)
-        penalty = 0;
-    const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
+    if (disqualify(dhp, specPlays, wl, kda, average, plays, penalty))
+        return null;
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
-    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
-    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
+    const wlAdjusted = adjust_wl(wl, average.WL);
+    const kdaAdjusted = adjust_dhp(kda, AVERAGE_KDA);
+    const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjusted / 2)) * (1000 + average.ADJUST));
     if (SR <= 0)
         return null;
     else
         return SR;
 }
-function adjust_2_wl(v, averageRatio) {
-    const adjust = 2.027 - averageRatio;
-    if (v > 6.896 - adjust)
-        return 2;
-    else if (v > 2.027)
-        return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
-    else if (v <= 0.027 || v <= 0.027 - adjust)
+function disqualify(dhp, specPlays, wl, kda, average, plays, penalty) {
+    if (wl > DISQUALIFY.MAX_WL)
+        return true;
+    if (penalty == null)
+        penalty = 0;
+    if ((penalty / plays) * 100 >= 5)
+        return true;
+    return false;
+}
+function adjust_wl(v, averageRatio) {
+    v = v * 2 + 0.027 - (averageRatio - 1);
+    if (v > 2.027)
+        return Math.cos(((v + 3) / Math.PI) + Math.PI) + 1;
+    else if (v <= 0.027)
         return 0;
     else
-        return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
+        return Math.tan((v - 3) / Math.PI) - 0.35 + 1;
 }
 function calculateWL(wins, plays) {
     return MathUtils_1.round(MathUtils_1.vOr0(wins) / MathUtils_1.vOr1(MathUtils_1.vOr0(plays) - MathUtils_1.vOr0(wins)), 100);
@@ -110,21 +115,10 @@ function adjust_dhp(v, average) {
 function calculateDHP(dmg, heal, prevented, plays) {
     return Math.round((MathUtils_1.vOr0(dmg) + MathUtils_1.vOr0(heal) + MathUtils_1.vOr0(prevented)) / MathUtils_1.vOr1(plays));
 }
-function antiDefenderNoobDHP(dmg, heal, prevented, plays) {
-    if (dmg == null || heal == null || prevented == null)
-        return null;
-    const penalty = Math.log2((prevented / plays / ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED) + (heal / plays / ANTI_DEFENDER_NOOB_THRESHOLD_HEAL) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty) / plays);
-}
-function antiSniperDHP(dmg, heal, prevented, plays) {
-    if (dmg == null || heal == null || prevented == null)
-        return null;
-    const penalty = Math.log2(((prevented + heal) / plays / ANTI_SNIPER_TRESHOLD) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty) / plays);
-}
 function calculateKD(kills, deaths) {
     return MathUtils_1.round(MathUtils_1.vOr0(kills) / MathUtils_1.vOr1(deaths), 100);
 }
 function calculateKDA(kills, deaths, assists) {
     return MathUtils_1.round((MathUtils_1.vOr0(kills) + MathUtils_1.vOr0(assists)) / MathUtils_1.vOr1(deaths), 100);
 }
+//# sourceMappingURL=SrCalculator.js.map

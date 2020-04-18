@@ -1,7 +1,13 @@
 import * as express from 'express'
 import {PlayerModel} from "../src/PlayerDB";
 import {CLAZZES, WARLORDS} from "../src/Warlords";
+const Cache = require("cache");
+
 const router = express.Router();
+
+const cache = new Cache(5 * 60 * 1000);
+
+
 
 /* GET home page. */
 router.get('/*', async function(req, res, next) {
@@ -13,10 +19,19 @@ router.get('/*', async function(req, res, next) {
         const specsOfClazz = clazz ? WARLORDS[CLAZZES.indexOf(clazz)].specs : null;
         const spec = clazz && url[3] && specsOfClazz && specsOfClazz.indexOf(url[3].toLowerCase()) >= 0 ? url[3].toLowerCase() : null;
 
-        const sortBY = "warlords_sr." + (clazz ? (spec ? clazz + "." + spec + "." : clazz + ".") : "") + "SR";
+        async function loadLb(sortBy : string) {
+            if(cache.get(sortBy)) return cache.get(sortBy);
+
+            const lb = await PlayerModel.find({[sortBy] : {$exists : true}}, {name : 1, uuid : 1, warlords_sr : 1}).sort("-" + sortBy).limit(1000).lean(true);
+            cache.put(sortBy, lb);
+            return lb;
+
+        }
+
+        const players = await loadLb("warlords_sr." + (clazz ? (spec ? clazz + "." + spec + "." : clazz + ".") : "") + "SR");
 
 
-        const players = await PlayerModel.find({[sortBY] : {$exists : true}}, {name : 1, uuid : 1, warlords_sr : 1, warlords : 1}).sort("-" + sortBY).limit(1000).lean(true);
+
         res.render('lb', {
             PAGE_TITLE: "LB | " + capitalizeFirstLetter(clazz ? (spec ? spec : clazz) : "General"),
             CLAZZ : clazz,

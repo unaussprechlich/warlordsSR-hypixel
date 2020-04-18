@@ -6,7 +6,8 @@ export const PlayerModel = mongoose.model<IPlayer>('Player', PlayerSchema);
 export interface IStats{
     DHP : number | null,
     SR : number | null,
-    WL : number | null
+    WL : number | null,
+    WINS : number | null
 }
 
 export interface IWarlordsSR{
@@ -20,36 +21,44 @@ export interface IWarlordsSR{
     realPenalty : number | null
 
     paladin : {
-        DHP : number | null,
-        SR : number | null,
-        WL : number | null,
+        DHP : number | null
+        SR : number | null
+        WL : number | null
+        LEVEL : number | null
+        WINS : number | null
         avenger : IStats
         crusader : IStats
         protector : IStats
     },
 
     mage : {
-        SR : number | null,
-        WL : number | null,
-        DHP : number | null,
+        SR : number | null
+        WL : number | null
+        DHP : number | null
+        LEVEL : number | null
+        WINS : number | null
         pyromancer : IStats
         aquamancer : IStats
         cryomancer : IStats
     },
 
     warrior : {
-        DHP : number | null,
-        SR : number | null,
-        WL : number | null,
+        DHP : number | null
+        SR : number | null
+        WL : number | null
+        LEVEL : number | null
+        WINS : number | null
         berserker : IStats
         defender : IStats
         revenant : IStats
     },
 
     shaman : {
-        DHP : number | null,
-        SR : number | null,
-        WL : number | null,
+        DHP : number | null
+        SR : number | null
+        WL : number | null
+        LEVEL : number | null
+        WINS : number | null
         thunderlord : IStats
         earthwarden : IStats
         spiritguard : IStats
@@ -80,6 +89,17 @@ export interface IWarlordsHypixelAPI{
     warrior_plays: number,
     wins_warrior: number,
     losses_warrior: number,
+
+    warrior_skill1 : number
+    warrior_skill2 : number
+    warrior_skill3 : number
+    warrior_skill4 : number
+    warrior_skill5 : number
+    warrior_cooldown : number
+    warrior_critchance : number
+    warrior_critmultiplier : number
+    warrior_energy : number
+    warrior_health : number
 
     //BERS -------------------------------------------------------------------------------------------------------//
     berserker_plays: number,
@@ -114,6 +134,18 @@ export interface IWarlordsHypixelAPI{
     wins_paladin: number,
     losses_paladin: number,
 
+    paladin_skill1 : number
+    paladin_skill2 : number
+    paladin_skill3 : number
+    paladin_skill4 : number
+    paladin_skill5 : number
+    paladin_cooldown : number
+    paladin_critchance : number
+    paladin_critmultiplier : number
+    paladin_energy : number
+    paladin_health : number
+
+
     //AVENGER ----------------------------------------------------------------------------------------------------//
     avenger_plays: number,
     damage_avenger: number,
@@ -147,6 +179,18 @@ export interface IWarlordsHypixelAPI{
     wins_mage: number,
     losses_mage: number,
 
+    mage_skill1 : number
+    mage_skill2 : number
+    mage_skill3 : number
+    mage_skill4 : number
+    mage_skill5 : number
+    mage_cooldown : number
+    mage_critchance : number
+    mage_critmultiplier : number
+    mage_energy : number
+    mage_health : number
+
+
     //PYRO -------------------------------------------------------------------------------------------------------//
     damage_prevented_pyromancer: number,
     damage_pyromancer: number,
@@ -178,6 +222,18 @@ export interface IWarlordsHypixelAPI{
     shaman_plays: number,
     damage_prevented_shaman: number,
     wins_shaman: number,
+
+    shaman_skill1 : number
+    shaman_skill2 : number
+    shaman_skill3 : number
+    shaman_skill4 : number
+    shaman_skill5 : number
+    shaman_cooldown : number
+    shaman_critchance : number
+    shaman_critmultiplier : number
+    shaman_energy : number
+    shaman_health : number
+
 
     //TL ---------------------------------------------------------------------------------------------------------//
     heal_thunderlord: number,

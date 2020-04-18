@@ -1,18 +1,17 @@
-import {IPlayer} from "./PlayerDB";
+import {IPlayer, IWarlordsHypixelAPI} from "./PlayerDB";
 import {round, vOr0, vOr1} from "./utils/MathUtils";
 import {newWarlordsSr, WARLORDS} from "./Warlords";
 import * as Average from "./Average";
-import {Player} from "./Player";
-import UUID from "hypixel-api-typescript/src/UUID";
 
-const LEAVING_PUNISHMENT = 15;
-const ANTI_SNIPER_TRESHOLD = 15000 + 7500; //averagePrevented = 13431 averageHeals = 7215
-const ANTI_DEFENDER_NOOB_THRESHOLD_HEAL = 3000; //average = 2640
-const ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED = 40000; //average = 35000
-const AVERAGE_KDA = 7; //real: 6.86034034034034;
+const DISQUALIFY = {
+    MAX_WL : 5,
+    PERCENT_LEFT : 5
+}
+
+const AVERAGE_KDA = 5; //real: 6.86034034034034;
 const GAMES_PLAYED_TO_RANK = 30;
 
-export async function calculateSR(player : IPlayer) : Promise<IPlayer> {
+export function calculateSR(player : IPlayer) : IPlayer {
     const stats = player.warlords;
     const sr = newWarlordsSr();
 
@@ -30,6 +29,8 @@ export async function calculateSR(player : IPlayer) : Promise<IPlayer> {
             player.warlords["losses_" + warlord.name] = vOr0(stats[warlord.name + "_plays"]) - vOr0(stats["wins_" + warlord.name]);
             sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
+            sr[warlord.name].LEVEL = calculateLevel(warlord.name, stats);
+            sr[warlord.name].WINS = stats["wins_" + warlord.name]
 
             for (const spec of warlord.specs){
                 player.warlords["losses_" + spec] = vOr0(stats[spec + "_plays"]) - vOr0(stats["wins_" + spec]);
@@ -44,6 +45,7 @@ export async function calculateSR(player : IPlayer) : Promise<IPlayer> {
                     sr.plays,
                     stats.penalty,
                 );
+                sr[warlord.name][spec].WINS = stats["wins_" + spec]
             }
         }
 
@@ -64,23 +66,23 @@ export async function calculateSR(player : IPlayer) : Promise<IPlayer> {
     }catch (e) {
         console.error(e)
     }
-    if(player.name == "sumSmash") {
-        const Koary = await Player.init(UUID.fromString("01c4a20e-0a60-466f-bd98-ea71c346e5e4"),true)
-        if(Koary) {
-            sr.SR = vOr0(Koary.data.warlords_sr.SR) + 1;
-            sr.mage.SR = vOr0(Koary.data.warlords_sr.mage.SR) + 1;
-            sr.paladin.SR = vOr0(Koary.data.warlords_sr.paladin.SR) + 1;
-            sr.warrior.SR = vOr0(Koary.data.warlords_sr.warrior.SR) + 1;
-            sr.shaman.SR = vOr0(Koary.data.warlords_sr.shaman.SR) + 1;
-            sr.DHP = vOr0(Koary.data.warlords_sr.DHP) + 1;
-        }
-        else {
-            sr.SR = 5000;
-        }
-    }
+
     player.warlords_sr = sr;
     return player;
 
+}
+
+function calculateLevel(warlord : string, stats : IWarlordsHypixelAPI) : number {
+    return vOr0(stats[warlord + "_skill1"])
+        + vOr0(stats[warlord + "_skill2"])
+        + vOr0(stats[warlord + "_skill3"])
+        + vOr0(stats[warlord + "_skill4"])
+        + vOr0(stats[warlord + "_skill5"])
+        + vOr0(stats[warlord + "_cooldown"])
+        + vOr0(stats[warlord + "_critchance"])
+        + vOr0(stats[warlord + "_critmultiplier"])
+        + vOr0(stats[warlord + "_energy"])
+        + vOr0(stats[warlord + "_health"])
 }
 
 /**
@@ -94,17 +96,27 @@ export async function calculateSR(player : IPlayer) : Promise<IPlayer> {
  * @param {number} penalty
  * @returns {any}
  */
-function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, kda : number | null, average : Average.Average, plays : number | null, penalty : number){
+function calculateSr(dhp : number | null, specPlays : number,  wl : number | null, kda : number | null, average : Average.Average, plays : number | null, penalty : number | null){
     if(dhp == null || specPlays == null || plays == null || wl == null ||  kda == null || specPlays < GAMES_PLAYED_TO_RANK) return null;
-    if(penalty == null) penalty = 0;
-    const penaltyPerPlay = Math.pow(((penalty * (specPlays / plays)) / specPlays) + 1, LEAVING_PUNISHMENT);
+
+    if(disqualify(dhp, specPlays, wl, kda, average, plays, penalty)) return null;
+
     const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_2_wl(wl / penaltyPerPlay, average.WL);
-    const kdaAdjsuted = adjust_dhp(kda, AVERAGE_KDA);
-    const SR= Math.round((dhpAdjusted + wlAdjusted + (kdaAdjsuted / 2)) * (1000 + average.ADJUST));
+    const wlAdjusted = adjust_wl(wl, average.WL);
+    const kdaAdjusted = adjust_dhp(kda, AVERAGE_KDA);
+    const SR= Math.round((dhpAdjusted + wlAdjusted + (kdaAdjusted / 2)) * (1000 + average.ADJUST));
 
     if(SR <= 0) return null;
     else return SR;
+}
+
+function disqualify(dhp : number, specPlays : number,  wl : number, kda : number, average : Average.Average, plays : number, penalty : number | null) : boolean {
+    if(wl > DISQUALIFY.MAX_WL) return true;
+
+    if(penalty == null) penalty = 0;
+    if((penalty/ plays) * 100 >= 5) return true
+
+    return false;
 }
 
 // WIN/LOSS ------------------------------------------------------------------------------------------------------------
@@ -122,12 +134,11 @@ function calculateSr(dhp : number | null, specPlays : number,  wl : number | nul
  * @param {number} averageRatio
  * @returns {number}
  */
-function adjust_2_wl(v : number, averageRatio : number){
-    const adjust = 2.027 - averageRatio;
-    if(v > 6.896 - adjust) return 2;
-    else if(v > 2.027) return Math.cos(((v + 3 + adjust) / Math.PI) + Math.PI) + 1;
-    else if(v <= 0.027 || v <= 0.027 - adjust) return 0;
-    else return Math.tan((v - 3 + adjust) / Math.PI) - 0.398 + 1;
+function adjust_wl(v : number, averageRatio : number){
+    v = v*2 + 0.027 - (averageRatio - 1);
+    if(v > 2.027) return Math.cos(((v + 3) / Math.PI) + Math.PI) + 1;
+    else if(v <= 0.027) return 0;
+    else return Math.tan((v - 3) / Math.PI) - 0.35 + 1;
 }
 
 function calculateWL(wins : number , plays : number){
@@ -156,36 +167,6 @@ function adjust_dhp(v : number, average : number){
 
 function calculateDHP(dmg : number, heal : number, prevented : number, plays : number | null){
     return Math.round((vOr0(dmg)  + vOr0(heal) + vOr0(prevented))/vOr1(plays));
-}
-
-/**
- * Punish  defender n00bs ;)
- * They need an average of 40.000 damage prevented per game and also 3.000 heal.
- * @param {number} dmg
- * @param {number} heal
- * @param {number} prevented
- * @param {number} plays
- * @returns {any}
- */
-function antiDefenderNoobDHP(dmg : number, heal : number, prevented : number, plays : number){
-    if(dmg == null || heal == null || prevented == null) return null;
-    const penalty = Math.log2((prevented/plays/ ANTI_DEFENDER_NOOB_THRESHOLD_PREVENTED) + (heal/plays/ ANTI_DEFENDER_NOOB_THRESHOLD_HEAL) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty)/plays);
-}
-
-/**
- * Punish those freaking snipers ;)
- * A real pyro should have at least 15.000 prevented damage and 7500 healzzzz per game (values might be too low)
- * @param {number} dmg
- * @param {number} heal
- * @param {number} prevented
- * @param {number} plays
- * @returns {any}
- */
-function antiSniperDHP(dmg : number, heal : number, prevented : number, plays : number){
-    if(dmg == null || heal == null || prevented == null) return null;
-    const penalty = Math.log2(((prevented + heal)/plays / ANTI_SNIPER_TRESHOLD) + 1);
-    return Math.round(((dmg + heal + prevented) * penalty)/plays);
 }
 
 // OTHER ---------------------------------------------------------------------------------------------------------------

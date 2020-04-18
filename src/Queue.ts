@@ -1,4 +1,3 @@
-import {isNumber} from "util";
 import Timer = NodeJS.Timer;
 
 function lowerBound<T>(array : Array<T>, value : T, comp : (a : T, b : T) => number) {
@@ -126,7 +125,7 @@ export class Queue {
             maxExecutions : 5
         }, opts);
 
-        if (!(isNumber(options.parallel) && options.parallel >= 1))
+        if (!(options.parallel >= 1))
             throw new OptionNumberError(options.parallel, "QueueOptions.parallel");
 
         if(options.parallel > options.rateLimit)

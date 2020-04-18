@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const util_1 = require("util");
 function lowerBound(array, value, comp) {
     let first = 0;
     let count = array.length;
@@ -60,7 +59,7 @@ class Queue {
             maxRateDelay: 600,
             maxExecutions: 5
         }, opts);
-        if (!(util_1.isNumber(options.parallel) && options.parallel >= 1))
+        if (!(options.parallel >= 1))
             throw new OptionNumberError(options.parallel, "QueueOptions.parallel");
         if (options.parallel > options.rateLimit)
             throw SyntaxError("You can't perform more PARALLEL_EXECUTIONS, then your RATE_LIMIT allows!");
@@ -235,3 +234,4 @@ class Queue {
     }
 }
 exports.Queue = Queue;
+//# sourceMappingURL=Queue.js.map

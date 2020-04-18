@@ -37,6 +37,9 @@
     padding: 20px; }
     #sidebar .sidebar-header h3 {
       margin: 0; }
+  #sidebar #searchPlayerButton {
+    background-color: #17a2b8;
+    color: #ffffff; }
   #sidebar form .input-group-append button {
     background-color: #17a2b8;
     color: #ffffff; }

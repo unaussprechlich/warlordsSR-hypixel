@@ -16,20 +16,25 @@ export const PlayerSchema = new mongoose.Schema({
             DHP : Number,
             SR : Number,
             WL : Number,
+            LEVEL : Number,
+            WINS : Number,
             avenger : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             crusader : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             protector : {
                 DHP : Number,
                 SR: Number,
-                WL: Number
+                WL: Number,
+                WINS : Number
             }
         },
 
@@ -37,20 +42,25 @@ export const PlayerSchema = new mongoose.Schema({
             SR : Number,
             WL : Number,
             DHP : Number,
+            LEVEL : Number,
+            WINS : Number,
             pyromancer : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             aquamancer : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             cryomancer : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             }
         },
 
@@ -58,20 +68,25 @@ export const PlayerSchema = new mongoose.Schema({
             DHP : Number,
             SR : Number,
             WL : Number,
+            LEVEL : Number,
+            WINS : Number,
             berserker : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             defender : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             revenant : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             }
         },
 
@@ -79,20 +94,25 @@ export const PlayerSchema = new mongoose.Schema({
             DHP : Number,
             SR : Number,
             WL : Number,
+            LEVEL : Number,
+            WINS : Number,
             thunderlord : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             spiritguard : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             },
             earthwarden : {
                 DHP : Number,
                 SR : Number,
-                WL : Number
+                WL : Number,
+                WINS : Number
             }
         }
     },
@@ -121,6 +141,17 @@ export const PlayerSchema = new mongoose.Schema({
         warrior_plays: Number,
         wins_warrior: Number,
         losses_warrior: Number,
+
+        warrior_skill1 : Number,
+        warrior_skill2 : Number,
+        warrior_skill3 : Number,
+        warrior_skill4 : Number,
+        warrior_skill5 : Number,
+        warrior_cooldown : Number,
+        warrior_critchance : Number,
+        warrior_critmultiplier : Number,
+        warrior_energy : Number,
+        warrior_health : Number,
 
         //BERS -------------------------------------------------------------------------------------------------------//
         berserker_plays: Number,
@@ -155,6 +186,17 @@ export const PlayerSchema = new mongoose.Schema({
         wins_paladin: Number,
         losses_paladin: Number,
 
+        paladin_skill1 : Number,
+        paladin_skill2 : Number,
+        paladin_skill3 : Number,
+        paladin_skill4 : Number,
+        paladin_skill5 : Number,
+        paladin_cooldown : Number,
+        paladin_critchance : Number,
+        paladin_critmultiplier : Number,
+        paladin_energy : Number,
+        paladin_health : Number,
+
         //AVENGER ----------------------------------------------------------------------------------------------------//
         avenger_plays: Number,
         damage_avenger: Number,
@@ -188,6 +230,17 @@ export const PlayerSchema = new mongoose.Schema({
         wins_mage: Number,
         losses_mage: Number,
 
+        mage_skill1 : Number,
+        mage_skill2 : Number,
+        mage_skill3 : Number,
+        mage_skill4 : Number,
+        mage_skill5 : Number,
+        mage_cooldown : Number,
+        mage_critchance : Number,
+        mage_critmultiplier : Number,
+        mage_energy : Number,
+        mage_health : Number,
+
         //PYRO -------------------------------------------------------------------------------------------------------//
         damage_prevented_pyromancer: Number,
         damage_pyromancer: Number,
@@ -219,6 +272,17 @@ export const PlayerSchema = new mongoose.Schema({
         shaman_plays: Number,
         damage_prevented_shaman: Number,
         wins_shaman: Number,
+
+        shaman_skill1 : Number,
+        shaman_skill2 : Number,
+        shaman_skill3 : Number,
+        shaman_skill4 : Number,
+        shaman_skill5 : Number,
+        shaman_cooldown : Number,
+        shaman_critchance : Number,
+        shaman_critmultiplier : Number,
+        shaman_energy : Number,
+        shaman_health : Number,
 
         //TL ---------------------------------------------------------------------------------------------------------//
         heal_thunderlord: Number,

@@ -21,7 +21,7 @@ mixin lb_spec()
       th(scope="col")  #
       th(scope="col") Name
       th(scope="col") SR
-      th(scope="col") WL
+      th(scope="col") W/L
       th(scope="col") DHP
       th(scope="col") Wins
   tbody
@@ -33,7 +33,7 @@ mixin lb_spec()
         +td_entry(player, "SR")
         +td_entry(player, "WL")
         +td_entry(player, "DHP")
-        +td_item(player.warlords["wins_" + SPEC])
+        +td_entry(player, "WINS")
       - rank++
 
 mixin lb_class()
@@ -42,7 +42,7 @@ mixin lb_class()
       th(scope="col")  #
       th(scope="col") Name
       th(scope="col") SR
-      th(scope="col") WL
+      th(scope="col") W/L
       th(scope="col") DHP
       th(scope="col") Wins
       for spec in SPECS
@@ -56,7 +56,7 @@ mixin lb_class()
         +td_entry(player, "SR")
         +td_entry(player, "WL")
         +td_entry(player, "DHP")
-        +td_item(player.warlords["wins_" + CLAZZ])
+        +td_entry(player, "WINS")
         for spec in SPECS
           +td_item(player.warlords_sr[CLAZZ][spec].SR)
       - rank++
@@ -67,7 +67,8 @@ mixin lb_overview()
       th(scope="col")  #
       th(scope="col") Name
       th(scope="col") SR
-      th(scope="col") WL
+      th(scope="col") W/L
+      th(scope="col") KA/D
       th(scope="col") DHP
       for clazz in CLAZZES
         th(scope="col")= clazz.toUpperCase()
@@ -79,6 +80,7 @@ mixin lb_overview()
         +td_item(player.name)
         +td_entry(player, "SR")
         +td_entry(player, "WL")
+        +td_entry(player, "KDA")
         +td_entry(player, "DHP")
         for clazz in CLAZZES
           +td_item(player.warlords_sr[clazz].SR)

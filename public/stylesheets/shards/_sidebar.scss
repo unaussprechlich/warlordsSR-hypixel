@@ -43,6 +43,10 @@
       margin: 0;
     }
   }
+  #searchPlayerButton{
+    background-color: $highlight;
+    color: $white;
+  }
 
   form .input-group-append button {
     background-color: $highlight;

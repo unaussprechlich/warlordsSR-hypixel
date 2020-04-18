@@ -6,6 +6,7 @@ import * as Cache from "cache";
 import {Queue} from "./Queue";
 import Exception from "hypixel-api-typescript/src/Exceptions";
 import {calculateSR} from "./SrCalculator";
+import * as MinecraftAPI from "minecraft-api/index";
 
 if(!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID.fromString(process.env.API_KEY);
@@ -59,6 +60,7 @@ export class PlayerCache{
 export class Player{
 
     private _data : IPlayer;
+    private _nameHistory? : Array<MinecraftAPI.NameHistoryResponseModel>
 
     private constructor(data : IPlayer){
         this._data = data;
@@ -99,6 +101,23 @@ export class Player{
         return this._data;
     }
 
+    async getNameHistoryString(){
+        const history = await this.getNameHistory();
+        if(!history || history.length === 0) return null;
+        let result = "";
+        for(let item of [... new Set(history.filter(v => v.name !== this._data.name).map(v => v.name))]){
+            result += item + " | "
+        }
+        return result.substring(0, result.length - 3)
+    }
+
+    async getNameHistory(){
+        if(this._nameHistory) return this._nameHistory;
+        const history = await MinecraftAPI.nameHistoryForUuid(this._data.uuid.toString());
+        this._nameHistory = history;
+        return history;
+    }
+
     async getRanking() {
         return Ranking.defaultCache.get(this._data.uuid)
     }
@@ -111,7 +130,7 @@ export class Player{
     }
 
     static getWarlordsStatsFromHypixelStats(hypixelPlayer : HypixelAPI.Player){
-        if(!hypixelPlayer || !hypixelPlayer.stats) throw Exception.NULL_POINTER;
+        if(!hypixelPlayer || !hypixelPlayer.stats) throw Exception.NOT_FOUND;
         return hypixelPlayer.stats.Battleground as IWarlordsHypixelAPI;
     }
 

@@ -313,6 +313,8 @@ block content
                   img.card-img-top(src= playerHeadLink)
                 .col-lg-10.col-sm-9.col-9
                   h3.card-title= PLAYER.name
+                  if NAME_HISTORY
+                    p= NAME_HISTORY
                   - var planckeLink= "https://plancke.io/hypixel/player/stats/" + PLAYER.name
                   a.btn.btn-light(href= planckeLink) show on plancke.io
 
@@ -334,6 +336,7 @@ block content
                 h3.mb-0
                   +RankingNullCheck(RANKING.paladin.overall)
                   | Paladin
+                  span(style="color : #757575")  Lv#{PLAYER.warlords_sr.paladin.LEVEL}
                 +sritem(PLAYER.warlords_sr.paladin.SR)
               #collapse-paladin.collapse(aria-labelledby="heading-paladin" data-parent="#classaccordion")
                 .card-body
@@ -344,6 +347,7 @@ block content
                 h3.mb-0
                   +RankingNullCheck(RANKING.mage.overall)
                   | Mage
+                  span(style="color : #757575")  Lv#{PLAYER.warlords_sr.mage.LEVEL}
                 +sritem(PLAYER.warlords_sr.mage.SR)
               #collapse-mage.collapse(aria-labelledby="heading-mage" data-parent="#classaccordion")
                 .card-body
@@ -354,6 +358,7 @@ block content
                 h3.mb-0
                   +RankingNullCheck(RANKING.shaman.overall)
                   | Shaman
+                  span(style="color : #757575")  Lv#{PLAYER.warlords_sr.shaman.LEVEL}
                 +sritem(PLAYER.warlords_sr.shaman.SR)
               #collapse-shaman.collapse(aria-labelledby="heading-shaman" data-parent="#classaccordion")
                 .card-body
@@ -364,6 +369,7 @@ block content
                 h3.mb-0
                   +RankingNullCheck(RANKING.warrior.overall)
                   | Warrior
+                  span(style="color : #757575")  Lv#{PLAYER.warlords_sr.warrior.LEVEL}
                 +sritem(PLAYER.warlords_sr.warrior.SR)
               #collapse-warrior.collapse(aria-labelledby="heading-warrior" data-parent="#classaccordion")
                 .card-body
