@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.log10_x2 = exports.log10_1At1 = exports.av2 = exports.av10 = exports.adjustV = exports.adjust_1_wl = exports.vOr1 = exports.vOr0 = exports.round = void 0;
 function round(zahl, n_stelle) {
     zahl = (Math.round(zahl * n_stelle) / n_stelle);
     return zahl;

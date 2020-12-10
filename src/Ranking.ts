@@ -1,5 +1,9 @@
 import * as Cache from "cache";
 import {PlayerModel} from "./PlayerDB";
+import {redis} from "../app";
+import UUID from "hypixel-api-typescript/src/UUID";
+
+const CACHE_TIME = 24 * 60 * 60; // 24 hours
 
 export interface Ranking{
     overall? : number
@@ -35,24 +39,25 @@ export interface Ranking{
 
 export class RankingCache{
 
-    _cache = new Cache(15 * 60 * 1000);
-
-    async get(uuid : String) : Promise<Ranking>{
-        if(this._cache.get(uuid)) return this._cache.get(uuid);
-        else{
+    public static async get(uuid : UUID) : Promise<Ranking>{
+        const cacheResult = await redis.get(`wsr:rank:${uuid.toString()}`)
+        if(cacheResult){
+            console.info(`[WarlordsSR|RankingCache] hit for ${uuid}`)
+            return JSON.parse(cacheResult)
+        } else{
             const result = await RankingCache.loadFromDatabase(uuid);
-            this._cache.put(uuid, result);
+            await redis.set(`wsr:rank:${uuid}`, JSON.stringify(result), ["EX", CACHE_TIME])
             return result;
         }
     }
 
-    private static async loadRankFromDatabase(srField : string, uuid : String){
+    private static async loadRankFromDatabase(srField : string, uuid : UUID){
 
         let sortObj = {};
-        sortObj[srField] = -1;
+        sortObj[`warlords_sr.${srField}`] = -1;
 
         let matchObj = {};
-        matchObj[srField] = {$exists : true, $ne: null};
+        matchObj[`warlords_sr.${srField}`] = {$exists : true, $ne: null};
 
         const result = (await PlayerModel.aggregate([
             {
@@ -79,7 +84,7 @@ export class RankingCache{
             },
             {
                 $match: {
-                    "players.uuid": uuid
+                    "players.uuid": uuid.toShortString()
                 }
             },
             {
@@ -94,7 +99,7 @@ export class RankingCache{
         else return null;
     }
 
-    private static async loadFromDatabase(uuid : String){
+    private static async loadFromDatabase(uuid : UUID){
         return {
             overall : await RankingCache.loadRankFromDatabase("warlords_sr.SR", uuid),
 

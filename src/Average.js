@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.REVENANT = exports.DEFENDER = exports.BERSERKER = exports.EARTHWARDEN = exports.SPIRITGUARD = exports.THUNDERLORD = exports.PROTECTOR = exports.CRUSADER = exports.AVENGER = exports.AQUAMANCER = exports.CRYOMANCER = exports.PYROMANCER = exports.Average = void 0;
 class Average {
     constructor(ADJUST, DHP, WL) {
         this.ADJUST = ADJUST;

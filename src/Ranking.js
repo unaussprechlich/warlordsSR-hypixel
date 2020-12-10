@@ -9,19 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Cache = require("cache");
+exports.defaultCache = exports.RankingCache = void 0;
 const PlayerDB_1 = require("./PlayerDB");
+const app_1 = require("../app");
+const CACHE_TIME = 24 * 60 * 60;
 class RankingCache {
-    constructor() {
-        this._cache = new Cache(15 * 60 * 1000);
-    }
-    get(uuid) {
+    static get(uuid) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this._cache.get(uuid))
-                return this._cache.get(uuid);
+            const cacheResult = yield app_1.redis.get(`wsr:rank:${uuid.toString()}`);
+            if (cacheResult) {
+                console.info(`[WarlordsSR|RankingCache] hit for ${uuid}`);
+                return JSON.parse(cacheResult);
+            }
             else {
                 const result = yield RankingCache.loadFromDatabase(uuid);
-                this._cache.put(uuid, result);
+                yield app_1.redis.set(`wsr:rank:${uuid}`, JSON.stringify(result), ["EX", CACHE_TIME]);
                 return result;
             }
         });
@@ -29,9 +31,9 @@ class RankingCache {
     static loadRankFromDatabase(srField, uuid) {
         return __awaiter(this, void 0, void 0, function* () {
             let sortObj = {};
-            sortObj[srField] = -1;
+            sortObj[`warlords_sr.${srField}`] = -1;
             let matchObj = {};
-            matchObj[srField] = { $exists: true, $ne: null };
+            matchObj[`warlords_sr.${srField}`] = { $exists: true, $ne: null };
             const result = (yield PlayerDB_1.PlayerModel.aggregate([
                 {
                     $match: matchObj
@@ -57,7 +59,7 @@ class RankingCache {
                 },
                 {
                     $match: {
-                        "players.uuid": uuid
+                        "players.uuid": uuid.toShortString()
                     }
                 },
                 {

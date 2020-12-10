@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.calculateSR = void 0;
 const MathUtils_1 = require("./utils/MathUtils");
 const Warlords_1 = require("./Warlords");
 const Average = require("./Average");
@@ -17,16 +18,16 @@ function calculateSR(player) {
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
         sr.plays = MathUtils_1.vOr0(stats.mage_plays) + MathUtils_1.vOr0(stats.paladin_plays) + MathUtils_1.vOr0(stats.shaman_plays) + MathUtils_1.vOr0(stats.warrior_plays);
         sr.WL = calculateWL(stats.wins, sr.plays);
-        player.warlords.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
+        stats.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
         for (const warlord of Warlords_1.WARLORDS) {
-            player.warlords["losses_" + warlord.name] = MathUtils_1.vOr0(stats[warlord.name + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + warlord.name]);
+            stats["losses_" + warlord.name] = MathUtils_1.vOr0(stats[warlord.name + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + warlord.name]);
             sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].LEVEL = calculateLevel(warlord.name, stats);
-            sr[warlord.name].WINS = stats["wins_" + warlord.name];
+            sr[warlord.name].WINS = MathUtils_1.vOr0(stats["wins_" + warlord.name]);
             for (const spec of warlord.specs) {
-                player.warlords["losses_" + spec] = MathUtils_1.vOr0(stats[spec + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + spec]);
+                stats["losses_" + spec] = MathUtils_1.vOr0(stats[spec + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + spec]);
                 sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].SR = calculateSr(sr[warlord.name][spec].DHP, stats[spec + "_plays"], sr[warlord.name][spec].WL, sr.KDA, Average[spec.toLocaleUpperCase()], sr.plays, stats.penalty);

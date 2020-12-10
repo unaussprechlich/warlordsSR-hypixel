@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.newWarlordsSr = exports.CLAZZES = exports.WARLORDS = void 0;
 exports.WARLORDS = [
     {
         name: "mage",

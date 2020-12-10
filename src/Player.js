@@ -12,80 +12,96 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const PlayerDB_1 = require("./PlayerDB");
 const UUID_1 = require("hypixel-api-typescript/src/UUID");
 const HypixelAPI = require("hypixel-api-typescript");
-const Ranking = require("./Ranking");
-const Cache = require("cache");
 const Queue_1 = require("./Queue");
 const Exceptions_1 = require("hypixel-api-typescript/src/Exceptions");
 const SrCalculator_1 = require("./SrCalculator");
-const MinecraftAPI = require("minecraft-api/index");
+const MinecraftApiCached = require("./utils/MinecraftApiRedisCached");
+const app_1 = require("../app");
+const UUID_2 = require("./utils/UUID");
+const Ranking_1 = require("./Ranking");
 if (!process.env.API_KEY)
     throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID_1.default.fromString(process.env.API_KEY);
 const q = new Queue_1.Queue();
-const INTERVAL_TIME = 5 * 1000;
-const CACHE_TIME = 10 * 60 * 1000;
-class PlayerCache {
-    constructor() {
-        this._cache = new Cache(CACHE_TIME);
-        this._interval = setInterval(() => __awaiter(this, void 0, void 0, function* () {
-            try {
-                const playerDB = yield PlayerDB_1.PlayerModel.aggregate([
-                    { $sample: { size: 1 } },
-                    { $project: { _id: 0, uuid: 1 } }
-                ]).exec();
-                const uuid = UUID_1.default.fromShortString(playerDB[0].uuid);
-                const player = yield this.get(uuid, false);
-                console.log("[PlayerCache|RandomReload] " + player.data.uuid + " -> " + player.data.warlords_sr.SR + " SR");
-            }
-            catch (err) {
-                console.error("[PlayerCache] something went wrong while reloading a random player: " + err);
-            }
-        }), INTERVAL_TIME);
+const INTERVAL_TIME = 30 * 1000;
+const CACHE_TIME = 24 * 60 * 60;
+setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (process.env.NO_AUTO_UPDATE)
+            return;
+        const playerDB = yield PlayerDB_1.PlayerModel.aggregate([
+            { $sample: { size: 1 } },
+            { $project: { _id: 0, uuid: 1 } }
+        ]).exec();
+        const cacheResult = yield app_1.redis.get(`wsr:${playerDB[0].uuid}`);
+        if (cacheResult)
+            return;
+        const uuid = UUID_1.default.fromShortString(playerDB[0].uuid);
+        const player = yield Player.init(uuid);
+        console.log("[PlayerCache|RandomReload] " + player.data.uuid + " -> " + player.data.warlords_sr.SR + " SR");
     }
-    get(uuid, isHighPriority = true) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this._cache.get(uuid))
-                return this._cache.get(uuid);
-            else {
-                const result = yield Player.init(uuid, isHighPriority);
-                this._cache.put(uuid, result);
-                return result;
-            }
-        });
+    catch (err) {
+        console.error("[PlayerCache] something went wrong while reloading a random player: " + err);
     }
-    getDirect(uuid) {
-        return this._cache.get(uuid);
-    }
-    contains(uuid) {
-        return this._cache.get(uuid) != null;
-    }
-}
-exports.PlayerCache = PlayerCache;
+}), INTERVAL_TIME);
 class Player {
-    constructor(data) {
+    constructor(data, nameHistory) {
         this._data = data;
+        this._uuid = UUID_2.stringToUuid(data.uuid.toString());
     }
     static init(uuid, isHighPriority = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (exports.defaultCache.contains(uuid))
-                return exports.defaultCache.getDirect(uuid);
-            const data = yield PlayerDB_1.PlayerModel.findOne({ uuid: uuid.toShortString() }).exec();
-            if (data && data.uuid == uuid.toShortString()) {
-                const player = new Player(data);
-                yield player.reloadHypixelStats(isHighPriority);
-                return player;
+            const cacheResult = yield this.loadFromRedis(uuid);
+            if (cacheResult) {
+                console.info(`[WarlordsSR|PlayerCache] hit for ${uuid.toShortString()}`);
+                return cacheResult;
             }
             else {
-                const hypixelPlayer = yield Player.loadHypixelStats(uuid, isHighPriority);
-                let model = new PlayerDB_1.PlayerModel({
-                    uuid: hypixelPlayer.uuid,
-                    name: hypixelPlayer.displayname,
-                    warlords: this.getWarlordsStatsFromHypixelStats(hypixelPlayer)
-                });
-                model = yield SrCalculator_1.calculateSR(model);
-                yield model.save();
-                return new Player(model);
+                const data = yield PlayerDB_1.PlayerModel.findOne({ uuid: uuid.toShortString() }).exec();
+                let player;
+                if (data && data.uuid == uuid.toShortString()) {
+                    player = new Player(data);
+                    yield player.reloadHypixelStats(isHighPriority);
+                }
+                else {
+                    const hypixelPlayer = yield Player.loadHypixelStats(uuid, isHighPriority);
+                    const warlordsStats = this.getWarlordsStatsFromHypixelStats(hypixelPlayer);
+                    let model = new PlayerDB_1.PlayerModel({
+                        uuid: uuid.toShortString(),
+                        name: hypixelPlayer.displayname,
+                        warlords: warlordsStats
+                    });
+                    model = yield SrCalculator_1.calculateSR(model);
+                    yield model.save();
+                    player = new Player(model);
+                }
+                yield player.getNameHistory();
+                yield player.saveToRedis();
+                return player;
             }
+        });
+    }
+    get uuid() {
+        return this._uuid;
+    }
+    static loadFromRedis(uuid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield app_1.redis.get(`wsr:${uuid.toString()}`);
+            if (result) {
+                const redisPlayer = JSON.parse(result);
+                return new Player(redisPlayer.data, redisPlayer.nameHistory);
+            }
+            else {
+                return undefined;
+            }
+        });
+    }
+    saveToRedis() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield app_1.redis.set(`wsr:${this.uuid.toString()}`, JSON.stringify({
+                data: this._data,
+                nameHistory: this._nameHistory || null
+            }), ["EX", CACHE_TIME]);
         });
     }
     get data() {
@@ -114,19 +130,17 @@ class Player {
         return __awaiter(this, void 0, void 0, function* () {
             if (this._nameHistory)
                 return this._nameHistory;
-            const history = yield MinecraftAPI.nameHistoryForUuid(this._data.uuid.toString());
-            this._nameHistory = history;
-            return history;
+            return MinecraftApiCached.nameHistoryForUuid(this.uuid);
         });
     }
     getRanking() {
         return __awaiter(this, void 0, void 0, function* () {
-            return Ranking.defaultCache.get(this._data.uuid);
+            return Ranking_1.RankingCache.get(this.uuid);
         });
     }
     reloadHypixelStats(isHighPriority) {
         return __awaiter(this, void 0, void 0, function* () {
-            const stats = yield Player.loadHypixelStats(UUID_1.default.fromShortString(this._data.uuid), isHighPriority);
+            const stats = yield Player.loadHypixelStats(this.uuid, isHighPriority);
             this._data.name = stats.displayname;
             this._data.warlords = Player.getWarlordsStatsFromHypixelStats(stats);
             return yield this.recalculateSr();
@@ -150,6 +164,6 @@ class Player {
         });
     }
 }
-exports.Player = Player;
-exports.defaultCache = new PlayerCache();
+exports.default = Player;
+;
 //# sourceMappingURL=Player.js.map

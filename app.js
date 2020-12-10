@@ -1,26 +1,22 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.redis = exports.app = void 0;
 const express = require("express");
 const path = require("path");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-const HttpStatusCodes = require("http-status-codes");
+const http_status_codes_1 = require("http-status-codes");
+const RedisClient = require("handy-redis");
 require("mongoose").Promise = global.Promise;
 exports.app = express();
-const SrCalculator_1 = require("./src/SrCalculator");
-const PlayerDB_1 = require("./src/PlayerDB");
 if (!process.env.MONGO_DB)
     throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true }).then(value => console.log("Connected!"));
+mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true }).then(value => console.info("WarlordsSr | Connected to MongoDB!"));
+if (!process.env.REDIS)
+    throw "Missing Redis connection string, please provide it with the environment variable 'REDIS'!";
+exports.redis = RedisClient.createNodeRedisClient({ url: process.env.REDIS });
+exports.redis.set('foo', 'bar').then(() => exports.redis.get('foo'))
+    .then(foo => console.info("WarlordsSr | Connected to Redis!"));
 const port = normalizePort(process.env.PORT || '3000');
 exports.app.set('port', port);
 const server = require('http').createServer(exports.app);
@@ -57,18 +53,7 @@ function onError(error) {
 function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-    console.info('Listening on ' + bind);
-}
-function reloadSR() {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log("Reloading SR ...");
-        const players = yield PlayerDB_1.PlayerModel.find({});
-        console.log("Players found:" + players.length);
-        players.forEach(value => {
-            SrCalculator_1.calculateSR(value).save().catch(err => console.log(err));
-            console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
-        });
-    });
+    console.info('WarlordsSr | Listening on ' + bind);
 }
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');
@@ -91,12 +76,12 @@ exports.app.get("/", function (req, res) {
 });
 exports.app.use(function (req, res, next) {
     next({
-        status: HttpStatusCodes.NOT_FOUND
+        status: http_status_codes_1.StatusCodes.NOT_FOUND
     });
 });
 exports.app.use(function (err, req, res, next) {
     if (err.apiError) {
-        res.status(err.status || HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(err.status || http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: err.message
         });
@@ -104,13 +89,13 @@ exports.app.use(function (err, req, res, next) {
     else {
         res.locals.message = err.message;
         res.locals.error = err;
-        res.locals.PAGE_TITLE = "Error | " + err.status || HttpStatusCodes.INTERNAL_SERVER_ERROR;
-        res.status(err.status || HttpStatusCodes.INTERNAL_SERVER_ERROR);
+        res.locals.PAGE_TITLE = "Error | " + err.status || http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR;
+        res.status(err.status || http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR);
         console.error(err);
-        if (err.status === HttpStatusCodes.NOT_FOUND) {
+        if (err.status === http_status_codes_1.StatusCodes.NOT_FOUND) {
             res.render('errors/404.pug');
         }
-        else if (err.status === HttpStatusCodes.BAD_REQUEST) {
+        else if (err.status === http_status_codes_1.StatusCodes.BAD_REQUEST) {
             res.render("errors/400.pug");
         }
         else {

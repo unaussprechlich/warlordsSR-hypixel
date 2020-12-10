@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Queue = void 0;
 function lowerBound(array, value, comp) {
     let first = 0;
     let count = array.length;

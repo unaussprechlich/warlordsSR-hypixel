@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlayerSchema = void 0;
 const mongoose = require("mongoose");
 exports.PlayerSchema = new mongoose.Schema({
     uuid: String,

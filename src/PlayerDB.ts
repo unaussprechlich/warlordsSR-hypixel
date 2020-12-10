@@ -289,10 +289,8 @@ export interface IWarlordsHypixelAPI{
 export interface IPlayer extends mongoose.Document{
     uuid : String,
     name : String,
-
-    warlords_sr : IWarlordsSR,
-
     warlords : IWarlordsHypixelAPI
+    warlords_sr : IWarlordsSR
 }
 
 

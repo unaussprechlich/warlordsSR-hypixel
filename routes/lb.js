@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const PlayerDB_1 = require("../src/PlayerDB");
 const Warlords_1 = require("../src/Warlords");
-const Cache = require("cache");
+const app_1 = require("../app");
 const router = express.Router();
-const cache = new Cache(5 * 60 * 1000);
+const CACHE_TIME = 24 * 60 * 60;
 router.get('/*', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -24,10 +24,13 @@ router.get('/*', function (req, res, next) {
             const spec = clazz && url[3] && specsOfClazz && specsOfClazz.indexOf(url[3].toLowerCase()) >= 0 ? url[3].toLowerCase() : null;
             function loadLb(sortBy) {
                 return __awaiter(this, void 0, void 0, function* () {
-                    if (cache.get(sortBy))
-                        return cache.get(sortBy);
+                    const cacheResult = yield app_1.redis.get(`wsr:lb:${sortBy}`);
+                    if (cacheResult) {
+                        console.info(`[WarlordsSR|LbCache] hit for ${sortBy}`);
+                        return JSON.parse(cacheResult);
+                    }
                     const lb = yield PlayerDB_1.PlayerModel.find({ [sortBy]: { $exists: true } }, { name: 1, uuid: 1, warlords_sr: 1 }).sort("-" + sortBy).limit(1000).lean(true);
-                    cache.put(sortBy, lb);
+                    yield app_1.redis.set(`wsr:lb:${sortBy}`, JSON.stringify(lb), ["EX", CACHE_TIME]);
                     return lb;
                 });
             }
