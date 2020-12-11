@@ -100,36 +100,36 @@ export class RankingCache{
     }
 
     private static async loadFromDatabase(uuid : UUID){
-        return {
-            overall : await RankingCache.loadRankFromDatabase("warlords_sr.SR", uuid),
+        const result = {
+            overall : await RankingCache.loadRankFromDatabase("SR", uuid),
 
             paladin : {
-                overall : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.SR", uuid),
-                avenger : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.avenger.SR", uuid),
-                crusader : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.crusader.SR", uuid),
-                protector : await RankingCache.loadRankFromDatabase("warlords_sr.paladin.protector.SR", uuid),
+                overall : await RankingCache.loadRankFromDatabase("paladin.SR", uuid),
+                avenger : await RankingCache.loadRankFromDatabase("paladin.avenger.SR", uuid),
+                crusader : await RankingCache.loadRankFromDatabase("paladin.crusader.SR", uuid),
+                protector : await RankingCache.loadRankFromDatabase("paladin.protector.SR", uuid),
             },
 
             warrior : {
-                overall : await RankingCache.loadRankFromDatabase("warlords_sr.warrior.SR", uuid),
-                berserker : await RankingCache.loadRankFromDatabase("warlords_sr.warrior.berserker.SR", uuid),
-                defender : await RankingCache.loadRankFromDatabase("warlords_sr.warrior.defender.SR", uuid),
-                revenant : await RankingCache.loadRankFromDatabase("warlords_sr.warrior.revenant.SR", uuid),
+                overall : await RankingCache.loadRankFromDatabase("warrior.SR", uuid),
+                berserker : await RankingCache.loadRankFromDatabase("warrior.berserker.SR", uuid),
+                defender : await RankingCache.loadRankFromDatabase("warrior.defender.SR", uuid),
+                revenant : await RankingCache.loadRankFromDatabase("warrior.revenant.SR", uuid),
             },
             mage : {
-                overall : await RankingCache.loadRankFromDatabase("warlords_sr.mage.SR", uuid),
-                pyromancer : await RankingCache.loadRankFromDatabase("warlords_sr.mage.pyromancer.SR", uuid),
-                cryomancer : await RankingCache.loadRankFromDatabase("warlords_sr.mage.cryomancer.SR", uuid),
-                aquamancer : await RankingCache.loadRankFromDatabase("warlords_sr.mage.aquamancer.SR", uuid),
+                overall : await RankingCache.loadRankFromDatabase("mage.SR", uuid),
+                pyromancer : await RankingCache.loadRankFromDatabase("mage.pyromancer.SR", uuid),
+                cryomancer : await RankingCache.loadRankFromDatabase("mage.cryomancer.SR", uuid),
+                aquamancer : await RankingCache.loadRankFromDatabase("mage.aquamancer.SR", uuid),
             },
             shaman : {
-                overall : await RankingCache.loadRankFromDatabase("warlords_sr.shaman.SR", uuid),
-                thunderlord : await RankingCache.loadRankFromDatabase("warlords_sr.shaman.thunderlord.SR", uuid),
-                spiritguard : await RankingCache.loadRankFromDatabase("warlords_sr.shaman.spiritguard.SR", uuid),
-                earthwarden : await RankingCache.loadRankFromDatabase("warlords_sr.shaman.earthwarden.SR", uuid),
+                overall : await RankingCache.loadRankFromDatabase("shaman.SR", uuid),
+                thunderlord : await RankingCache.loadRankFromDatabase("shaman.thunderlord.SR", uuid),
+                spiritguard : await RankingCache.loadRankFromDatabase("shaman.spiritguard.SR", uuid),
+                earthwarden : await RankingCache.loadRankFromDatabase("shaman.earthwarden.SR", uuid),
             }
         };
+
+        return result;
     }
 }
-
-export const defaultCache = new RankingCache();

@@ -5,13 +5,17 @@ import * as logger from 'morgan'
 import * as mongoose from "mongoose"
 import {StatusCodes} from "http-status-codes"
 import * as RedisClient from "handy-redis"
+import * as Scheduler from "./src/Scheduler"
 
 require("mongoose").Promise = global.Promise;
 
 export const app = express();
 
 if(!process.env.MONGO_DB) throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true, useUnifiedTopology : true}).then(value => console.info("WarlordsSr | Connected to MongoDB!"));
+mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true, useUnifiedTopology : true}).then(value => {
+    console.info("WarlordsSr | Connected to MongoDB!")
+    Scheduler.init()
+});
 
 if(!process.env.REDIS) throw "Missing Redis connection string, please provide it with the environment variable 'REDIS'!";
 export const redis = RedisClient.createNodeRedisClient({url : process.env.REDIS})

@@ -7,11 +7,15 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const http_status_codes_1 = require("http-status-codes");
 const RedisClient = require("handy-redis");
+const Scheduler = require("./src/Scheduler");
 require("mongoose").Promise = global.Promise;
 exports.app = express();
 if (!process.env.MONGO_DB)
     throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true }).then(value => console.info("WarlordsSr | Connected to MongoDB!"));
+mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true }).then(value => {
+    console.info("WarlordsSr | Connected to MongoDB!");
+    Scheduler.init();
+});
 if (!process.env.REDIS)
     throw "Missing Redis connection string, please provide it with the environment variable 'REDIS'!";
 exports.redis = RedisClient.createNodeRedisClient({ url: process.env.REDIS });
