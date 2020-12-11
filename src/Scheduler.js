@@ -13,8 +13,9 @@ exports.init = void 0;
 const scheduler = require("node-schedule");
 const PlayerDB_1 = require("./PlayerDB");
 function init() {
-    scheduler.scheduleJob("44 14 * * *", removeAllZeNons);
+    scheduler.scheduleJob("0 0 * * *", removeAllZeNons);
     console.info("Scheduler | started!");
+    removeAllZeNons().catch(console.error);
 }
 exports.init = init;
 function removeAllZeNons() {
