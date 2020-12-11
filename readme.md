@@ -11,3 +11,4 @@ A SR system for the Gamemode Warlords on Hypixel.net
 | ----------------------|:------------------------------------------------------:|
 | API_KEY        | Hypixel API-Key                  |
 | MONGO_DB     | URI connection string of a MongoDB instance |
+| REDIS     | URI to Redis|
