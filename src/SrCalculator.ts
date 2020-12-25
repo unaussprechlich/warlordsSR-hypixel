@@ -5,10 +5,10 @@ import * as Average from "./Average";
 
 const DISQUALIFY = {
     MAX_WL : 5,
-    PERCENT_LEFT : 5
+    PERCENT_LEFT : 4
 }
 
-const AVERAGE_KDA = 4.15; //real: 4.149092128801431;
+const AVERAGE_KDA = (3.85 + 2.67) / 2.0;
 const GAMES_PLAYED_TO_RANK = 30;
 
 export function calculateSR(player : IPlayer) : IPlayer {
@@ -21,6 +21,7 @@ export function calculateSR(player : IPlayer) : IPlayer {
 
         sr.plays = vOr0(stats.mage_plays) + vOr0(stats.paladin_plays) + vOr0(stats.shaman_plays) + vOr0(stats.warrior_plays);
         sr.WL = calculateWL(stats.wins, sr.plays);
+        sr.ACCURATE_WL = vOr0(stats.wins) / vOr1(vOr0(sr.plays) - vOr0(stats.wins));
         stats.losses = sr.plays - vOr0(stats.wins);
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
 
@@ -101,9 +102,9 @@ function calculateSr(dhp : number | null, specPlays : number,  wl : number | nul
 
     if(disqualify(dhp, specPlays, wl, kda, average, plays, penalty)) return null;
 
-    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_wl(wl, average.WL);
-    const kdaAdjusted = adjust_dhp(kda, AVERAGE_KDA);
+    const dhpAdjusted = adjust_cos(dhp, average.DHP);
+    const wlAdjusted = adjust_tanCos(wl, average.WL);
+    const kdaAdjusted = adjust_tanCos(kda, AVERAGE_KDA);
     const SR= Math.round((dhpAdjusted + wlAdjusted + (kdaAdjusted / 2)) * (1000 + average.ADJUST));
 
     if(SR <= 0) return null;
@@ -112,9 +113,7 @@ function calculateSr(dhp : number | null, specPlays : number,  wl : number | nul
 
 function disqualify(dhp : number, specPlays : number,  wl : number, kda : number, average : Average.Average, plays : number, penalty : number | null) : boolean {
     if(wl > DISQUALIFY.MAX_WL) return true;
-
-    if(penalty == null) penalty = 0;
-    if((penalty/ plays) * 100 >= 5) return true
+    if((vOr0(penalty)/ plays) * 100 >= DISQUALIFY.PERCENT_LEFT) return true
 
     return false;
 }
@@ -124,8 +123,7 @@ function disqualify(dhp : number, specPlays : number,  wl : number, kda : number
 /**
  * A adjusting function to smooth stuff out :D
  *
- * This does smooth out the winrate between 0 and 2
- * values are capped at 6.8
+ * values are capped at 6.8 -> 3.4 times average
  *
  * https://www.wolframalpha.com/input/?i=plot+%5B-cos((x+%2B+3)%2Fpi),+tan((x+-+3)%2Fpi)+%2B+0.35%5D+between+0+and+7
  * plot [-cos((x + 3)/pi), tan((x - 3)/pi) + 0.35] between 0 and 7
@@ -134,15 +132,15 @@ function disqualify(dhp : number, specPlays : number,  wl : number, kda : number
  * @param {number} averageRatio
  * @returns {number}
  */
-function adjust_wl(v : number, averageRatio : number){
-    v = v*2 + 0.027 - (averageRatio - 1);
-    if(v > 2.027) return Math.cos(((v + 3) / Math.PI) + Math.PI) + 1;
+function adjust_tanCos(v : number, average : number){
+    v = (v/average)*2 + 0.027
+    if(v > 2.027) return Math.min( Math.cos(((v + 3) / Math.PI) + Math.PI) + 1, 2);
     else if(v <= 0.027) return 0;
-    else return Math.tan((v - 3) / Math.PI) - 0.35 + 1;
+    else return Math.max(Math.tan((v - 3) / Math.PI) + 0.35 + 1, 0);
 }
 
 function calculateWL(wins : number , plays : number){
-    return round(vOr0(wins) / vOr1(vOr0(plays) - vOr0(wins)), 100);
+    return round(vOr0(wins) / vOr1(vOr0(plays) - vOr0(wins)), 100.0);
 }
 
 // DHP -----------------------------------------------------------------------------------------------------------------
@@ -158,7 +156,7 @@ function calculateWL(wins : number , plays : number){
  * @param {number} average
  * @returns {number}
  */
-function adjust_dhp(v : number, average : number){
+function adjust_cos(v : number, average : number){
     const x = v / average;
     if(x >= 2) return 2;
     else if(x <= 0) return 0;
@@ -172,11 +170,11 @@ function calculateDHP(dmg : number, heal : number, prevented : number, plays : n
 // OTHER ---------------------------------------------------------------------------------------------------------------
 
 function calculateKD(kills : number, deaths: number) : number | null{
-    return round(vOr0(kills) / vOr1(deaths), 100);
+    return round(vOr0(kills) / vOr1(deaths), 100.0);
 }
 
 function calculateKDA(kills : number, deaths: number, assists : number) : number | null{
-    return round((vOr0(kills) + vOr0(assists)) / vOr1(deaths), 100);
+    return round((vOr0(kills) + vOr0(assists)) / vOr1(deaths), 100.0);
 }
 
 

@@ -48,6 +48,7 @@ export function newWarlordsSr() : IWarlordsSR{
         KD :  null,
         KDA :  null,
         WL :  null,
+        ACCURATE_WL : null,
         plays :  null,
         DHP :  null,
         realLosses : null,

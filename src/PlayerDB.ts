@@ -15,6 +15,7 @@ export interface IWarlordsSR{
     KD : number | null,
     KDA : number | null,
     WL : number | null,
+    ACCURATE_WL : number | null,
     plays : number | null,
     DHP : number | null,
     realLosses : number | null,

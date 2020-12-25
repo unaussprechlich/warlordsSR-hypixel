@@ -12,7 +12,7 @@ require("mongoose").Promise = global.Promise;
 export const app = express();
 
 if(!process.env.MONGO_DB) throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true, useUnifiedTopology : true}).then(value => {
+mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true, useUnifiedTopology : true, poolSize : 10 }).then(value => {
     console.info("WarlordsSr | Connected to MongoDB!")
     Scheduler.init()
 });
@@ -100,13 +100,39 @@ function onListening() {
 
 async function reloadSR(){
     console.log("Reloading SR ...");
-    const players = await PlayerModel.find({});
-    console.log("Players found:" + players.length);
+    const projectedPlayers = await PlayerModel.find({}, {uuid : 1});
+    console.log("Players found:" + projectedPlayers.length);
 
-    players.forEach(value => {
-        calculateSR(value).save().catch(err => console.log(err));
-        console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
-    })
+    let count = 0;
+
+    async function recalculate(projectedPlayer){
+        try{
+            const player = await PlayerModel.findOne({uuid : projectedPlayer.uuid})
+            if(player != null){
+                await calculateSR(player).save()
+                count++;
+                console.log("[Reloading|"+ Math.round((count / projectedPlayers.length) * 100) + "%] " + player.name + " -> " + player.warlords_sr.SR + " SR");
+            }
+        }catch (e){
+            console.error(e)
+        }
+    }
+
+    for (let i = 0; i < projectedPlayers.length; i = i + 10) {
+        await Promise.all([
+            recalculate(projectedPlayers[i]),
+            recalculate(projectedPlayers[i + 1]),
+            recalculate(projectedPlayers[i + 2]),
+            recalculate(projectedPlayers[i + 3]),
+            recalculate(projectedPlayers[i + 4]),
+            recalculate(projectedPlayers[i + 5]),
+            recalculate(projectedPlayers[i + 6]),
+            recalculate(projectedPlayers[i + 7]),
+            recalculate(projectedPlayers[i + 8]),
+            recalculate(projectedPlayers[i + 8])
+        ])
+
+    }
 }
 
 //reloadSR().catch(err => console.log(err));

@@ -21,7 +21,7 @@ require("mongoose").Promise = global.Promise;
 exports.app = express();
 if (!process.env.MONGO_DB)
     throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true }).then(value => {
+mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 10 }).then(value => {
     console.info("WarlordsSr | Connected to MongoDB!");
     Scheduler.init();
 });
@@ -73,12 +73,38 @@ function onListening() {
 function reloadSR() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("Reloading SR ...");
-        const players = yield PlayerDB_1.PlayerModel.find({});
-        console.log("Players found:" + players.length);
-        players.forEach(value => {
-            SrCalculator_1.calculateSR(value).save().catch(err => console.log(err));
-            console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
-        });
+        const projectedPlayers = yield PlayerDB_1.PlayerModel.find({}, { uuid: 1 });
+        console.log("Players found:" + projectedPlayers.length);
+        let count = 0;
+        function recalculate(projectedPlayer) {
+            return __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const player = yield PlayerDB_1.PlayerModel.findOne({ uuid: projectedPlayer.uuid });
+                    if (player != null) {
+                        yield SrCalculator_1.calculateSR(player).save();
+                        count++;
+                        console.log("[Reloading|" + Math.round((count / projectedPlayers.length) * 100) + "%] " + player.name + " -> " + player.warlords_sr.SR + " SR");
+                    }
+                }
+                catch (e) {
+                    console.error(e);
+                }
+            });
+        }
+        for (let i = 0; i < projectedPlayers.length; i = i + 10) {
+            yield Promise.all([
+                recalculate(projectedPlayers[i]),
+                recalculate(projectedPlayers[i + 1]),
+                recalculate(projectedPlayers[i + 2]),
+                recalculate(projectedPlayers[i + 3]),
+                recalculate(projectedPlayers[i + 4]),
+                recalculate(projectedPlayers[i + 5]),
+                recalculate(projectedPlayers[i + 6]),
+                recalculate(projectedPlayers[i + 7]),
+                recalculate(projectedPlayers[i + 8]),
+                recalculate(projectedPlayers[i + 8])
+            ]);
+        }
     });
 }
 exports.app.set('views', path.join(__dirname, 'views'));

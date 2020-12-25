@@ -6,9 +6,9 @@ const Warlords_1 = require("./Warlords");
 const Average = require("./Average");
 const DISQUALIFY = {
     MAX_WL: 5,
-    PERCENT_LEFT: 5
+    PERCENT_LEFT: 4
 };
-const AVERAGE_KDA = 4.15;
+const AVERAGE_KDA = (3.85 + 2.67) / 2.0;
 const GAMES_PLAYED_TO_RANK = 30;
 function calculateSR(player) {
     const stats = player.warlords;
@@ -18,6 +18,7 @@ function calculateSR(player) {
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
         sr.plays = MathUtils_1.vOr0(stats.mage_plays) + MathUtils_1.vOr0(stats.paladin_plays) + MathUtils_1.vOr0(stats.shaman_plays) + MathUtils_1.vOr0(stats.warrior_plays);
         sr.WL = calculateWL(stats.wins, sr.plays);
+        sr.ACCURATE_WL = MathUtils_1.vOr0(stats.wins) / MathUtils_1.vOr1(MathUtils_1.vOr0(sr.plays) - MathUtils_1.vOr0(stats.wins));
         stats.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
         for (const warlord of Warlords_1.WARLORDS) {
@@ -74,9 +75,9 @@ function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
         return null;
     if (disqualify(dhp, specPlays, wl, kda, average, plays, penalty))
         return null;
-    const dhpAdjusted = adjust_dhp(dhp, average.DHP);
-    const wlAdjusted = adjust_wl(wl, average.WL);
-    const kdaAdjusted = adjust_dhp(kda, AVERAGE_KDA);
+    const dhpAdjusted = adjust_cos(dhp, average.DHP);
+    const wlAdjusted = adjust_tanCos(wl, average.WL);
+    const kdaAdjusted = adjust_tanCos(kda, AVERAGE_KDA);
     const SR = Math.round((dhpAdjusted + wlAdjusted + (kdaAdjusted / 2)) * (1000 + average.ADJUST));
     if (SR <= 0)
         return null;
@@ -86,25 +87,23 @@ function calculateSr(dhp, specPlays, wl, kda, average, plays, penalty) {
 function disqualify(dhp, specPlays, wl, kda, average, plays, penalty) {
     if (wl > DISQUALIFY.MAX_WL)
         return true;
-    if (penalty == null)
-        penalty = 0;
-    if ((penalty / plays) * 100 >= 5)
+    if ((MathUtils_1.vOr0(penalty) / plays) * 100 >= DISQUALIFY.PERCENT_LEFT)
         return true;
     return false;
 }
-function adjust_wl(v, averageRatio) {
-    v = v * 2 + 0.027 - (averageRatio - 1);
+function adjust_tanCos(v, average) {
+    v = (v / average) * 2 + 0.027;
     if (v > 2.027)
-        return Math.cos(((v + 3) / Math.PI) + Math.PI) + 1;
+        return Math.min(Math.cos(((v + 3) / Math.PI) + Math.PI) + 1, 2);
     else if (v <= 0.027)
         return 0;
     else
-        return Math.tan((v - 3) / Math.PI) - 0.35 + 1;
+        return Math.max(Math.tan((v - 3) / Math.PI) + 0.35 + 1, 0);
 }
 function calculateWL(wins, plays) {
-    return MathUtils_1.round(MathUtils_1.vOr0(wins) / MathUtils_1.vOr1(MathUtils_1.vOr0(plays) - MathUtils_1.vOr0(wins)), 100);
+    return MathUtils_1.round(MathUtils_1.vOr0(wins) / MathUtils_1.vOr1(MathUtils_1.vOr0(plays) - MathUtils_1.vOr0(wins)), 100.0);
 }
-function adjust_dhp(v, average) {
+function adjust_cos(v, average) {
     const x = v / average;
     if (x >= 2)
         return 2;
@@ -117,9 +116,9 @@ function calculateDHP(dmg, heal, prevented, plays) {
     return Math.round((MathUtils_1.vOr0(dmg) + MathUtils_1.vOr0(heal) + MathUtils_1.vOr0(prevented)) / MathUtils_1.vOr1(plays));
 }
 function calculateKD(kills, deaths) {
-    return MathUtils_1.round(MathUtils_1.vOr0(kills) / MathUtils_1.vOr1(deaths), 100);
+    return MathUtils_1.round(MathUtils_1.vOr0(kills) / MathUtils_1.vOr1(deaths), 100.0);
 }
 function calculateKDA(kills, deaths, assists) {
-    return MathUtils_1.round((MathUtils_1.vOr0(kills) + MathUtils_1.vOr0(assists)) / MathUtils_1.vOr1(deaths), 100);
+    return MathUtils_1.round((MathUtils_1.vOr0(kills) + MathUtils_1.vOr0(assists)) / MathUtils_1.vOr1(deaths), 100.0);
 }
 //# sourceMappingURL=SrCalculator.js.map
