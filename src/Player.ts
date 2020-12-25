@@ -10,94 +10,104 @@ import {redis} from "../app";
 import {stringToUuid} from "./utils/UUID";
 import {RankingCache} from "./Ranking";
 
-if(!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
+if (!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID.fromString(process.env.API_KEY);
 const q = new Queue();
 const INTERVAL_TIME = 30 * 1000; //30 sec
 const CACHE_TIME = 24 * 60 * 60; // 24 hours
+export const MANUAL_RELOAD_COOLDOWN_TIME = 15 * 60; // 15 min
 
 setInterval(async () => {
-    try{
-        if(process.env.NO_AUTO_UPDATE) return
+    try {
+        if (process.env.NO_AUTO_UPDATE) return
         const playerDB = await PlayerModel.aggregate([
-            { $sample: { size: 1 } },
-            { $project: {_id : 0, uuid : 1}}
+            {$sample: {size: 1}},
+            {$project: {_id: 0, uuid: 1}}
         ]).exec();
 
         const cacheResult = await redis.get(`wsr:${playerDB[0].uuid}`)
-        if(cacheResult) return;
+        if (cacheResult) return;
 
         const uuid = UUID.fromShortString(playerDB[0].uuid);
         const player = await Player.init(uuid);
 
         console.log("[PlayerCache|RandomReload] " + player.data.uuid + " -> " + player.data.warlords_sr.SR + " SR");
 
-    } catch(err){
+    } catch (err) {
         console.error("[PlayerCache] something went wrong while reloading a random player: " + err);
     }
 }, INTERVAL_TIME)
 
-interface IRedisPlayer{
-    data : IPlayer
-    nameHistory? : Array<MinecraftAPI.NameHistoryResponseModel>
+interface IRedisPlayer {
+    data: IPlayer
+    nameHistory?: Array<MinecraftAPI.NameHistoryResponseModel>
 }
 
-export default class Player{
+export default class Player {
 
-    private _uuid : UUID;
-    private _data : IPlayer;
-    private _nameHistory? : Array<MinecraftAPI.NameHistoryResponseModel>
+    private _uuid: UUID;
+    private _data: IPlayer;
+    private _nameHistory?: Array<MinecraftAPI.NameHistoryResponseModel>
 
-    private constructor(data : IPlayer, nameHistory? : Array<MinecraftAPI.NameHistoryResponseModel>){
+    private constructor(data: IPlayer, nameHistory?: Array<MinecraftAPI.NameHistoryResponseModel>) {
         this._data = data;
         this._uuid = stringToUuid(data.uuid.toString())
     }
 
-    public static async init(uuid : UUID, isHighPriority : boolean = false) : Promise<Player>{
+    public static async init(uuid: UUID, isHighPriority: boolean = false, shouldReloadIfNotOnCooldown: boolean = false): Promise<Player> {
         const cacheResult = await this.loadFromRedis(uuid)
 
-        if(cacheResult){
-            console.info(`[WarlordsSR|PlayerCache] hit for ${uuid.toShortString()}`)
-            return cacheResult;
-        } else {
-            const data = await PlayerModel.findOne({uuid : uuid.toShortString()}).exec();
 
-            let player : Player;
-
-            if(data && data.uuid == uuid.toShortString()){
-                player = new Player(data);
-                await player.reloadHypixelStats(isHighPriority);
+        if (cacheResult) {
+            if (!shouldReloadIfNotOnCooldown) {
+                console.info(`[WarlordsSR|PlayerCache] hit for ${uuid.toShortString()}`)
+                return cacheResult;
             } else {
-                const hypixelPlayer = await Player.loadHypixelStats(uuid, isHighPriority);
-                const warlordsStats = this.getWarlordsStatsFromHypixelStats(hypixelPlayer);
-
-                let model = new PlayerModel({
-                    uuid: uuid.toShortString(),
-                    name : hypixelPlayer.displayname,
-                    warlords : warlordsStats
-                });
-
-                model = await calculateSR(model);
-
-                await model.save();
-                player = new Player(model);
+                const shouldReload = await cacheResult.shouldReloadManually()
+                if (!shouldReload) {
+                    console.info(`[WarlordsSR|PlayerCache] hit for ${uuid.toShortString()}`)
+                    return cacheResult;
+                }
             }
-
-            await player.getNameHistory()
-
-            await player.saveToRedis()
-            return player;
         }
+
+        const data = await PlayerModel.findOne({uuid: uuid.toShortString()}).exec();
+
+        let player: Player;
+
+        if (data && data.uuid == uuid.toShortString()) {
+            player = new Player(data);
+            await player.reloadHypixelStats(isHighPriority);
+        } else {
+            const hypixelPlayer = await Player.loadHypixelStats(uuid, isHighPriority);
+            const warlordsStats = this.getWarlordsStatsFromHypixelStats(hypixelPlayer);
+
+            let model = new PlayerModel({
+                uuid: uuid.toShortString(),
+                name: hypixelPlayer.displayname,
+                warlords: warlordsStats
+            });
+
+            model = await calculateSR(model);
+
+            await model.save();
+            player = new Player(model);
+        }
+
+        await player.getNameHistory()
+        await player.saveToRedis()
+
+        return player;
     }
 
-    public get uuid(){
+    public get uuid() {
         return this._uuid
     }
 
-    private static async loadFromRedis(uuid : UUID) : Promise<Player | undefined>{
+    private static async loadFromRedis(uuid: UUID): Promise<Player | undefined> {
         const result = await redis.get(`wsr:${uuid.toString()}`)
 
-        if(result){
+        if (result) {
             const redisPlayer = JSON.parse(result) as IRedisPlayer
             return new Player(redisPlayer.data, redisPlayer.nameHistory)
         } else {
@@ -105,63 +115,83 @@ export default class Player{
         }
     }
 
-    private async saveToRedis(){
+    private async saveToRedis(overrideCacheTime?: number) {
+        if (this.data?.warlords_sr?.SR !== null && this.data.warlords_sr.SR > 0) {
+            console.info(`SETTING RELOAD TIME FOR ${this.uuid.toShortString()}`)
+            await redis.set(`wsr:reloadcooldown:${this.uuid.toShortString()}`,
+                Date.now().toString()
+                , ["EX", MANUAL_RELOAD_COOLDOWN_TIME])
+        }
         await redis.set(`wsr:${this.uuid.toString()}`, JSON.stringify({
-            data : this._data,
-            nameHistory : this._nameHistory || null
-        }), ["EX", CACHE_TIME])
+            data: this._data,
+            nameHistory: this._nameHistory || null
+        }), ["EX", overrideCacheTime ? overrideCacheTime : CACHE_TIME])
     }
 
-    get data(){
+    get data() {
         return this._data;
     }
 
 
-    async recalculateSr(){
+    async recalculateSr() {
         this._data = await calculateSR(this._data);
         await this._data.save();
         return this._data;
     }
 
-    async getNameHistoryString(){
+    async getNameHistoryString() {
         const history = await this.getNameHistory();
-        if(!history || history.length === 0) return null;
+        if (!history || history.length === 0) return null;
         let result = "";
-        for(let item of [... new Set(history.filter(v => v.name !== this._data.name).map(v => v.name))]){
+        for (let item of [...new Set(history.filter(v => v.name !== this._data.name).map(v => v.name))]) {
             result += item + " | "
         }
         return result.substring(0, result.length - 3)
     }
 
-    async getNameHistory(){
-        if(this._nameHistory) return this._nameHistory;
+    async getNameHistory() {
+        if (this._nameHistory) return this._nameHistory;
         return MinecraftApiCached.nameHistoryForUuid(this.uuid);
     }
 
-    async getRanking() {
+    async getRanking(checkForManualReload: boolean = false) {
+        if (checkForManualReload) {
+            return RankingCache.get(this.uuid, await this.shouldReloadManually())
+        }
         return RankingCache.get(this.uuid)
     }
 
-    async reloadHypixelStats(isHighPriority : boolean){
+    async reloadHypixelStats(isHighPriority: boolean) {
         const stats = await Player.loadHypixelStats(this.uuid, isHighPriority);
         this._data.name = stats.displayname;
         this._data.warlords = Player.getWarlordsStatsFromHypixelStats(stats);
         return await this.recalculateSr();
     }
 
-    static getWarlordsStatsFromHypixelStats(hypixelPlayer : HypixelAPI.Player){
-        if(!hypixelPlayer || !hypixelPlayer.stats) throw Exception.NOT_FOUND;
+    static getWarlordsStatsFromHypixelStats(hypixelPlayer: HypixelAPI.Player) {
+        if (!hypixelPlayer || !hypixelPlayer.stats) throw Exception.NOT_FOUND;
         return hypixelPlayer.stats.Battleground as IWarlordsHypixelAPI;
     }
 
-    static async loadHypixelStats(uuid : UUID, isHighPriority : boolean){
+    async getManualReloadCooldown() {
+        return redis.get(`wsr:reloadcooldown:${this.uuid.toShortString()}`)
+    }
+
+    private async shouldReloadManually() {
+        if (this.data.warlords_sr.SR == null || this.data.warlords_sr.SR <= 0)
+            return false
+        const reloadCooldown = await this.getManualReloadCooldown()
+        return reloadCooldown == null
+    }
+
+    static async loadHypixelStats(uuid: UUID, isHighPriority: boolean) {
         return await q.add(async () => {
             return await HypixelAPI.getPlayerByUuid(uuid, API_KEY);
         }, {
-            priority : isHighPriority ? 1 : 0,
-            heat : 1,
-            queueTimeout : isHighPriority ? 20 * 1000 : 10 * 1000,
-            executionTimeout : isHighPriority ? 15 * 1000 : 5 * 1000
+            priority: isHighPriority ? 1 : 0,
+            heat: 1,
+            queueTimeout: isHighPriority ? 20 * 1000 : 10 * 1000,
+            executionTimeout: isHighPriority ? 15 * 1000 : 5 * 1000
         });
     }
 };

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MANUAL_RELOAD_COOLDOWN_TIME = void 0;
 const PlayerDB_1 = require("./PlayerDB");
 const UUID_1 = require("hypixel-api-typescript/src/UUID");
 const HypixelAPI = require("hypixel-api-typescript");
@@ -25,6 +26,7 @@ const API_KEY = UUID_1.default.fromString(process.env.API_KEY);
 const q = new Queue_1.Queue();
 const INTERVAL_TIME = 30 * 1000;
 const CACHE_TIME = 24 * 60 * 60;
+exports.MANUAL_RELOAD_COOLDOWN_TIME = 15 * 60;
 setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (process.env.NO_AUTO_UPDATE)
@@ -49,36 +51,43 @@ class Player {
         this._data = data;
         this._uuid = UUID_2.stringToUuid(data.uuid.toString());
     }
-    static init(uuid, isHighPriority = false) {
+    static init(uuid, isHighPriority = false, shouldReloadIfNotOnCooldown = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const cacheResult = yield this.loadFromRedis(uuid);
             if (cacheResult) {
-                console.info(`[WarlordsSR|PlayerCache] hit for ${uuid.toShortString()}`);
-                return cacheResult;
-            }
-            else {
-                const data = yield PlayerDB_1.PlayerModel.findOne({ uuid: uuid.toShortString() }).exec();
-                let player;
-                if (data && data.uuid == uuid.toShortString()) {
-                    player = new Player(data);
-                    yield player.reloadHypixelStats(isHighPriority);
+                if (!shouldReloadIfNotOnCooldown) {
+                    console.info(`[WarlordsSR|PlayerCache] hit for ${uuid.toShortString()}`);
+                    return cacheResult;
                 }
                 else {
-                    const hypixelPlayer = yield Player.loadHypixelStats(uuid, isHighPriority);
-                    const warlordsStats = this.getWarlordsStatsFromHypixelStats(hypixelPlayer);
-                    let model = new PlayerDB_1.PlayerModel({
-                        uuid: uuid.toShortString(),
-                        name: hypixelPlayer.displayname,
-                        warlords: warlordsStats
-                    });
-                    model = yield SrCalculator_1.calculateSR(model);
-                    yield model.save();
-                    player = new Player(model);
+                    const shouldReload = yield cacheResult.shouldReloadManually();
+                    if (!shouldReload) {
+                        console.info(`[WarlordsSR|PlayerCache] hit for ${uuid.toShortString()}`);
+                        return cacheResult;
+                    }
                 }
-                yield player.getNameHistory();
-                yield player.saveToRedis();
-                return player;
             }
+            const data = yield PlayerDB_1.PlayerModel.findOne({ uuid: uuid.toShortString() }).exec();
+            let player;
+            if (data && data.uuid == uuid.toShortString()) {
+                player = new Player(data);
+                yield player.reloadHypixelStats(isHighPriority);
+            }
+            else {
+                const hypixelPlayer = yield Player.loadHypixelStats(uuid, isHighPriority);
+                const warlordsStats = this.getWarlordsStatsFromHypixelStats(hypixelPlayer);
+                let model = new PlayerDB_1.PlayerModel({
+                    uuid: uuid.toShortString(),
+                    name: hypixelPlayer.displayname,
+                    warlords: warlordsStats
+                });
+                model = yield SrCalculator_1.calculateSR(model);
+                yield model.save();
+                player = new Player(model);
+            }
+            yield player.getNameHistory();
+            yield player.saveToRedis();
+            return player;
         });
     }
     get uuid() {
@@ -96,12 +105,17 @@ class Player {
             }
         });
     }
-    saveToRedis() {
+    saveToRedis(overrideCacheTime) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
+            if (((_b = (_a = this.data) === null || _a === void 0 ? void 0 : _a.warlords_sr) === null || _b === void 0 ? void 0 : _b.SR) !== null && this.data.warlords_sr.SR > 0) {
+                console.info(`SETTING RELOAD TIME FOR ${this.uuid.toShortString()}`);
+                yield app_1.redis.set(`wsr:reloadcooldown:${this.uuid.toShortString()}`, Date.now().toString(), ["EX", exports.MANUAL_RELOAD_COOLDOWN_TIME]);
+            }
             yield app_1.redis.set(`wsr:${this.uuid.toString()}`, JSON.stringify({
                 data: this._data,
                 nameHistory: this._nameHistory || null
-            }), ["EX", CACHE_TIME]);
+            }), ["EX", overrideCacheTime ? overrideCacheTime : CACHE_TIME]);
         });
     }
     get data() {
@@ -133,8 +147,11 @@ class Player {
             return MinecraftApiCached.nameHistoryForUuid(this.uuid);
         });
     }
-    getRanking() {
+    getRanking(checkForManualReload = false) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (checkForManualReload) {
+                return Ranking_1.RankingCache.get(this.uuid, yield this.shouldReloadManually());
+            }
             return Ranking_1.RankingCache.get(this.uuid);
         });
     }
@@ -150,6 +167,19 @@ class Player {
         if (!hypixelPlayer || !hypixelPlayer.stats)
             throw Exceptions_1.default.NOT_FOUND;
         return hypixelPlayer.stats.Battleground;
+    }
+    getManualReloadCooldown() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return app_1.redis.get(`wsr:reloadcooldown:${this.uuid.toShortString()}`);
+        });
+    }
+    shouldReloadManually() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.data.warlords_sr.SR == null || this.data.warlords_sr.SR <= 0)
+                return false;
+            const reloadCooldown = yield this.getManualReloadCooldown();
+            return reloadCooldown == null;
+        });
     }
     static loadHypixelStats(uuid, isHighPriority) {
         return __awaiter(this, void 0, void 0, function* () {

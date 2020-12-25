@@ -4,7 +4,7 @@ mixin value(description, item)
   if item
     p.statitem
       span= description + ":  "
-      | #{item}
+      | #{item.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
   else
     p.statitem
       span= description + ":  "
@@ -60,15 +60,17 @@ mixin stats(dmg, prevented, heal, plays, wins, losses)
 mixin overview()
 
   h4 Kills | Assists | Deaths
-  +value( "Assists" , PLAYER.warlords.assists)
-  +value( "Deaths" , PLAYER.warlords.deaths)
-  +value( "Kills" , PLAYER.warlords.kills)
   +value( "Kill/Death Ratio" , PLAYER.warlords_sr.KD)
   +value( "Kills+Assists/Deaths Ratio" , PLAYER.warlords_sr.KDA)
+  br
+  +value( "Kills" , PLAYER.warlords.kills)
+  +value( "Assists" , PLAYER.warlords.assists)
+  +value( "Deaths" , PLAYER.warlords.deaths)
 
   .divider
   h4 Damage | Heal | Prevented
   +value( "DHP per game" , PLAYER.warlords_sr.DHP)
+  br
   +value( "Prevented" , PLAYER.warlords.damage_prevented)
   +value( "Damage taken" , PLAYER.warlords.damage_taken)
   +value( "Damage dealt" , PLAYER.warlords.damage)
@@ -77,12 +79,13 @@ mixin overview()
 
   .divider
   h4 Wins | Losses
-  +value( "Games Played" , PLAYER.warlords_sr.plays)
   +value( "Wins/Losses Ratio" , PLAYER.warlords_sr.WL)
-  +value( "wins" , PLAYER.warlords.wins)
-  +value( "losses" , PLAYER.warlords.losses)
-  +value( "blue wins" , PLAYER.warlords.wins_blu)
-  +value( "red wins" , PLAYER.warlords.wins_red)
+  br
+  +value( "Games Played" , PLAYER.warlords_sr.plays)
+  +value( "Wins" , PLAYER.warlords.wins)
+  +value( "Losses" , PLAYER.warlords.losses)
+  +value( "Blue wins" , PLAYER.warlords.wins_blu)
+  +value( "Red wins" , PLAYER.warlords.wins_red)
   +value( "Games left / AFK" , PLAYER.warlords.penalty)
 
   .divider
@@ -299,6 +302,22 @@ mixin sritem(value)
       .srvalue.rounded-right
         p -
 
+mixin manualReload()
+  if PLAYER.warlords_sr.SR && PLAYER.warlords_sr.SR > 0
+    if RELOAD_COOLDOWN
+      - const cooldown = Math.round(MANUAL_RELOAD_COOLDOWN_TIME - ((Date.now() - RELOAD_COOLDOWN) / 1000));
+      - const reloadText = "<b>Cooldown</b> " + cooldown.toString() + "s"
+      span.float-right.d-inline-block(tabindex="0" data-toggle="tooltip" data-placement="left" data-html="true" title=reloadText)
+        button(disabled= true style="pointer-events: none;")#reloadButton.btn.btn-light
+          i.fas.fa-sync
+    else
+        button#reloadButton.btn.btn-light.float-right
+          i.fas.fa-sync
+
+
+block js
+  script
+    include player.js
 
 block content
   #content
@@ -312,6 +331,7 @@ block content
                 .col-lg-2.col-sm-3.col-3
                   img.card-img-top(src= playerHeadLink)
                 .col-lg-10.col-sm-9.col-9
+                  +manualReload
                   h3.card-title= PLAYER.name
                   if NAME_HISTORY
                     p= NAME_HISTORY

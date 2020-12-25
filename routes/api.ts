@@ -34,7 +34,7 @@ router.get('/*', async function(req, res, next) {
             }
         }
 
-        const player = await Player.init(uuid);
+        const player = await Player.init(uuid, false, true);
 
         if(player == null) {
             throw {
@@ -47,6 +47,8 @@ router.get('/*', async function(req, res, next) {
             player.getRanking(),
             player.getNameHistory()
         ]);
+
+
 
         res.status(200).json({
             success : true,

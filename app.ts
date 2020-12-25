@@ -25,6 +25,8 @@ redis.set('foo', 'bar').then(() => redis.get('foo'))
 import {calculateSR} from "./src/SrCalculator";
 import {PlayerModel} from "./src/PlayerDB";
 
+
+
 /**
  * Get port from environment and store in Express.
  */
@@ -95,6 +97,18 @@ function onListening() {
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     console.info('WarlordsSr | Listening on ' + bind);
 }
+
+async function reloadSR(){
+    console.log("Reloading SR ...");
+    const players = await PlayerModel.find({});
+    console.log("Players found:" + players.length);
+
+    players.forEach(value => {
+        calculateSR(value).save().catch(err => console.log(err));
+        console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
+    })
+}
+
 //reloadSR().catch(err => console.log(err));
 
 // view engine setup
@@ -116,10 +130,6 @@ app.use('/api/*', require('./routes/api'));
 
 app.get("/impressum", function (req : Request, res : Response) {
    res.render("impressum", {PAGE_TITLE : "Impressum"});
-});
-
-app.get("/about", function (req : Request, res : Response) {
-    res.render("about", {PAGE_TITLE : "About"});
 });
 
 app.get("/", function (req : Request, res : Response) {

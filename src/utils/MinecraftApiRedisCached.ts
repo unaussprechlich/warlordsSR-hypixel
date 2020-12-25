@@ -8,7 +8,7 @@ import {stringToUuid} from "./UUID";
 
 const REDIS_KEY_PREFIX = "mojang"
 
-const CACHE_TIME = 24 * 60 * 60 // 24 Hours
+const CACHE_TIME = 5 * 60 * 60 // 5 Hours
 
 async function get(prefix : string, key : string){
     return redis.get(`${REDIS_KEY_PREFIX}:${prefix}:${key}`)

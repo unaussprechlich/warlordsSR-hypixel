@@ -38,22 +38,30 @@ router.get('/*', function (req, res, next) {
                     status: http_status_codes_1.StatusCodes.BAD_REQUEST
                 };
             }
-            const player = yield Player_1.default.init(uuid);
+            const player = yield Player_1.default.init(uuid, false, req.query.reload === "true");
             if (player == null)
                 throw {
                     message: "Player with UUID:" + uuid.toString() + " not found!",
                     status: http_status_codes_1.StatusCodes.NOT_FOUND
                 };
-            const [ranking, nameHistory] = yield Promise.all([
+            const [ranking, nameHistory, reloadCooldown] = yield Promise.all([
                 player.getRanking(),
-                player.getNameHistoryString()
+                player.getNameHistoryString(),
+                player.getManualReloadCooldown()
             ]);
-            res.render('player', {
-                PAGE_TITLE: "Player | " + player.data.name,
-                PLAYER: player.data,
-                RANKING: ranking,
-                NAME_HISTORY: nameHistory
-            });
+            if (req.query.reload === "true") {
+                res.redirect(req.baseUrl);
+            }
+            else {
+                res.render('player', {
+                    PAGE_TITLE: "Player | " + player.data.name,
+                    PLAYER: player.data,
+                    RANKING: ranking,
+                    NAME_HISTORY: nameHistory,
+                    RELOAD_COOLDOWN: reloadCooldown,
+                    MANUAL_RELOAD_COOLDOWN_TIME: Player_1.MANUAL_RELOAD_COOLDOWN_TIME
+                });
+            }
         }
         catch (err) {
             next(err);

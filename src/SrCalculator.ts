@@ -8,8 +8,8 @@ const DISQUALIFY = {
     PERCENT_LEFT : 5
 }
 
-const AVERAGE_KDA = 5; //real: 6.86034034034034;
-const GAMES_PLAYED_TO_RANK = 50;
+const AVERAGE_KDA = 4.15; //real: 4.149092128801431;
+const GAMES_PLAYED_TO_RANK = 30;
 
 export function calculateSR(player : IPlayer) : IPlayer {
     const stats = player.warlords;

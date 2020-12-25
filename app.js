@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.redis = exports.app = void 0;
 const express = require("express");
@@ -21,6 +30,8 @@ if (!process.env.REDIS)
 exports.redis = RedisClient.createNodeRedisClient({ url: process.env.REDIS });
 exports.redis.set('foo', 'bar').then(() => exports.redis.get('foo'))
     .then(foo => console.info("WarlordsSr | Connected to Redis!"));
+const SrCalculator_1 = require("./src/SrCalculator");
+const PlayerDB_1 = require("./src/PlayerDB");
 const port = normalizePort(process.env.PORT || '3000');
 exports.app.set('port', port);
 const server = require('http').createServer(exports.app);
@@ -59,6 +70,17 @@ function onListening() {
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     console.info('WarlordsSr | Listening on ' + bind);
 }
+function reloadSR() {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("Reloading SR ...");
+        const players = yield PlayerDB_1.PlayerModel.find({});
+        console.log("Players found:" + players.length);
+        players.forEach(value => {
+            SrCalculator_1.calculateSR(value).save().catch(err => console.log(err));
+            console.log("[Reloading] " + value.name + " -> " + value.warlords_sr.SR + " SR");
+        });
+    });
+}
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');
 exports.app.use(logger('dev'));
@@ -71,9 +93,6 @@ exports.app.use('/lb*', require('./routes/lb'));
 exports.app.use('/api/*', require('./routes/api'));
 exports.app.get("/impressum", function (req, res) {
     res.render("impressum", { PAGE_TITLE: "Impressum" });
-});
-exports.app.get("/about", function (req, res) {
-    res.render("about", { PAGE_TITLE: "About" });
 });
 exports.app.get("/", function (req, res) {
     res.redirect("/lb");

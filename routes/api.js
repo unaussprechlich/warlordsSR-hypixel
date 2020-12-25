@@ -39,7 +39,7 @@ router.get('/*', function (req, res, next) {
                     status: http_status_codes_1.StatusCodes.BAD_REQUEST
                 };
             }
-            const player = yield Player_1.default.init(uuid);
+            const player = yield Player_1.default.init(uuid, false, true);
             if (player == null) {
                 throw {
                     message: "Player with UUID:" + uuid.toString() + " not found!",

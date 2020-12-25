@@ -15,7 +15,7 @@ const app_1 = require("../../app");
 const http_status_codes_1 = require("http-status-codes");
 const UUID_1 = require("./UUID");
 const REDIS_KEY_PREFIX = "mojang";
-const CACHE_TIME = 24 * 60 * 60;
+const CACHE_TIME = 5 * 60 * 60;
 function get(prefix, key) {
     return __awaiter(this, void 0, void 0, function* () {
         return app_1.redis.get(`${REDIS_KEY_PREFIX}:${prefix}:${key}`);
