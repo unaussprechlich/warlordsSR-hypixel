@@ -1,4 +1,4 @@
-import {IWarlordsSR} from "./PlayerDB";
+import {IWarlordsSR} from "../db/PlayerModel";
 
 interface IWarlord {
     name : string

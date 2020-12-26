@@ -1,27 +1,17 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.redis = exports.app = void 0;
+exports.app = exports.redis = void 0;
 const express = require("express");
 const path = require("path");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 const http_status_codes_1 = require("http-status-codes");
 const RedisClient = require("handy-redis");
-const Scheduler = require("./src/Scheduler");
+const Scheduler = require("./src/utils/Scheduler");
 require("mongoose").Promise = global.Promise;
-exports.app = express();
 if (!process.env.MONGO_DB)
     throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 10 }).then(value => {
+mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 10 }).then(_ => {
     console.info("WarlordsSr | Connected to MongoDB!");
     Scheduler.init();
 });
@@ -29,29 +19,18 @@ if (!process.env.REDIS)
     throw "Missing Redis connection string, please provide it with the environment variable 'REDIS'!";
 exports.redis = RedisClient.createNodeRedisClient({ url: process.env.REDIS });
 exports.redis.set('foo', 'bar').then(() => exports.redis.get('foo'))
-    .then(foo => console.info("WarlordsSr | Connected to Redis!"));
-const SrCalculator_1 = require("./src/SrCalculator");
-const PlayerDB_1 = require("./src/PlayerDB");
-const port = normalizePort(process.env.PORT || '3000');
+    .then(_ => console.info("WarlordsSr | Connected to Redis!"));
+const port = process.env.PORT || '3000';
+exports.app = express();
 exports.app.set('port', port);
 const server = require('http').createServer(exports.app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-function normalizePort(val) {
-    const port = parseInt(val, 10);
-    if (isNaN(port))
-        return val;
-    if (port >= 0)
-        return port;
-    return false;
-}
 function onError(error) {
     if (error.syscall !== 'listen')
         throw error;
-    const bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
+    const bind = 'Pipe ' + port;
     switch (error.code) {
         case 'EACCES':
             console.error(bind + ' requires elevated privileges');
@@ -69,43 +48,6 @@ function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     console.info('WarlordsSr | Listening on ' + bind);
-}
-function reloadSR() {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log("Reloading SR ...");
-        const projectedPlayers = yield PlayerDB_1.PlayerModel.find({}, { uuid: 1 });
-        console.log("Players found:" + projectedPlayers.length);
-        let count = 0;
-        function recalculate(projectedPlayer) {
-            return __awaiter(this, void 0, void 0, function* () {
-                try {
-                    const player = yield PlayerDB_1.PlayerModel.findOne({ uuid: projectedPlayer.uuid });
-                    if (player != null) {
-                        yield SrCalculator_1.calculateSR(player).save();
-                        count++;
-                        console.log("[Reloading|" + Math.round((count / projectedPlayers.length) * 100) + "%] " + player.name + " -> " + player.warlords_sr.SR + " SR");
-                    }
-                }
-                catch (e) {
-                    console.error(e);
-                }
-            });
-        }
-        for (let i = 0; i < projectedPlayers.length; i = i + 10) {
-            yield Promise.all([
-                recalculate(projectedPlayers[i]),
-                recalculate(projectedPlayers[i + 1]),
-                recalculate(projectedPlayers[i + 2]),
-                recalculate(projectedPlayers[i + 3]),
-                recalculate(projectedPlayers[i + 4]),
-                recalculate(projectedPlayers[i + 5]),
-                recalculate(projectedPlayers[i + 6]),
-                recalculate(projectedPlayers[i + 7]),
-                recalculate(projectedPlayers[i + 8]),
-                recalculate(projectedPlayers[i + 8])
-            ]);
-        }
-    });
 }
 exports.app.set('views', path.join(__dirname, 'views'));
 exports.app.set('view engine', 'pug');

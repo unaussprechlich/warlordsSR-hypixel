@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RankingCache = void 0;
-const PlayerDB_1 = require("./PlayerDB");
+const PlayerModel_1 = require("./db/PlayerModel");
 const app_1 = require("../app");
 const CACHE_TIME = 2 * 60 * 60;
 class RankingCache {
@@ -34,7 +34,7 @@ class RankingCache {
             sortObj[`warlords_sr.${srField}`] = -1;
             let matchObj = {};
             matchObj[`warlords_sr.${srField}`] = { $exists: true, $ne: null };
-            const result = (yield PlayerDB_1.PlayerModel.aggregate([
+            const result = (yield PlayerModel_1.PlayerModel.aggregate([
                 {
                     $match: matchObj
                 },

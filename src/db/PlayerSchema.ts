@@ -9,6 +9,7 @@ export const PlayerSchema = new mongoose.Schema({
         KD : Number,
         KDA : Number,
         WL : Number,
+        ACCURATE_WL : Number,
         plays : Number,
         DHP : Number,
 

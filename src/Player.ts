@@ -1,9 +1,9 @@
-import {IPlayer, IWarlordsHypixelAPI, PlayerModel} from "./PlayerDB";
+import {IPlayer, IWarlordsHypixelAPI, PlayerModel} from "./db/PlayerModel";
 import UUID from "hypixel-api-typescript/src/UUID";
 import * as HypixelAPI from "hypixel-api-typescript";
-import {Queue} from "./Queue";
+import {Queue} from "./utils/Queue";
 import Exception from "hypixel-api-typescript/src/Exceptions";
-import {calculateSR} from "./SrCalculator";
+import {calculateStatsAndSR} from "./SrCalculator";
 import * as MinecraftApiCached from "./utils/MinecraftApiRedisCached";
 import * as MinecraftAPI from "minecraft-api/index";
 import {redis} from "../app";
@@ -13,30 +13,9 @@ import {RankingCache} from "./Ranking";
 if (!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID.fromString(process.env.API_KEY);
 const q = new Queue();
-const INTERVAL_TIME = 30 * 1000; //30 sec
-const CACHE_TIME = 24 * 60 * 60; // 24 hours
+
+const CACHE_TIME = 12 * 60 * 60; // 12 hours
 export const MANUAL_RELOAD_COOLDOWN_TIME = 15 * 60; // 15 min
-
-setInterval(async () => {
-    try {
-        if (process.env.NO_AUTO_UPDATE) return
-        const playerDB = await PlayerModel.aggregate([
-            {$sample: {size: 1}},
-            {$project: {_id: 0, uuid: 1}}
-        ]).exec();
-
-        const cacheResult = await redis.get(`wsr:${playerDB[0].uuid}`)
-        if (cacheResult) return;
-
-        const uuid = UUID.fromShortString(playerDB[0].uuid);
-        const player = await Player.init(uuid);
-
-        console.log("[PlayerCache|RandomReload] " + player.data.uuid + " -> " + player.data.warlords_sr.SR + " SR");
-
-    } catch (err) {
-        console.error("[PlayerCache] something went wrong while reloading a random player: " + err);
-    }
-}, INTERVAL_TIME)
 
 interface IRedisPlayer {
     data: IPlayer
@@ -45,7 +24,7 @@ interface IRedisPlayer {
 
 export default class Player {
 
-    private _uuid: UUID;
+    private readonly _uuid: UUID;
     private _data: IPlayer;
     private _nameHistory?: Array<MinecraftAPI.NameHistoryResponseModel>
 
@@ -55,8 +34,8 @@ export default class Player {
     }
 
     public static async init(uuid: UUID, isHighPriority: boolean = false, shouldReloadIfNotOnCooldown: boolean = false): Promise<Player> {
-        const cacheResult = await this.loadFromRedis(uuid)
 
+        const cacheResult = await this.loadFromRedis(uuid)
 
         if (cacheResult) {
             if (!shouldReloadIfNotOnCooldown) {
@@ -88,7 +67,7 @@ export default class Player {
                 warlords: warlordsStats
             });
 
-            model = await calculateSR(model);
+            model = await calculateStatsAndSR(model);
 
             await model.save();
             player = new Player(model);
@@ -134,7 +113,7 @@ export default class Player {
 
 
     async recalculateSr() {
-        this._data = await calculateSR(this._data);
+        this._data = await calculateStatsAndSR(this._data);
         await this._data.save();
         return this._data;
     }

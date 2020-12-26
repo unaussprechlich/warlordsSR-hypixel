@@ -4,4 +4,4 @@ exports.PlayerModel = void 0;
 const mongoose = require("mongoose");
 const PlayerSchema_1 = require("./PlayerSchema");
 exports.PlayerModel = mongoose.model('Player', PlayerSchema_1.PlayerSchema);
-//# sourceMappingURL=PlayerDB.js.map
+//# sourceMappingURL=PlayerModel.js.map

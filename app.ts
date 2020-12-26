@@ -5,72 +5,50 @@ import * as logger from 'morgan'
 import * as mongoose from "mongoose"
 import {StatusCodes} from "http-status-codes"
 import * as RedisClient from "handy-redis"
-import * as Scheduler from "./src/Scheduler"
+import * as Scheduler from "./src/utils/Scheduler"
+import {recalculateSR} from "./src/utils/SrRecalculator";
+
+/** MONGODB ###################################################################### */
 
 require("mongoose").Promise = global.Promise;
 
-export const app = express();
-
 if(!process.env.MONGO_DB) throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
-mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true, useUnifiedTopology : true, poolSize : 10 }).then(value => {
+mongoose.connect(process.env.MONGO_DB, {useNewUrlParser : true, useUnifiedTopology : true, poolSize : 10 }).then( _ => {
     console.info("WarlordsSr | Connected to MongoDB!")
     Scheduler.init()
 });
 
+/** REDIS ######################################################################## */
+
 if(!process.env.REDIS) throw "Missing Redis connection string, please provide it with the environment variable 'REDIS'!";
 export const redis = RedisClient.createNodeRedisClient({url : process.env.REDIS})
 redis.set('foo', 'bar').then(() => redis.get('foo'))
-    .then(foo => console.info("WarlordsSr | Connected to Redis!"));
+    .then( _ => console.info("WarlordsSr | Connected to Redis!"));
 
-import {calculateSR} from "./src/SrCalculator";
-import {PlayerModel} from "./src/PlayerDB";
+/** RECALCULATOR ################################################################## */
 
+//Uncomment if you want to recalculate all players
+//recalculateSR().catch(reason => console.error(reason))
 
+/** EXPRESS ####################################################################### */
 
-/**
- * Get port from environment and store in Express.
- */
+const port = process.env.PORT || '3000'
 
-const port = normalizePort(process.env.PORT || '3000');
+export const app = express();
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
 const server = require('http').createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
 
-function normalizePort(val) {
-    const port = parseInt(val, 10);
-
-    if (isNaN(port)) return val;
-    if (port >= 0) return port;
-
-    return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
+/** EVENT LISTENER ################################################################ */
 
 function onError(error) {
     if (error.syscall !== 'listen') throw error;
 
-    const bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
+    const bind = 'Pipe ' + port;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {
@@ -93,49 +71,11 @@ function onError(error) {
 
 function onListening() {
     const addr = server.address();
-    // @ts-ignore
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     console.info('WarlordsSr | Listening on ' + bind);
 }
 
-async function reloadSR(){
-    console.log("Reloading SR ...");
-    const projectedPlayers = await PlayerModel.find({}, {uuid : 1});
-    console.log("Players found:" + projectedPlayers.length);
-
-    let count = 0;
-
-    async function recalculate(projectedPlayer){
-        try{
-            const player = await PlayerModel.findOne({uuid : projectedPlayer.uuid})
-            if(player != null){
-                await calculateSR(player).save()
-                count++;
-                console.log("[Reloading|"+ Math.round((count / projectedPlayers.length) * 100) + "%] " + player.name + " -> " + player.warlords_sr.SR + " SR");
-            }
-        }catch (e){
-            console.error(e)
-        }
-    }
-
-    for (let i = 0; i < projectedPlayers.length; i = i + 10) {
-        await Promise.all([
-            recalculate(projectedPlayers[i]),
-            recalculate(projectedPlayers[i + 1]),
-            recalculate(projectedPlayers[i + 2]),
-            recalculate(projectedPlayers[i + 3]),
-            recalculate(projectedPlayers[i + 4]),
-            recalculate(projectedPlayers[i + 5]),
-            recalculate(projectedPlayers[i + 6]),
-            recalculate(projectedPlayers[i + 7]),
-            recalculate(projectedPlayers[i + 8]),
-            recalculate(projectedPlayers[i + 8])
-        ])
-
-    }
-}
-
-//reloadSR().catch(err => console.log(err));
+/** ENGINE ###################################################################### */
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

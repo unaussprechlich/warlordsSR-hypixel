@@ -1,6 +1,6 @@
 import * as express from 'express'
-import {PlayerModel} from "../src/PlayerDB";
-import {CLAZZES, WARLORDS} from "../src/Warlords";
+import {PlayerModel} from "../src/db/PlayerModel";
+import {CLAZZES, WARLORDS} from "../src/static/Warlords";
 import {redis} from "../app";
 
 const router = express.Router();

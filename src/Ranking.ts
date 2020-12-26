@@ -1,4 +1,4 @@
-import {PlayerModel} from "./PlayerDB";
+import {PlayerModel} from "./db/PlayerModel";
 import {redis} from "../app";
 import UUID from "hypixel-api-typescript/src/UUID";
 
