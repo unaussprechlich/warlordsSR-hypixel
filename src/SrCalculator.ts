@@ -132,10 +132,12 @@ function disqualify(dhp: number, specPlays: number, wl: number, kda: number, ave
 function adjustTheAverage(value: number, staticAverage: number){
     const average = value / staticAverage
 
-    if(average >= 5) return 2.0
+    if(average >= 5) return 1.0
     else if(average <= 0) return 0.0
 
-    return 1.00699 + (-1.02107/(1.01398 + Math.pow(average,3.09248)))
+    const result = 1.00699 + (-1.02107/(1.01398 + Math.pow(average,3.09248)))
+
+    return result
 }
 
 // Helper --------------------------------------------------------------------------------------------------------------

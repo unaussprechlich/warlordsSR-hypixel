@@ -5,7 +5,7 @@ class Average {
     constructor(DHP_RELVANT_PLAYERS, DHP_ALL_PLAYERS, WL) {
         this.DHP_ALL_PLAYERS = DHP_ALL_PLAYERS;
         this.DHP_RELVANT_PLAYERS = DHP_RELVANT_PLAYERS;
-        this.DHP = Math.round((DHP_ALL_PLAYERS + DHP_RELVANT_PLAYERS) / 2.0);
+        this.DHP = DHP_RELVANT_PLAYERS;
         this.WL = WL;
     }
 }

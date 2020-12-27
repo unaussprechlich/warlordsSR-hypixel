@@ -28,7 +28,7 @@ redis.set('foo', 'bar').then(() => redis.get('foo'))
 /** RECALCULATOR ################################################################## */
 
 //Uncomment if you want to recalculate all players
-//recalculateSR().catch(reason => console.error(reason))
+recalculateSR().catch(reason => console.error(reason))
 
 /** EXPRESS ####################################################################### */
 

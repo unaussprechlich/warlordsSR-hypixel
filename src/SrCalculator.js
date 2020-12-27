@@ -68,10 +68,11 @@ function disqualify(dhp, specPlays, wl, kda, average, plays, penalty) {
 function adjustTheAverage(value, staticAverage) {
     const average = value / staticAverage;
     if (average >= 5)
-        return 2.0;
+        return 1.0;
     else if (average <= 0)
         return 0.0;
-    return 1.00699 + (-1.02107 / (1.01398 + Math.pow(average, 3.09248)));
+    const result = 1.00699 + (-1.02107 / (1.01398 + Math.pow(average, 3.09248)));
+    return result;
 }
 function calculateKD(kills, deaths) {
     return MathUtils_1.round(MathUtils_1.vOr0(kills) / MathUtils_1.vOr1(deaths), 100.0);
