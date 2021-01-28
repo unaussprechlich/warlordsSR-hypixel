@@ -333,6 +333,8 @@ block content
                 .col-lg-10.col-sm-9.col-9
                   +manualReload
                   h3.card-title= PLAYER.name
+                    if PLAYER.isInactive
+                      span.badge.mx-2.bg-dark.text-light Inactive
                   if NAME_HISTORY
                     p= NAME_HISTORY
                   - var planckeLink= "https://plancke.io/hypixel/player/stats/" + PLAYER.name

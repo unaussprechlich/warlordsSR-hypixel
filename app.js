@@ -8,7 +8,6 @@ const mongoose = require("mongoose");
 const http_status_codes_1 = require("http-status-codes");
 const RedisClient = require("handy-redis");
 const Scheduler = require("./src/utils/Scheduler");
-const SrRecalculator_1 = require("./src/utils/SrRecalculator");
 require("mongoose").Promise = global.Promise;
 if (!process.env.MONGO_DB)
     throw "Missing MongoDB connection string, please provide it with the environment variable 'MONGO_DB'!";
@@ -21,7 +20,6 @@ if (!process.env.REDIS)
 exports.redis = RedisClient.createNodeRedisClient({ url: process.env.REDIS });
 exports.redis.set('foo', 'bar').then(() => exports.redis.get('foo'))
     .then(_ => console.info("WarlordsSr | Connected to Redis!"));
-SrRecalculator_1.recalculateSR().catch(reason => console.error(reason));
 const port = process.env.PORT || '3000';
 exports.app = express();
 exports.app.set('port', port);

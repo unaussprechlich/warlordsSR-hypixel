@@ -1,6 +1,7 @@
 import {PlayerModel} from "./db/PlayerModel";
 import {redis} from "../app";
 import UUID from "hypixel-api-typescript/src/UUID";
+import {INACTIVE_AFTER} from "./static/Statics";
 
 const CACHE_TIME = 2 * 60 * 60; // 2 hours
 
@@ -65,6 +66,14 @@ export class RankingCache{
 
         let matchObj = {};
         matchObj[`warlords_sr.${srField}`] = {$exists : true, $ne: null};
+
+        //Filter out inactive players
+        matchObj[`$or`] = [
+            {"lastLogin" : {$exists : false}},
+            {"lastLogin" : {$gt : Date.now() - INACTIVE_AFTER}},
+            {"lastTimeRecalculated" : {$exists : false}},
+            {"lastTimeRecalculated" : {$gt : Date.now() - INACTIVE_AFTER}}
+        ]
 
         const result = (await PlayerModel.aggregate([
             {

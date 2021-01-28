@@ -3,21 +3,31 @@ import {round, vOr0, vOr1} from "./utils/MathUtils";
 import {newWarlordsSr, WARLORDS} from "./static/Warlords";
 import * as Statics from "./static/Statics";
 import {Average} from "./static/Average";
+import { DateTime } from "luxon";
 
 /**
  * Calculate the stats and SR for a player.
  * The maximum SR a player can earn is 5000.
  *
  * @param player
+ * @param forceRecalculate
  */
-export function calculateStatsAndSR(player: IPlayer): IPlayer {
+export function calculateStatsAndSR(player: IPlayer, forceRecalculate : boolean = false): IPlayer {
     const stats = player.warlords;
     const sr = newWarlordsSr();
 
     try {
+        sr.plays = vOr0(stats.mage_plays) + vOr0(stats.paladin_plays) + vOr0(stats.shaman_plays) + vOr0(stats.warrior_plays);
+
+        if(!forceRecalculate && player.warlords_sr && player.warlords_sr.plays && sr.plays == player.warlords_sr.plays){
+            return player;
+        } else {
+            player.lastTimeRecalculated = Date.now()
+        }
+
         sr.KD    = calculateKD(stats.kills, stats.deaths);
         sr.KDA   = calculateKDA(stats.kills, stats.deaths, stats.assists);
-        sr.plays = vOr0(stats.mage_plays) + vOr0(stats.paladin_plays) + vOr0(stats.shaman_plays) + vOr0(stats.warrior_plays);
+
         sr.WL    = calculateWL(stats.wins, sr.plays);
         sr.DHP   = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
 

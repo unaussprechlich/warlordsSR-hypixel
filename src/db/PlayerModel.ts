@@ -1,5 +1,6 @@
 import * as mongoose from "mongoose";
 import {PlayerSchema} from "./PlayerSchema";
+import {INACTIVE_AFTER} from "../static/Statics";
 
 export const PlayerModel = mongoose.model<IPlayer>('Player', PlayerSchema);
 
@@ -290,9 +291,16 @@ export interface IWarlordsHypixelAPI{
 export interface IPlayer extends mongoose.Document{
     uuid : String,
     name : String,
+    lastTimeRecalculated? : number,
+    lastLogin?: number,
     warlords : IWarlordsHypixelAPI
     warlords_sr : IWarlordsSR
 }
+
+PlayerModel.schema.virtual("isInactive").get(function (this: IPlayer) {
+    return (this.lastLogin && this.lastLogin < Date.now() - INACTIVE_AFTER)
+        || (this.lastTimeRecalculated && this.lastTimeRecalculated < Date.now() - INACTIVE_AFTER)
+})
 
 
 

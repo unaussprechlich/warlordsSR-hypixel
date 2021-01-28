@@ -2,6 +2,7 @@ import * as express from 'express'
 import {PlayerModel} from "../src/db/PlayerModel";
 import {CLAZZES, WARLORDS} from "../src/static/Warlords";
 import {redis} from "../app";
+import {INACTIVE_AFTER} from "../src/static/Statics";
 
 const router = express.Router();
 
@@ -25,7 +26,14 @@ router.get('/*', async function(req, res, next) {
                 return JSON.parse(cacheResult);
             }
 
-            const lb = await PlayerModel.find({[sortBy] : {$exists : true}}, {name : 1, uuid : 1, warlords_sr : 1}).sort("-" + sortBy).limit(1000).lean(true);
+            const lb = await PlayerModel.find({
+                [sortBy] : {$exists : true},
+                $or : [
+                    {"lastLogin" : {$exists : false}},
+                    {"lastLogin" : {$gt : Date.now() - INACTIVE_AFTER}},
+                    {"lastTimeRecalculated" : {$exists : false}},
+                    {"lastTimeRecalculated" : {$gt : Date.now() - INACTIVE_AFTER}}]
+            }, {name : 1, uuid : 1, warlords_sr : 1}).sort("-" + sortBy).limit(1000).lean(true);
             await redis.set(`wsr:lb:${sortBy}`, JSON.stringify(lb), ["EX", CACHE_TIME])
             return lb;
         }

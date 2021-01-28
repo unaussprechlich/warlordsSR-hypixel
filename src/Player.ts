@@ -9,6 +9,7 @@ import * as MinecraftAPI from "minecraft-api/index";
 import {redis} from "../app";
 import {stringToUuid} from "./utils/UUID";
 import {RankingCache} from "./Ranking";
+import {DateTime} from "luxon";
 
 if (!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID.fromString(process.env.API_KEY);
@@ -141,9 +142,10 @@ export default class Player {
     }
 
     async reloadHypixelStats(isHighPriority: boolean) {
-        const stats = await Player.loadHypixelStats(this.uuid, isHighPriority);
-        this._data.name = stats.displayname;
-        this._data.warlords = Player.getWarlordsStatsFromHypixelStats(stats);
+        const hypixelPlayer = await Player.loadHypixelStats(this.uuid, isHighPriority);
+        this._data.name = hypixelPlayer.displayname;
+        this._data.lastLogin = hypixelPlayer.lastLogin || 0
+        this._data.warlords = Player.getWarlordsStatsFromHypixelStats(hypixelPlayer);
         return await this.recalculateSr();
     }
 

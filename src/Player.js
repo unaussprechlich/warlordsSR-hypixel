@@ -137,9 +137,10 @@ class Player {
     }
     reloadHypixelStats(isHighPriority) {
         return __awaiter(this, void 0, void 0, function* () {
-            const stats = yield Player.loadHypixelStats(this.uuid, isHighPriority);
-            this._data.name = stats.displayname;
-            this._data.warlords = Player.getWarlordsStatsFromHypixelStats(stats);
+            const hypixelPlayer = yield Player.loadHypixelStats(this.uuid, isHighPriority);
+            this._data.name = hypixelPlayer.displayname;
+            this._data.lastLogin = hypixelPlayer.lastLogin || 0;
+            this._data.warlords = Player.getWarlordsStatsFromHypixelStats(hypixelPlayer);
             return yield this.recalculateSr();
         });
     }

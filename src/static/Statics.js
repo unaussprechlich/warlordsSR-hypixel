@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.REVENANT = exports.DEFENDER = exports.BERSERKER = exports.EARTHWARDEN = exports.SPIRITGUARD = exports.THUNDERLORD = exports.PROTECTOR = exports.CRUSADER = exports.AVENGER = exports.AQUAMANCER = exports.CRYOMANCER = exports.PYROMANCER = exports.GAMES_PLAYED_TO_RANK = exports.AVERAGE_KDA = exports.DISQUALIFY = void 0;
+exports.REVENANT = exports.DEFENDER = exports.BERSERKER = exports.EARTHWARDEN = exports.SPIRITGUARD = exports.THUNDERLORD = exports.PROTECTOR = exports.CRUSADER = exports.AVENGER = exports.AQUAMANCER = exports.CRYOMANCER = exports.PYROMANCER = exports.GAMES_PLAYED_TO_RANK = exports.AVERAGE_KDA = exports.INACTIVE_AFTER = exports.DISQUALIFY = void 0;
 const Average_1 = require("./Average");
 exports.DISQUALIFY = {
     MAX_WL: 5,
     PERCENT_LEFT: 4
 };
+exports.INACTIVE_AFTER = 1000 * 60 * 60 * 24 * 356;
 const AVERAGE_KDA_RANKED_PLAYERS = 3.85;
 const AVERAGE_KDA_ALL_PLAYERS = 2.67;
 exports.AVERAGE_KDA = (AVERAGE_KDA_RANKED_PLAYERS + AVERAGE_KDA_ALL_PLAYERS) / 2.0;

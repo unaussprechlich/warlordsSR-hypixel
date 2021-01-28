@@ -3,6 +3,8 @@ import * as mongoose from "mongoose";
 export const PlayerSchema = new mongoose.Schema({
     uuid : String,
     name : String,
+    lastLogin : Number,
+    lastTimeRecalculated : Number,
 
     warlords_sr : {
         SR : Number,
@@ -338,4 +340,3 @@ export const PlayerSchema = new mongoose.Schema({
 
     }
 });
-

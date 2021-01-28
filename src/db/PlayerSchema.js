@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 exports.PlayerSchema = new mongoose.Schema({
     uuid: String,
     name: String,
+    lastLogin: Number,
+    lastTimeRecalculated: Number,
     warlords_sr: {
         SR: Number,
         KD: Number,

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RankingCache = void 0;
 const PlayerModel_1 = require("./db/PlayerModel");
 const app_1 = require("../app");
+const Statics_1 = require("./static/Statics");
 const CACHE_TIME = 2 * 60 * 60;
 class RankingCache {
     static get(uuid, reloadManually = false) {
@@ -34,6 +35,12 @@ class RankingCache {
             sortObj[`warlords_sr.${srField}`] = -1;
             let matchObj = {};
             matchObj[`warlords_sr.${srField}`] = { $exists: true, $ne: null };
+            matchObj[`$or`] = [
+                { "lastLogin": { $exists: false } },
+                { "lastLogin": { $gt: Date.now() - Statics_1.INACTIVE_AFTER } },
+                { "lastTimeRecalculated": { $exists: false } },
+                { "lastTimeRecalculated": { $gt: Date.now() - Statics_1.INACTIVE_AFTER } }
+            ];
             const result = (yield PlayerModel_1.PlayerModel.aggregate([
                 {
                     $match: matchObj

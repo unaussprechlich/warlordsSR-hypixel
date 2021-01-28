@@ -4,13 +4,19 @@ exports.calculateStatsAndSR = void 0;
 const MathUtils_1 = require("./utils/MathUtils");
 const Warlords_1 = require("./static/Warlords");
 const Statics = require("./static/Statics");
-function calculateStatsAndSR(player) {
+function calculateStatsAndSR(player, forceRecalculate = false) {
     const stats = player.warlords;
     const sr = Warlords_1.newWarlordsSr();
     try {
+        sr.plays = MathUtils_1.vOr0(stats.mage_plays) + MathUtils_1.vOr0(stats.paladin_plays) + MathUtils_1.vOr0(stats.shaman_plays) + MathUtils_1.vOr0(stats.warrior_plays);
+        if (!forceRecalculate && player.warlords_sr && player.warlords_sr.plays && sr.plays == player.warlords_sr.plays) {
+            return player;
+        }
+        else {
+            player.lastTimeRecalculated = Date.now();
+        }
         sr.KD = calculateKD(stats.kills, stats.deaths);
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
-        sr.plays = MathUtils_1.vOr0(stats.mage_plays) + MathUtils_1.vOr0(stats.paladin_plays) + MathUtils_1.vOr0(stats.shaman_plays) + MathUtils_1.vOr0(stats.warrior_plays);
         sr.WL = calculateWL(stats.wins, sr.plays);
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
         stats.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
