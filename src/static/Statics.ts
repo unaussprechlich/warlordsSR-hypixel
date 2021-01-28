@@ -9,7 +9,7 @@ export const DISQUALIFY = {
     PERCENT_LEFT: 4
 }
 
-export const INACTIVE_AFTER = 1000 * 60 * 60 * 24 * 356
+export const INACTIVE_AFTER = 1000 * 60 * 60 * 24 * 100
 
 /**
  * The current average KDA =
