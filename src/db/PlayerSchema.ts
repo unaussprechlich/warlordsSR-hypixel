@@ -1,4 +1,6 @@
 import * as mongoose from "mongoose";
+import {INACTIVE_AFTER} from "../static/Statics";
+import {IPlayer, PlayerModel} from "./PlayerModel";
 
 export const PlayerSchema = new mongoose.Schema({
     uuid : String,

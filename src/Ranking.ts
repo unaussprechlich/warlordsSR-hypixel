@@ -70,9 +70,9 @@ export class RankingCache{
         //Filter out inactive players
         matchObj[`$or`] = [
             {"lastLogin" : {$exists : false}},
-            {"lastLogin" : {$gt : Date.now() - INACTIVE_AFTER}},
+            {"lastLogin" : {$lt : Date.now() - INACTIVE_AFTER}},
             {"lastTimeRecalculated" : {$exists : false}},
-            {"lastTimeRecalculated" : {$gt : Date.now() - INACTIVE_AFTER}}
+            {"lastTimeRecalculated" : {$lt : Date.now() - INACTIVE_AFTER}}
         ]
 
         const result = (await PlayerModel.aggregate([

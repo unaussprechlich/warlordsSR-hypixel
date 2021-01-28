@@ -10,6 +10,8 @@ import {redis} from "../app";
 import {stringToUuid} from "./utils/UUID";
 import {RankingCache} from "./Ranking";
 import {DateTime} from "luxon";
+import {INACTIVE_AFTER} from "./static/Statics";
+import {PlayerSchema} from "./db/PlayerSchema";
 
 if (!process.env.API_KEY) throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID.fromString(process.env.API_KEY);
@@ -127,6 +129,12 @@ export default class Player {
             result += item + " | "
         }
         return result.substring(0, result.length - 3)
+    }
+
+
+    get isInactive(){
+        return (this._data.lastLogin && this._data.lastLogin < Date.now() - INACTIVE_AFTER)
+            || (this._data.lastTimeRecalculated && this._data.lastTimeRecalculated < Date.now() - INACTIVE_AFTER)
     }
 
     async getNameHistory() {

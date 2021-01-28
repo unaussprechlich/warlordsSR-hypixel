@@ -296,12 +296,3 @@ export interface IPlayer extends mongoose.Document{
     warlords : IWarlordsHypixelAPI
     warlords_sr : IWarlordsSR
 }
-
-PlayerModel.schema.virtual("isInactive").get(function (this: IPlayer) {
-    return (this.lastLogin && this.lastLogin < Date.now() - INACTIVE_AFTER)
-        || (this.lastTimeRecalculated && this.lastTimeRecalculated < Date.now() - INACTIVE_AFTER)
-})
-
-
-
-

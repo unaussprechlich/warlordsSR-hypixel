@@ -37,9 +37,9 @@ class RankingCache {
             matchObj[`warlords_sr.${srField}`] = { $exists: true, $ne: null };
             matchObj[`$or`] = [
                 { "lastLogin": { $exists: false } },
-                { "lastLogin": { $gt: Date.now() - Statics_1.INACTIVE_AFTER } },
+                { "lastLogin": { $lt: Date.now() - Statics_1.INACTIVE_AFTER } },
                 { "lastTimeRecalculated": { $exists: false } },
-                { "lastTimeRecalculated": { $gt: Date.now() - Statics_1.INACTIVE_AFTER } }
+                { "lastTimeRecalculated": { $lt: Date.now() - Statics_1.INACTIVE_AFTER } }
             ];
             const result = (yield PlayerModel_1.PlayerModel.aggregate([
                 {

@@ -34,9 +34,9 @@ router.get('/*', function (req, res, next) {
                         [sortBy]: { $exists: true },
                         $or: [
                             { "lastLogin": { $exists: false } },
-                            { "lastLogin": { $gt: Date.now() - Statics_1.INACTIVE_AFTER } },
+                            { "lastLogin": { $lt: Date.now() - Statics_1.INACTIVE_AFTER } },
                             { "lastTimeRecalculated": { $exists: false } },
-                            { "lastTimeRecalculated": { $gt: Date.now() - Statics_1.INACTIVE_AFTER } }
+                            { "lastTimeRecalculated": { $lt: Date.now() - Statics_1.INACTIVE_AFTER } }
                         ]
                     }, { name: 1, uuid: 1, warlords_sr: 1 }).sort("-" + sortBy).limit(1000).lean(true);
                     yield app_1.redis.set(`wsr:lb:${sortBy}`, JSON.stringify(lb), ["EX", CACHE_TIME]);

@@ -20,6 +20,7 @@ const MinecraftApiCached = require("./utils/MinecraftApiRedisCached");
 const app_1 = require("../app");
 const UUID_2 = require("./utils/UUID");
 const Ranking_1 = require("./Ranking");
+const Statics_1 = require("./static/Statics");
 if (!process.env.API_KEY)
     throw "Missing Hypixel API-KEY, please provide it with the environment variable 'API_KEY'!";
 const API_KEY = UUID_1.default.fromString(process.env.API_KEY);
@@ -119,6 +120,10 @@ class Player {
             }
             return result.substring(0, result.length - 3);
         });
+    }
+    get isInactive() {
+        return (this._data.lastLogin && this._data.lastLogin < Date.now() - Statics_1.INACTIVE_AFTER)
+            || (this._data.lastTimeRecalculated && this._data.lastTimeRecalculated < Date.now() - Statics_1.INACTIVE_AFTER);
     }
     getNameHistory() {
         return __awaiter(this, void 0, void 0, function* () {

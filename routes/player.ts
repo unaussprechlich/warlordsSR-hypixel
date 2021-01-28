@@ -53,6 +53,7 @@ router.get('/*', async function(req, res, next) {
             res.render('player', {
                 PAGE_TITLE: "Player | " +  player.data.name ,
                 PLAYER : player.data,
+                IS_INACTIVE : player.isInactive,
                 RANKING : ranking,
                 NAME_HISTORY : nameHistory,
                 RELOAD_COOLDOWN : reloadCooldown,
