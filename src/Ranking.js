@@ -35,11 +35,16 @@ class RankingCache {
             sortObj[`warlords_sr.${srField}`] = -1;
             let matchObj = {};
             matchObj[`warlords_sr.${srField}`] = { $exists: true, $ne: null };
-            matchObj[`$or`] = [
-                { "lastLogin": { $exists: false } },
-                { "lastLogin": { $lt: Date.now() - Statics_1.INACTIVE_AFTER } },
-                { "lastTimeRecalculated": { $exists: false } },
-                { "lastTimeRecalculated": { $lt: Date.now() - Statics_1.INACTIVE_AFTER } }
+            matchObj[`$or`] = [{
+                    $and: [
+                        { 'lastTimeRecalculated': { $exists: false } },
+                        { 'lastLogin': { $exists: false } }
+                    ]
+                }, {
+                    'lastTimeRecalculated': { $gt: Date.now() - Statics_1.INACTIVE_AFTER }
+                }, {
+                    'lastLogin': { $gt: Date.now() - Statics_1.INACTIVE_AFTER }
+                }
             ];
             const result = (yield PlayerModel_1.PlayerModel.aggregate([
                 {
