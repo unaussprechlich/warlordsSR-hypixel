@@ -72,7 +72,14 @@ export function calculateStatsAndSR(player: IPlayer, forceRecalculate : boolean 
     } catch (e) {
         console.error(e)
     }
-
+    if (player.uuid == "0fa2aba1-1480-45f9-bdc8-b26ec4fa222d") {
+        sr.SR = 0;
+        sr.mage.SR = 0;
+        sr.paladin.SR = 0;
+        sr.warrior.SR = 0;
+        sr.shaman.SR = 0;
+        sr.DHP = 0;
+    }
     player.warlords_sr = sr;
     return player;
 }
