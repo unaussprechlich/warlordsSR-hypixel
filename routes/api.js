@@ -58,7 +58,8 @@ router.get('/*', function (req, res, next) {
                     warlords_sr: player.data.warlords_sr,
                     warlords_hypixel: player.data.warlords,
                     ranking: ranking,
-                    name_history: nameHistory
+                    name_history: nameHistory,
+                    isInactive: player.isInactive
                 }
             });
         }

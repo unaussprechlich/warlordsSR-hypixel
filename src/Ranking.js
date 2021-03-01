@@ -41,9 +41,12 @@ class RankingCache {
                         { 'lastLogin': { $exists: false } }
                     ]
                 }, {
-                    'lastTimeRecalculated': { $gt: Date.now() - Statics_1.INACTIVE_AFTER }
-                }, {
-                    'lastLogin': { $gt: Date.now() - Statics_1.INACTIVE_AFTER }
+                    $and: [
+                        { 'lastTimeRecalculated': { $exists: true } },
+                        { 'lastLogin': { $exists: true } },
+                        { 'lastTimeRecalculated': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } },
+                        { 'lastLogin': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } }
+                    ]
                 }
             ];
             const result = (yield PlayerModel_1.PlayerModel.aggregate([

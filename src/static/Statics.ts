@@ -20,7 +20,7 @@ const AVERAGE_KDA_RANKED_PLAYERS = 3.85
 const AVERAGE_KDA_ALL_PLAYERS = 2.67
 export const AVERAGE_KDA = (AVERAGE_KDA_RANKED_PLAYERS + AVERAGE_KDA_ALL_PLAYERS) / 2.0;
 
-export const GAMES_PLAYED_TO_RANK = 30;
+export const GAMES_PLAYED_TO_RANK = 50;
 
 export const PYROMANCER  = new Average(109706,  52789, 1);
 export const CRYOMANCER  = new Average(103596,  62240, 1);

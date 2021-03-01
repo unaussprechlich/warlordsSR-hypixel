@@ -3,7 +3,6 @@ import {round, vOr0, vOr1} from "./utils/MathUtils";
 import {newWarlordsSr, WARLORDS} from "./static/Warlords";
 import * as Statics from "./static/Statics";
 import {Average} from "./static/Average";
-import { DateTime } from "luxon";
 
 /**
  * Calculate the stats and SR for a player.
@@ -31,7 +30,7 @@ export function calculateStatsAndSR(player: IPlayer, forceRecalculate : boolean 
         sr.WL    = calculateWL(stats.wins, sr.plays);
         sr.DHP   = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
 
-        stats.losses   = sr.plays - vOr0(stats.wins);
+        player.warlords.losses = stats.losses = sr.plays - vOr0(stats.wins);
         sr.ACCURATE_WL = vOr0(stats.wins) / vOr1(stats.losses);
 
         for (const warlord of WARLORDS) {
@@ -145,9 +144,7 @@ function adjustTheAverage(value: number, staticAverage: number){
     if(average >= 5) return 1.0
     else if(average <= 0) return 0.0
 
-    const result = 1.00699 + (-1.02107/(1.01398 + Math.pow(average,3.09248)))
-
-    return result
+    return 1.00699 + (-1.02107 / (1.01398 + Math.pow(average, 3.09248)))
 }
 
 // Helper --------------------------------------------------------------------------------------------------------------

@@ -19,7 +19,7 @@ function calculateStatsAndSR(player, forceRecalculate = false) {
         sr.KDA = calculateKDA(stats.kills, stats.deaths, stats.assists);
         sr.WL = calculateWL(stats.wins, sr.plays);
         sr.DHP = calculateDHP(stats.damage, stats.heal, stats.damage_prevented, sr.plays);
-        stats.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
+        player.warlords.losses = stats.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
         sr.ACCURATE_WL = MathUtils_1.vOr0(stats.wins) / MathUtils_1.vOr1(stats.losses);
         for (const warlord of Warlords_1.WARLORDS) {
             stats["losses_" + warlord.name] = MathUtils_1.vOr0(stats[warlord.name + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + warlord.name]);
@@ -77,8 +77,7 @@ function adjustTheAverage(value, staticAverage) {
         return 1.0;
     else if (average <= 0)
         return 0.0;
-    const result = 1.00699 + (-1.02107 / (1.01398 + Math.pow(average, 3.09248)));
-    return result;
+    return 1.00699 + (-1.02107 / (1.01398 + Math.pow(average, 3.09248)));
 }
 function calculateKD(kills, deaths) {
     return MathUtils_1.round(MathUtils_1.vOr0(kills) / MathUtils_1.vOr1(deaths), 100.0);

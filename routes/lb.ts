@@ -9,8 +9,8 @@ const router = express.Router();
 const CACHE_TIME = 24 * 60 * 60; // 24 hours
 
 /* GET home page. */
-router.get('/*', async function(req, res, next) {
-    try{
+router.get('/*', async function (req, res, next) {
+    try {
 
         const url = req.baseUrl.split("/");
 
@@ -18,28 +18,31 @@ router.get('/*', async function(req, res, next) {
         const specsOfClazz = clazz ? WARLORDS[CLAZZES.indexOf(clazz)].specs : null;
         const spec = clazz && url[3] && specsOfClazz && specsOfClazz.indexOf(url[3].toLowerCase()) >= 0 ? url[3].toLowerCase() : null;
 
-        async function loadLb(sortBy : string) {
+        async function loadLb(sortBy: string) {
             const cacheResult = await redis.get(`wsr:lb:${sortBy}`)
 
-            if(cacheResult){
+            if (cacheResult) {
                 console.info(`[WarlordsSR|LbCache] hit for ${sortBy}`)
                 return JSON.parse(cacheResult);
             }
 
             const lb = await PlayerModel.find({
-                [sortBy] : {$exists : true, $ne: null},
+                [sortBy]: {$exists: true, $ne: null},
                 $or: [{
-                        $and: [
-                            {'lastTimeRecalculated': {$exists: false}},
-                            {'lastLogin': {$exists: false}}
-                        ]
-                    }, {
-                        'lastTimeRecalculated': {$gt: Date.now() - INACTIVE_AFTER}
-                    }, {
-                        'lastLogin': {$gt: Date.now() - INACTIVE_AFTER}
-                    }
+                    $and: [
+                        {'lastTimeRecalculated': {$exists: false}},
+                        {'lastLogin': {$exists: false}}
+                    ]
+                }, {
+                    $and: [
+                        {'lastTimeRecalculated': {$exists: true}},
+                        {'lastLogin': {$exists: true}},
+                        {'lastTimeRecalculated': {$gt: Date.now() - INACTIVE_AFTER}},
+                        {'lastLogin': {$gt: Date.now() - INACTIVE_AFTER}}
+                    ]
+                }
                 ]
-            }, {name : 1, uuid : 1, warlords_sr : 1}).sort("-" + sortBy).limit(1000).lean(true);
+            }, {name: 1, uuid: 1, warlords_sr: 1}).sort("-" + sortBy).limit(1000).lean(true);
             await redis.set(`wsr:lb:${sortBy}`, JSON.stringify(lb), ["EX", CACHE_TIME])
             return lb;
         }
@@ -48,13 +51,13 @@ router.get('/*', async function(req, res, next) {
 
         res.render('lb', {
             PAGE_TITLE: "LB | " + capitalizeFirstLetter(clazz ? (spec ? spec : clazz) : "General"),
-            CLAZZ : clazz,
-            CLAZZES : CLAZZES,
-            SPEC : spec,
-            SPECS : specsOfClazz,
-            PLAYERS : players
+            CLAZZ: clazz,
+            CLAZZES: CLAZZES,
+            SPEC: spec,
+            SPECS: specsOfClazz,
+            PLAYERS: players
         });
-    }catch (err){
+    } catch (err) {
         next(err);
         console.error(err);
     }

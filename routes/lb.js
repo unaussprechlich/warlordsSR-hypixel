@@ -38,9 +38,12 @@ router.get('/*', function (req, res, next) {
                                     { 'lastLogin': { $exists: false } }
                                 ]
                             }, {
-                                'lastTimeRecalculated': { $gt: Date.now() - Statics_1.INACTIVE_AFTER }
-                            }, {
-                                'lastLogin': { $gt: Date.now() - Statics_1.INACTIVE_AFTER }
+                                $and: [
+                                    { 'lastTimeRecalculated': { $exists: true } },
+                                    { 'lastLogin': { $exists: true } },
+                                    { 'lastTimeRecalculated': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } },
+                                    { 'lastLogin': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } }
+                                ]
                             }
                         ]
                     }, { name: 1, uuid: 1, warlords_sr: 1 }).sort("-" + sortBy).limit(1000).lean(true);

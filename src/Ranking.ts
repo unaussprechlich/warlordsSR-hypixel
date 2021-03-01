@@ -74,10 +74,12 @@ export class RankingCache{
                 {'lastLogin': {$exists: false}}
             ]
             }, {
-                'lastTimeRecalculated': {$gt: Date.now() - INACTIVE_AFTER}
-            }, {
-                'lastLogin': {$gt: Date.now() - INACTIVE_AFTER}
-            }
+            $and: [
+                {'lastTimeRecalculated': {$exists: true}},
+                {'lastLogin': {$exists: true}},
+                {'lastTimeRecalculated': {$gt: Date.now() - INACTIVE_AFTER}},
+                {'lastLogin': {$gt: Date.now() - INACTIVE_AFTER}}
+            ]}
         ]
 
         const result = (await PlayerModel.aggregate([
