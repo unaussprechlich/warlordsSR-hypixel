@@ -117,7 +117,7 @@ mixin paladin()
     PLAYER.warlords.heal_paladin,
     PLAYER.warlords.paladin_plays,
     PLAYER.warlords.wins_paladin,
-    PLAYER.warlords.losses_paladin
+    ((PLAYER.warlords.paladin_plays|| 0) - (PLAYER.warlords.wins_paladin|| 0))
   )
 
 
@@ -128,7 +128,7 @@ mixin paladin()
     PLAYER.warlords.heal_avenger,
     PLAYER.warlords.avenger_plays,
     PLAYER.warlords.wins_avenger,
-    PLAYER.warlords.losses_avenger
+    ((PLAYER.warlords.avenger_plays|| 0) - (PLAYER.warlords.wins_avenger|| 0))
   )
 
   +spec("Crusader", PLAYER.warlords_sr.paladin.crusader, RANKING.paladin.crusader)
@@ -138,7 +138,7 @@ mixin paladin()
     PLAYER.warlords.heal_crusader,
     PLAYER.warlords.crusader_plays,
     PLAYER.warlords.wins_crusader,
-    PLAYER.warlords.losses_crusader
+    ((PLAYER.warlords.crusader_plays|| 0) - (PLAYER.warlords.wins_crusader|| 0))
   )
 
   +spec("Protector", PLAYER.warlords_sr.paladin.protector, RANKING.paladin.protector)
@@ -148,7 +148,7 @@ mixin paladin()
     PLAYER.warlords.heal_protector,
     PLAYER.warlords.protector_plays,
     PLAYER.warlords.wins_protector,
-    PLAYER.warlords.losses_protector
+    ((PLAYER.warlords.protector_plays|| 0) - (PLAYER.warlords.wins_protector|| 0))
   )
 
 mixin mage()
@@ -159,7 +159,7 @@ mixin mage()
     PLAYER.warlords.heal_mage,
     PLAYER.warlords.mage_plays,
     PLAYER.warlords.wins_mage,
-    PLAYER.warlords.losses_mage
+    ((PLAYER.warlords.mage_plays|| 0) - (PLAYER.warlords.wins_mage|| 0))
   )
   +spec("Pyromancer", PLAYER.warlords_sr.mage.pyromancer, RANKING.mage.pyromancer)
   +stats(
@@ -168,7 +168,7 @@ mixin mage()
     PLAYER.warlords.heal_pyromancer,
     PLAYER.warlords.pyromancer_plays,
     PLAYER.warlords.wins_pyromancer,
-    PLAYER.warlords.losses_pyromancer
+    ((PLAYER.warlords.pyromancer_plays|| 0) - (PLAYER.warlords.wins_pyromancer|| 0))
   )
   +spec("Aquamancer", PLAYER.warlords_sr.mage.aquamancer, RANKING.mage.aquamancer)
   +stats(
@@ -177,7 +177,7 @@ mixin mage()
     PLAYER.warlords.heal_aquamancer,
     PLAYER.warlords.aquamancer_plays,
     PLAYER.warlords.wins_aquamancer,
-    PLAYER.warlords.losses_aquamancer
+    ((PLAYER.warlords.aquamancer_plays|| 0) - (PLAYER.warlords.wins_aquamancer|| 0))
   )
   +spec("Cryomancer", PLAYER.warlords_sr.mage.cryomancer, RANKING.mage.cryomancer)
   +stats(
@@ -186,7 +186,7 @@ mixin mage()
     PLAYER.warlords.heal_cryomancer,
     PLAYER.warlords.cryomancer_plays,
     PLAYER.warlords.wins_cryomancer,
-    PLAYER.warlords.losses_cryomancer
+    ((PLAYER.warlords.crusader_plays|| 0) - (PLAYER.warlords.wins_cryomancer|| 0))
   )
 
 mixin warrior()
@@ -197,7 +197,7 @@ mixin warrior()
     PLAYER.warlords.heal_warrior,
     PLAYER.warlords.warrior_plays,
     PLAYER.warlords.wins_warrior,
-    PLAYER.warlords.losses_warrior
+    ((PLAYER.warlords.warrior_plays|| 0) - (PLAYER.warlords.wins_warrior|| 0))
   )
   +spec("Berserker", PLAYER.warlords_sr.warrior.berserker, RANKING.warrior.berserker)
   +stats(
@@ -206,7 +206,7 @@ mixin warrior()
     PLAYER.warlords.heal_berserker,
     PLAYER.warlords.berserker_plays,
     PLAYER.warlords.wins_berserker,
-    PLAYER.warlords.losses_berserker
+    ((PLAYER.warlords.berserker_plays|| 0) - (PLAYER.warlords.wins_berserker|| 0))
   )
   +spec("Defender", PLAYER.warlords_sr.warrior.defender, RANKING.warrior.defender)
   +stats(
@@ -215,7 +215,7 @@ mixin warrior()
     PLAYER.warlords.heal_defender,
     PLAYER.warlords.defender_plays,
     PLAYER.warlords.wins_defender,
-    PLAYER.warlords.losses_defender
+    ((PLAYER.warlords.defender_plays|| 0) - (PLAYER.warlords.wins_defender|| 0))
   )
   +spec("Revenant", PLAYER.warlords_sr.warrior.revenant, RANKING.warrior.revenant)
   +stats(
@@ -224,7 +224,7 @@ mixin warrior()
       PLAYER.warlords.heal_revenant,
       PLAYER.warlords.revenant_plays,
       PLAYER.warlords.wins_revenant,
-      PLAYER.warlords.losses_revenant
+    ((PLAYER.warlords.revenant_plays|| 0) - (PLAYER.warlords.wins_revenant|| 0))
   )
 
 mixin shaman()
@@ -235,7 +235,7 @@ mixin shaman()
     PLAYER.warlords.heal_shaman,
     PLAYER.warlords.shaman_plays,
     PLAYER.warlords.wins_shaman,
-    PLAYER.warlords.losses_shaman
+    ((PLAYER.warlords.shaman_plays|| 0) - (PLAYER.warlords.wins_shaman|| 0))
   )
   +spec("Thunderlord", PLAYER.warlords_sr.shaman.thunderlord, RANKING.shaman.thunderlord)
   +stats(
@@ -244,7 +244,7 @@ mixin shaman()
     PLAYER.warlords.heal_thunderlord,
     PLAYER.warlords.thunderlord_plays,
     PLAYER.warlords.wins_thunderlord,
-    PLAYER.warlords.losses_thunderlord
+    ((PLAYER.warlords.thunderlord_plays|| 0) - (PLAYER.warlords.wins_thunderlord|| 0))
   )
   +spec("Spiritguard", PLAYER.warlords_sr.shaman.spiritguard, RANKING.shaman.spiritguard)
   +stats(
@@ -253,7 +253,7 @@ mixin shaman()
       PLAYER.warlords.heal_spiritguard,
       PLAYER.warlords.spiritguard_plays,
       PLAYER.warlords.wins_spiritguard,
-      PLAYER.warlords.losses_spiritguard
+    ((PLAYER.warlords.spiritguard_plays|| 0) - (PLAYER.warlords.wins_spiritguard|| 0))
   )
   +spec("Earthwarden", PLAYER.warlords_sr.shaman.earthwarden, RANKING.shaman.earthwarden)
   +stats(
@@ -262,7 +262,7 @@ mixin shaman()
     PLAYER.warlords.heal_earthwarden,
     PLAYER.warlords.earthwarden_plays,
     PLAYER.warlords.wins_earthwarden,
-    PLAYER.warlords.losses_earthwarden
+    ((PLAYER.warlords.earthwarden_plays|| 0) - (PLAYER.warlords.wins_earthwarden|| 0))
   )
 
 

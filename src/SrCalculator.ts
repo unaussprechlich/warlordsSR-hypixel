@@ -35,14 +35,14 @@ export function calculateStatsAndSR(player: IPlayer, forceRecalculate : boolean 
 
         for (const warlord of WARLORDS) {
 
-            stats["losses_" + warlord.name] = vOr0(stats[warlord.name + "_plays"]) - vOr0(stats["wins_" + warlord.name]);
+            player.warlords["losses_" + warlord.name] = stats["losses_" + warlord.name] = vOr0(stats[warlord.name + "_plays"]) - vOr0(stats["wins_" + warlord.name]);
             sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].LEVEL = calculateLevel(warlord.name, stats);
             sr[warlord.name].WINS = vOr0(stats["wins_" + warlord.name]);
 
             for (const spec of warlord.specs) {
-                stats["losses_" + spec] = vOr0(stats[spec + "_plays"]) - vOr0(stats["wins_" + spec]);
+                player.warlords["losses_" + spec] = stats["losses_" + spec] = vOr0(stats[spec + "_plays"]) - vOr0(stats["wins_" + spec]);
                 sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].SR = calculateSrForSpec(

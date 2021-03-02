@@ -22,13 +22,13 @@ function calculateStatsAndSR(player, forceRecalculate = false) {
         player.warlords.losses = stats.losses = sr.plays - MathUtils_1.vOr0(stats.wins);
         sr.ACCURATE_WL = MathUtils_1.vOr0(stats.wins) / MathUtils_1.vOr1(stats.losses);
         for (const warlord of Warlords_1.WARLORDS) {
-            stats["losses_" + warlord.name] = MathUtils_1.vOr0(stats[warlord.name + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + warlord.name]);
+            player.warlords["losses_" + warlord.name] = stats["losses_" + warlord.name] = MathUtils_1.vOr0(stats[warlord.name + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + warlord.name]);
             sr[warlord.name].WL = calculateWL(stats["wins_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].DHP = calculateDHP(stats["damage_" + warlord.name], stats["heal_" + warlord.name], stats["damage_prevented_" + warlord.name], stats[warlord.name + "_plays"]);
             sr[warlord.name].LEVEL = calculateLevel(warlord.name, stats);
             sr[warlord.name].WINS = MathUtils_1.vOr0(stats["wins_" + warlord.name]);
             for (const spec of warlord.specs) {
-                stats["losses_" + spec] = MathUtils_1.vOr0(stats[spec + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + spec]);
+                player.warlords["losses_" + spec] = stats["losses_" + spec] = MathUtils_1.vOr0(stats[spec + "_plays"]) - MathUtils_1.vOr0(stats["wins_" + spec]);
                 sr[warlord.name][spec].WL = calculateWL(stats["wins_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].DHP = calculateDHP(stats["damage_" + spec], stats["heal_" + spec], stats["damage_prevented_" + spec], stats[spec + "_plays"]);
                 sr[warlord.name][spec].SR = calculateSrForSpec(spec, sr[warlord.name][spec].DHP, stats[spec + "_plays"], sr[warlord.name][spec].WL, sr.KDA, sr.plays, stats.penalty);
