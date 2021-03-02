@@ -23,7 +23,7 @@ function recalculateSR() {
                 try {
                     let player = yield PlayerModel_1.PlayerModel.findOne({ uuid: projectedPlayer.uuid });
                     if (player != null) {
-                        player = SrCalculator_1.calculateStatsAndSR(player);
+                        player = SrCalculator_1.calculateStatsAndSR(player, true);
                         yield player.save();
                         count++;
                         console.log("[Reloading|" + Math.round((count / projectedPlayers.length) * 100) + "%] " + player.name + " -> " + player.warlords_sr.SR + " SR");

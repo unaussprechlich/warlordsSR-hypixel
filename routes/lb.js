@@ -32,19 +32,11 @@ router.get('/*', function (req, res, next) {
                     }
                     const lb = yield PlayerModel_1.PlayerModel.find({
                         [sortBy]: { $exists: true, $ne: null },
-                        $or: [{
-                                $and: [
-                                    { 'lastTimeRecalculated': { $exists: false } },
-                                    { 'lastLogin': { $exists: false } }
-                                ]
-                            }, {
-                                $and: [
-                                    { 'lastTimeRecalculated': { $exists: true } },
-                                    { 'lastLogin': { $exists: true } },
-                                    { 'lastTimeRecalculated': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } },
-                                    { 'lastLogin': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } }
-                                ]
-                            }
+                        $and: [
+                            { 'lastTimeRecalculated': { $exists: true } },
+                            { 'lastLogin': { $exists: true } },
+                            { 'lastTimeRecalculated': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } },
+                            { 'lastLogin': { $gt: Date.now() - Statics_1.INACTIVE_AFTER } }
                         ]
                     }, { name: 1, uuid: 1, warlords_sr: 1 }).sort("-" + sortBy).limit(1000).lean(true);
                     yield app_1.redis.set(`wsr:lb:${sortBy}`, JSON.stringify(lb), ["EX", CACHE_TIME]);

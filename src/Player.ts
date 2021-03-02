@@ -131,8 +131,8 @@ export default class Player {
 
 
     get isInactive(){
-        return (this._data.lastLogin && this._data.lastLogin < Date.now() - INACTIVE_AFTER)
-            || (this._data.lastTimeRecalculated && this._data.lastTimeRecalculated < Date.now() - INACTIVE_AFTER)
+        return !(this._data.lastLogin && this._data.lastTimeRecalculated)
+            || this._data.lastLogin < Date.now() - INACTIVE_AFTER ||  this._data.lastTimeRecalculated < Date.now() - INACTIVE_AFTER
     }
 
     async getNameHistory() {

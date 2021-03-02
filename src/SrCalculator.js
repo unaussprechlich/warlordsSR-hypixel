@@ -12,7 +12,7 @@ function calculateStatsAndSR(player, forceRecalculate = false) {
         if (!forceRecalculate && player.warlords_sr && player.warlords_sr.plays && sr.plays == player.warlords_sr.plays) {
             return player;
         }
-        else {
+        else if (!forceRecalculate) {
             player.lastTimeRecalculated = Date.now();
         }
         sr.KD = calculateKD(stats.kills, stats.deaths);

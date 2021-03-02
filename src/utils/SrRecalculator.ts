@@ -16,7 +16,7 @@ export async function recalculateSR(){
         try{
             let player = await PlayerModel.findOne({uuid : projectedPlayer.uuid})
             if(player != null){
-                player = calculateStatsAndSR(player)
+                player = calculateStatsAndSR(player, true)
                 await player.save()
                 count++;
                 console.log("[Reloading|"+ Math.round((count / projectedPlayers.length) * 100) + "%] " + player.name + " -> " + player.warlords_sr.SR + " SR");

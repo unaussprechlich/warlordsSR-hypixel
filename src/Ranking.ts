@@ -68,18 +68,11 @@ export class RankingCache{
         matchObj[`warlords_sr.${srField}`] = {$exists : true, $ne: null};
 
         //Filter out inactive players
-        matchObj[`$or`] = [{
-            $and: [
-                {'lastTimeRecalculated': {$exists: false}},
-                {'lastLogin': {$exists: false}}
-            ]
-            }, {
-            $and: [
-                {'lastTimeRecalculated': {$exists: true}},
-                {'lastLogin': {$exists: true}},
-                {'lastTimeRecalculated': {$gt: Date.now() - INACTIVE_AFTER}},
-                {'lastLogin': {$gt: Date.now() - INACTIVE_AFTER}}
-            ]}
+        matchObj[`$and`] = [
+            {'lastTimeRecalculated': {$exists: true}},
+            {'lastLogin': {$exists: true}},
+            {'lastTimeRecalculated': {$gt: Date.now() - INACTIVE_AFTER}},
+            {'lastLogin': {$gt: Date.now() - INACTIVE_AFTER}}
         ]
 
         const result = (await PlayerModel.aggregate([

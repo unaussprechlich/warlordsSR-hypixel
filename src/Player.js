@@ -122,8 +122,8 @@ class Player {
         });
     }
     get isInactive() {
-        return (this._data.lastLogin && this._data.lastLogin < Date.now() - Statics_1.INACTIVE_AFTER)
-            || (this._data.lastTimeRecalculated && this._data.lastTimeRecalculated < Date.now() - Statics_1.INACTIVE_AFTER);
+        return !(this._data.lastLogin && this._data.lastTimeRecalculated)
+            || this._data.lastLogin < Date.now() - Statics_1.INACTIVE_AFTER || this._data.lastTimeRecalculated < Date.now() - Statics_1.INACTIVE_AFTER;
     }
     getNameHistory() {
         return __awaiter(this, void 0, void 0, function* () {
