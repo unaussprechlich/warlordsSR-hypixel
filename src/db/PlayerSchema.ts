@@ -341,5 +341,29 @@ export const PlayerSchema = new mongoose.Schema({
         wins_teamdeathmatch_b: Number,
 
         //WEAPONS
+        weapon_inventory : [
+            {
+                spec : {
+                    spec : Number,
+                    playerClass : Number,
+                },
+                ability: Number,
+                abilityBoost: Number,
+                damage: Number,
+                energy: Number,
+                chance: Number,
+                multiplier: Number,
+                health: Number,
+                cooldown: Number,
+                movement: Number,
+                material: String,
+                id: Number,
+                category: String,
+                crafted: Boolean,
+                upgradeMax: Number,
+                upgradeTimes: Number,
+                unlocked: Boolean,
+            }
+        ],
     }
 });
