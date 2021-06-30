@@ -286,6 +286,32 @@ export interface IWarlordsHypixelAPI{
     wins_teamdeathmatch_blu: number,
     wins_teamdeathmatch_red: number,
     wins_teamdeathmatch_b: number,
+
+    //WEAPONS
+    weapon_inventory : Array<IWeapon>,
+}
+
+export interface IWeapon{
+    spec :  {
+        spec : number,
+        playerClass : number,
+    },
+    ability: number,
+    abilityBoost: number,
+    damage: number,
+    energy: number,
+    chance: number,
+    multiplier: number,
+    health: number,
+    cooldown: number,
+    movement: number,
+    material: string,
+    id: number,
+    category: string,
+    crafted: boolean,
+    upgradeMax: number,
+    upgradeTimes: number,
+    unlocked: boolean,
 }
 
 export interface IPlayer extends mongoose.Document{

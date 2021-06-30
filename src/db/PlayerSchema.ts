@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import {INACTIVE_AFTER} from "../static/Statics";
-import {IPlayer, PlayerModel} from "./PlayerModel";
+import {IPlayer, IWeapon, PlayerModel} from "./PlayerModel";
 
 export const PlayerSchema = new mongoose.Schema({
     uuid : String,
@@ -340,5 +340,30 @@ export const PlayerSchema = new mongoose.Schema({
         wins_teamdeathmatch_red: Number,
         wins_teamdeathmatch_b: Number,
 
+        //WEAPONS
+        weapon_inventory : [
+            {
+                spec : {
+                    spec : Number,
+                    playerClass : Number,
+                },
+                ability: Number,
+                abilityBoost: Number,
+                damage: Number,
+                energy: Number,
+                chance: Number,
+                multiplier: Number,
+                health: Number,
+                cooldown: Number,
+                movement: Number,
+                material: String,
+                id: Number,
+                category: String,
+                crafted: Boolean,
+                upgradeMax: Number,
+                upgradeTimes: Number,
+                unlocked: Boolean,
+            }
+        ],
     }
 });
