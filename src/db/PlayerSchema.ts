@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import {INACTIVE_AFTER} from "../static/Statics";
-import {IPlayer, PlayerModel} from "./PlayerModel";
+import {IPlayer, IWeapon, PlayerModel} from "./PlayerModel";
 
 export const PlayerSchema = new mongoose.Schema({
     uuid : String,
@@ -340,5 +340,6 @@ export const PlayerSchema = new mongoose.Schema({
         wins_teamdeathmatch_red: Number,
         wins_teamdeathmatch_b: Number,
 
+        //WEAPONS
     }
 });
